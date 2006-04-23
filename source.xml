@@ -8,60 +8,68 @@
 	
 	<INCLUDE file="inc/content.tmpl" />
 
-<h2>CVS vs. Linux 2.6.x</h2>
-<p>CVS contains development versions of the code which is in
-Linux 2.6. Latest bugfixes show usually up in CVS before going
-into mainline. Development only code like JFFS3 is in the CVS too.</p>
+<h2>GIT vs. Linux 2.6.x</h2>
 
-<hr size="2" />
+    <P>The MTD GIT tree is <TT>git://git.infradead.org/mtd-2.6.git</TT>, 
+    and is viewable using gitweb at <A 
+    HREF="http://git.infradead.org/">http://git.infradead.org/</A>, along
+    with a separate tree for the userspace tools, and users' own trees.
+    From time to time, other trees will exist which contain development work
+    which is not yet ready to be merged with the mainstream kernel.</P>
+    
+    <P>When cloning the tree, please try to conserve network bandwidth (and
+      your own disk space) by using 'alternates' -- if you have a local clone
+      of Linus' official kernel tree, share the object directory with that
+      instead of downloading the same objects all over again. With GIT 1.3.0
+      and onwards, that's simple enough. Assuming you have a local tree named
+      '<TT>~/git/linux-2.6</TT>' already, you can clone the MTD tree as follows:
+    <pre>
+git-clone --reference ~/git/linux-2.6 git://git.infradead.org/mtd-2.6
+</pre>
+</P>
+<p>Users with accounts on git.infradead.org can create their own trees
+there, which are also accessible via public git:// URLs and visible in
+gitweb. For more details see the <A HREF="doc/git.html">GIT HOWTO</A>.
 
-<h2>Download and CVS</h2>
-<p>Your best option is to obtain the latest code from CVS, by following 
-the instructions below. We do break the CVS build occasionally, but we're 
-also fairly good at fixing it quickly when we do so. </p>
-
-<p>Anonymous CVS access is available, and full CVS access may also be
-granted to developers on request.<br />
-<i>cvs -d :pserver:anoncvs@cvs.infradead.org:/home/cvs login (password: anoncvs)</i><br />
-<i>cvs -d :pserver:anoncvs@cvs.infradead.org:/home/cvs co mtd</i><br />
-</p>
-
-<p>If you can't access anoncvs for some reason, daily snapshots 
-are also available at <a href="ftp://ftp.uk.linux.org/pub/people/dwmw2/mtd/cvs/">
-				ftp://ftp.uk.linux.org/pub/people/dwmw2/mtd/cvs/</a>
-</p>
 
 <hr size="2" />
 
 <h2>Patch submission</h2>
 
 <p>
-Please send MTD related patches to the MTD mailinglist.
+If you have the facility to do so, please create a temporary git tree
+from which patches can be pulled. The <A HREF="doc/git.html">GIT
+HOWTO</A> documents how to do this. Please make sure that any such
+such GIT trees are based on the current mtd-2.6 GIT tree and not on 
+Linus' tree, so that unnecessary merges are avoided.
 </p>
+<P>Users without an account on <TT>git.infradead.org</TT> (which is a
+different machine to the old <tt>cvs.infradead.org</tt>) may send trivial patches
+to the mailing list -- but expect to be given an account and expected to
+use git if you make a habit of it.
 <p>
 Have a look at our <a href="http://lists.infradead.org/pipermail/linux-mtd/2005-July/012985.html">
-patch submission format guidelines</a>
+patch submission format guidelines.</a>
+
+
 </p>
 
 <hr size="2" />
 
 <h2><a name="kernelversions">Kernel versions</a></h2>
-<p>The MTD code in the linux kernel is updated from MTD CVS in kernel version <b>2.6.newest only</b>.</p>
-<p>As of March 2005 we dropped Linux 2.4 support from CVS head. This means we not longer care
-whether the CVS code can be used on Linux 2.4 or not. We will remove the compability hacks in the course of
-time <b>without further notice</b> - especially when they are in the way of adding new functionality.</p>
-<p>The latest snapshot which apparently works with 2.4 kernels >= 2.4.27 is the
-CVS snapshot of date 2005-03-04. To update your CVS tree to the snapshot, perform the checkout of the MTD tree as above and then run the following commands:<br />
-<i>cd mtd</i><br />
-<i>cvs update -dP -D 2005-03-04</i><br />
-</p>
-<P><B>NOTE:</B> That is just a snapshot. It isn't a release version
-or a branch; it's known to be broken in ways which will corrupt data,
-and we don't care. The bugs got fixed later but the patches will never
-be backported. The date quoted just happens to be the date at which the
-unstable development tree was last observed to compile for the ancient
-2.4 kernel. You should not use it, and you should not expect it to
-work.</P>
+<p>The MTD code in the linux kernel is updated from the MTD GIT tree
+in kernel version <b>2.6.newest only</b>.  The 2.4 kernel does not
+have NAND support in JFFS2, and will not have anything but
+high-priority bug-fixes applied to it.</p>
+<p>As of March 2005 we dropped Linux 2.4 support from CVS head. This
+means we no longer care whether the CVS code can be used on Linux 2.4
+or not.</P>
+<P>As of April 2006 we stopped using CVS altogether and switched to a
+  GIT tree based on the current 2.6 kernel. You may be able to massage
+  the current code to work in older kernels, if you have a sufficient
+  supply of illegal narcotics that you actually desire such a
+  thing. Please don't ask us about it though.</P>
+
 <P>If you are using the ancient 2.4 kernel, that's probably
 because you're interested in stabliity -- it is old and long-tested
 code. If that's what you want, then you should use the original JFFS2
@@ -72,41 +80,6 @@ Move yourself and update to a recent kernel. If you use a vendor supplied kernel
 please  get support from your kernel vendor.  Do not ask on the mailinglist for help with 
  such problems. You are either ignored or you get a pointer to this text. 
 Please save the bandwidth and our time to sort out such questions.</p>
-
-<hr size="2" />
-
-<h2>Installation</h2>
-<p>Check out sources from CVS or download a snapshot and untar it. Change to the
-top directory and read INSTALL. Invoke patchkernel.sh from the top directory.
-You have at least to supply the directory of the kernel you want to
-patch. Command line options for various patch selections are available.
-Invoke the script without arguments for help.<br />
-This script applies all the neccecary changes to your kernel source
-The script takes following options: <br />
-<i>
--c copy files into kernel tree instead of linking files<br />
--2 include jffs2 filesystem<br />
--3 include jffs3 filesystem<br />
--y answer all questions with yes<br />
-</i>
-As last argument you have to give the path of your kernel tree. This must be an absolute
-path.</p>
-<p>The difference between linking and copying files into the kernel tree is, that copying 
-       gives you a modified kernel tree, which can be handled by CVS as it contains no symlinks.
-       Linking the files has two advantages. <br />
-       1. All your kernel trees can share the same MTD source.<br />
-       2. You can have more than one MTD source eg. a stable and an unstable and use it with
-       your kernel tree(s) by changing the link to the directories.
-       Assumed you have two MTD versions (stable and unstable) and those are located in source,
-       then the directory listing of source shows:<br />
-       <i>
-       mtd->/source/mtd.stable<br />
-       mtd.stable<br />
-       mtd.unstable<br />
-       </i>
-       If you want to build with your stable MTD source, set the mtd link to mtd.stable else to 
-       mtd.unstable. Don't forget to make clean, if you switch the links.   	       
-</p>
 
 	<INCLUDE file="inc/footer.tmpl" />
 </PAGE>
