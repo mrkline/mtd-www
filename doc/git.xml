@@ -1,0 +1,156 @@
+<PAGE>
+	<VAR match="VAR_ORIGIN" replace="../" />
+	<VAR match="VAR_CVSID" replace="$Id$"/>
+	<INCLUDE file="../inc/header.tmpl" />
+
+	<VAR match="VAR_SEL_DOC" replace="selected" />
+	<VAR match="VAR_SEL_GIT" replace="selected" />
+	<PARSE file="../menu1.xml" />
+
+	<INCLUDE file="../inc/content.tmpl" />
+
+	<H2>MTD GIT HOWTO</H2>
+
+<P>The MTD GIT tree is at <TT>git://git.infradead.org/mtd-2.6.git</TT>,
+and is visible through <A
+HREF="http://git.infradead.org/?p=mtd-2.6.git">gitweb</A>. Other git
+trees are available and can be browsed through the gitweb interface 
+at <A HREF="http://git.infradead.org/">http://git.infradead.org/</A>.
+</P>
+
+<P>Users with accounts on git.infradead.org (aka pentafluge.infradead.org)
+can create their own git trees which are publicly accessible. A cron
+job runs every five minutes, indexing the available trees in users' 
+<TT>~/public_git/</TT> directories and making them available in
+gitweb.</P>
+<P>When creating GIT trees with patches you intend to be pushed upstream,
+please try to ensure that we end up with as few merges as possible.
+Anything you commit should be on top of the latest mtd-2.6 git tree,
+rather than against a clean tree from Linus. Avoid doing any merges of
+your own, unless absolutely necessary.</P>
+<P>Please try to avoid cloning directly from git.infradead.org -- you'll
+be downloading many thousands of objects which are already present in
+the official upstream source tree. Save your disk space and our
+network bandwidth by using 'alternates' instead.</P>
+<P>There are two suggested methods of working with your own local tree
+  -- the first is the simple method which uses a git tree with just
+  one 'master' branch, while the other deals with multiple branches in
+  the same directory.</P>
+
+<hr size="2" />
+
+<H3>Creating your own tree on git.infradead.org</H3>
+
+Creating your own tree is simple. You create a <TT>public_git</TT>
+directory within your home directory, and ensure that it is world-readable:
+<PRE>
+$ ssh pentafluge.infradead.org
+$ mkdir ~/public_git
+$ chmod og+rx ~ ~/public_git
+</PRE>
+
+Once you've done that, you can create trees in your <TT>public_git</TT>
+directory by cloning from the existing trees which are in <TT>/home/git</TT>
+(or indeed from other users' trees):
+
+<PRE>
+$ cd ~/public_git
+$ git clone -l -n -s --bare /home/git/mtd-2.6.git foo-2.6.git
+</PRE>
+
+<P>Your new tree will be immediately accessible to the public through the
+URL <TT>git://git.infradead.org/~<I>user</I>/foo-2.6.git</TT>.
+</P>
+<P>Within five minutes of its creation, your tree should be visible 
+through the <A HREF="http://git.infradead.org/">gitweb</A> interface
+  too.</P>
+<P>You can then make a local clone of your public tree, make commits
+  to it and push them back using the URL
+<TT>git+ssh://git.infradead.org/~/public_git/foo-2.6.git</TT>.</P>
+
+<hr size="2" />
+
+<H3>Local trees: simple, single-branch method (requires git 1.3.0 or newer)</H3>
+
+<H4>Clone Linus' tree</H4>
+If you don't already have a copy of Linus' tree locally, get one:
+<PRE>$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git linux-2.6</PRE>
+
+<H4>Clone MTD tree</H4>
+Using Linus' tree as a reference for existing objects, clone the MTD
+  tree:
+<PRE>$ git clone --reference linux-2.6 git://git.infradead.org/mtd-2.6.git mtd-2.6</PRE>
+
+<H4>Clone your own tree</H4>
+Again using Linus' tree for reference objects (since using the MTD
+tree created above doesn't seem to work with current GIT), clone your
+own tree from your <TT>public_git</TT> directory:
+<PRE>$ git clone --reference mtd-2.6 git+ssh://git.infradead.org/~/public_git/foo-2.6.git myfoo-2.6</PRE>
+
+Having cloned your tree, you can now commit to it using git-commit
+and push the results back with git-push.
+
+<hr size="2" />
+
+<H3>Local trees: Multiple-branch method</H3>
+
+<H4>Clone Linus' tree</H4>
+As above, if you don't already have a copy of Linus' tree locally, get one:
+<PRE>
+$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git linux-2.6
+$ cd linux-2.6
+</PRE>
+
+<H4>Add a branch for the MTD tree and pull from it, if you want a
+  local copy of the MTD tree:</H4>
+<PRE>
+$ cat &gt; .git/remotes/mtd &lt;&lt;EOF
+URL: git://git.infradead.org/mtd-2.6
+Pull: master:mtd
+EOF
+$ git-fetch mtd
+</PRE>
+
+<H4>Add a branch for your own tree, if you have one:</H4>
+<PRE>
+$ cat &gt; .git/remotes/myfoo &lt;&lt;EOF
+URL: git+ssh://git.infradead.org/~/public_git/foo-2.6
+Pull: master:myfoo
+Push: myfoo:master
+EOF
+$ git-fetch myfoo
+</PRE>
+
+<H4>Working with branches</H4>
+
+Now that you have multiple branches within the same tree, you need to
+explicitly switch to the one you want to work on. If you just wanted
+a copy of the MTD tree and fetched that, then you can do this as
+follows:
+<PRE>
+$ git checkout mtd
+</PRE>
+If you are intending to work on your own tree and commit to it, then
+switch to that instead. Assuming you called it '<TT>myfoo</TT>' as
+shown above:
+<PRE>
+$ git checkout myfoo
+</PRE>
+
+Now, you can edit files using your favourite editor, and tell git
+about new files with '<TT>git add</TT>'. When you're ready to commit,
+do so with '<TT>git commit -a -s</TT>'. Don't forget the '-s' part of
+you'll have to add the Signed-Off-By: line yourself.
+
+Remember that the first line of the commit is treated like a 'subject'
+and should summarise the commit. If it's intended to be pulled into
+the MTD tree and then into Linus' tree, then it should also be
+relevant in the context of the mainstream kernel -- so the first line
+should perhaps contain 'MTD' or 'JFFS2' somewhere.
+
+You can push your commits back to git.infradead.org with the command
+'<TT>git push myfoo</TT>'. New commits will visible in gitweb
+immediately -- it's only new trees which take a while to appear.
+
+	<INCLUDE file="../inc/footer.tmpl" />
+</PAGE>
