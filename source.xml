@@ -29,7 +29,7 @@ git-clone --reference ~/git/linux-2.6 git://git.infradead.org/mtd-2.6
 </P>
 <p>Users with accounts on git.infradead.org can create their own trees
 there, which are also accessible via public git:// URLs and visible in
-gitweb. For more details see the <A HREF="doc/git.html">GIT HOWTO</A>.
+gitweb. For more details see the <A HREF="doc/git.html">GIT HOWTO</A>.</p>
 
 
 <hr size="2" />
@@ -46,7 +46,7 @@ Linus' tree, so that unnecessary merges are avoided.
 <P>Users without an account on <TT>git.infradead.org</TT> (which is a
 different machine to the old <tt>cvs.infradead.org</tt>) may send trivial patches
 to the mailing list -- but expect to be given an account and expected to
-use git if you make a habit of it.
+use git if you make a habit of it.</P>
 <p>
 Have a look at our <a href="http://lists.infradead.org/pipermail/linux-mtd/2005-July/012985.html">
 patch submission format guidelines.</a>
@@ -61,7 +61,7 @@ patch submission format guidelines.</a>
 in kernel version <b>2.6.newest only</b>.  The 2.4 kernel does not
 have NAND support in JFFS2, and will not have anything but
 high-priority bug-fixes applied to it.</p>
-<p>As of March 2005 we dropped Linux 2.4 support from CVS head. This
+<P>As of March 2005 we dropped Linux 2.4 support from CVS head. This
 means we no longer care whether the CVS code can be used on Linux 2.4
 or not.</P>
 <P>As of April 2006 we stopped using CVS altogether and switched to a
