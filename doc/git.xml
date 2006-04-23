@@ -59,7 +59,7 @@ $ git clone -l -n -s --bare /home/git/mtd-2.6.git foo-2.6.git
 </PRE>
 
 <P>Your new tree will be immediately accessible to the public through the
-URL <TT>git://git.infradead.org/~<I>user</I>/foo-2.6.git</TT>.
+URL <TT>git://git.infradead.org/~&lt;I&gt;user&lt;/I&gt;/foo-2.6.git</TT>.
 </P>
 <P>Within five minutes of its creation, your tree should be visible 
 through the <A HREF="http://git.infradead.org/">gitweb</A> interface
@@ -104,7 +104,7 @@ $ cd linux-2.6
 <H4>Add a branch for the MTD tree and pull from it, if you want a
   local copy of the MTD tree:</H4>
 <PRE>
-$ cat &gt; .git/remotes/mtd &lt;&lt;EOF
+$ cat &amp;gt; .git/remotes/mtd &amp;lt;&amp;lt;EOF
 URL: git://git.infradead.org/mtd-2.6
 Pull: master:mtd
 EOF
@@ -113,7 +113,7 @@ $ git-fetch mtd
 
 <H4>Add a branch for your own tree, if you have one:</H4>
 <PRE>
-$ cat &gt; .git/remotes/myfoo &lt;&lt;EOF
+$ cat &amp;gt; .git/remotes/myfoo &amp;lt;&amp;lt;EOF
 URL: git+ssh://git.infradead.org/~/public_git/foo-2.6
 Pull: master:myfoo
 Push: myfoo:master
@@ -137,20 +137,20 @@ shown above:
 $ git checkout myfoo
 </PRE>
 
-Now, you can edit files using your favourite editor, and tell git
+<P>Now, you can edit files using your favourite editor, and tell git
 about new files with '<TT>git add</TT>'. When you're ready to commit,
-do so with '<TT>git commit -a -s</TT>'. Don't forget the '-s' part of
-you'll have to add the Signed-Off-By: line yourself.
+do so with '<TT>git commit -a -s</TT>'. Don't forget the '-s' part or
+you'll have to add the <TT>Signed-Off-By:</TT> line yourself.</P>
 
-Remember that the first line of the commit is treated like a 'subject'
+<P>Remember that the first line of the commit is treated like a 'subject'
 and should summarise the commit. If it's intended to be pulled into
 the MTD tree and then into Linus' tree, then it should also be
 relevant in the context of the mainstream kernel -- so the first line
-should perhaps contain 'MTD' or 'JFFS2' somewhere.
+should perhaps contain 'MTD' or 'JFFS2' somewhere.</P>
 
-You can push your commits back to git.infradead.org with the command
+<P>You can push your commits back to git.infradead.org with the command
 '<TT>git push myfoo</TT>'. New commits will visible in gitweb
-immediately -- it's only new trees which take a while to appear.
+immediately -- it's only new trees which take a while to appear.</P>
 
 	<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
