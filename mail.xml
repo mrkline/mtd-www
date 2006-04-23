@@ -37,7 +37,9 @@
 	     </p>
 	</li>
     	<li>
-		<p>There is a CVS log mailing list to keep you informed of CVS commits. 
+		<p>There is a CVS log mailing list which used to receive notification of CVS
+		  commits. Since switching to GIT, the list is no longer operational. This
+		  will hopefully be fixed some time soon.
 		      To subscribe, go <a 
     		  href="http://lists.infradead.org/mailman/listinfo/linux-mtd-cvs/">
 					here</a>
