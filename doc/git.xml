@@ -82,11 +82,16 @@ Using Linus' tree as a reference for existing objects, clone the MTD
 <PRE>$ git clone --reference linux-2.6 git://git.infradead.org/mtd-2.6.git mtd-2.6</PRE>
 
 <H4>Clone your own tree</H4>
-Again using Linus' tree for reference objects (since using the MTD
-tree created above doesn't seem to work with current GIT), clone your
-own tree from your <TT>public_git</TT> directory:
-<PRE>$ git clone --reference mtd-2.6 git+ssh://git.infradead.org/~/public_git/foo-2.6.git myfoo-2.6</PRE>
+Using both Linus' tree and the MTD tree (if you cloned it) as a
+reference for existing objects, clone your own tree from your
+<TT>public_git</TT> directory:
+<PRE>$ git clone --reference linux-2.6 --reference mtd-2.6 git+ssh://git.infradead.org/~/public_git/foo-2.6.git myfoo-2.6</PRE>
 
+<P><I>(Note that you <b>must</b> specify the linux-2.6 tree as a
+  reference if you specify the mtd-2.6 tree having cloned it as above,
+  due to a bug in git 1.3.0. Otherwise it won't be able to find 
+  objects from the linux-2.6 tree.)</I>
+</P>
 Having cloned your tree, you can now commit to it using git-commit
 and push the results back with git-push.
 
