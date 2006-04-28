@@ -63,11 +63,14 @@
 	<p>Some chips that are known to have this behavior:</p>
 	<table cellpadding="5" cellspacing="0" border="1">
 	<tr><td>Manufacturer</td>
-	<td>Intel</td>
+	<td>Part Number</td>
 	</tr>
 
-	<tr><td>Part Number</td>
+	<tr><td>Intel</td>
 	<td>28FxxxP30</td>
+	</tr>
+	<tr><td></td>
+	<td>GE28F256L30T</td>
 	</tr>
 	</table>
 
