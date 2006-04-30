@@ -25,6 +25,7 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>New release of MTD <a href="ftp://ftp.infradead.org/pub/mtd-utils/mtd-utils-1.0.0.tar.gz">utils</a></li>
 	<li>Linux 2.4 support <a href="source.html#kernelversions">dropped</a></li>
 	<li><a href="doc/jffs3.html">JFFS3</a> development started</li>
 	</ul>
