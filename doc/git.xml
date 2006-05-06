@@ -98,9 +98,8 @@ Using Linus' tree as a reference for existing objects, clone the MTD
 <PRE>$ git clone --reference linux-2.6 git://git.infradead.org/mtd-2.6.git mtd-2.6</PRE>
 
 <H4>Clone your own tree</H4>
-Using both Linus' tree and the MTD tree (if you cloned it) as a
-reference for existing objects, clone your own tree from your
-<TT>public_git</TT> directory:
+Again uUsing Linus' tree as a reference for existing objects, clone your
+own tree from your <TT>public_git</TT> directory:
 <PRE>$ git clone --reference linux-2.6 git+ssh://git.infradead.org/~/public_git/foo-2.6.git myfoo-2.6</PRE>
 
 <P><I>(Note that you <b>must</b> specify the linux-2.6 tree as a
