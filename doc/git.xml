@@ -28,14 +28,30 @@ please try to ensure that we end up with as few merges as possible.
 Anything you commit should be on top of the latest mtd-2.6 git tree,
 rather than against a clean tree from Linus. Avoid doing any merges of
 your own, unless absolutely necessary.</P>
-<P>Please try to avoid cloning directly from git.infradead.org -- you'll
-be downloading many thousands of objects which are already present in
-the official upstream source tree. Save your disk space and our
-network bandwidth by using 'alternates' instead.</P>
+
+<P>Please try to avoid cloning directly from git.infradead.org --
+you'll be downloading many thousands of objects which are already
+present in the official upstream source tree. Save your disk space and
+our network bandwidth by using 'alternates' instead. This is what the
+'<TT>--reference</TT>' command in the examples below is for. It means
+that you keep only one copy of all the git objects which exist in
+the 'reference' or 'alternate' tree, rather than duplicating them.</P>
+
 <P>There are two suggested methods of working with your own local tree
   -- the first is the simple method which uses a git tree with just
   one 'master' branch, while the other deals with multiple branches in
   the same directory.</P>
+
+<hr size="2" />
+
+<H3>General GIT reference documentation</H3>
+
+<UL>
+<LI><A HREF="http://www.kernel.org/pub/software/scm/git/docs/tutorial.html">Tutorial introduction to git</A></LI>
+<LI><A HREF="http://www.kernel.org/pub/software/scm/git/docs/everyday.html">Everyday GIT with 20 commands or so</A></LI>
+<LI><A HREF="http://www.kernel.org/pub/software/scm/git/docs/cvs-migration.html">GIT for CVS users</A></LI>
+</UL>
+
 
 <hr size="2" />
 
