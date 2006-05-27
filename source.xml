@@ -16,6 +16,17 @@
     with a separate tree for the userspace tools, and users' own trees.
     From time to time, other trees will exist which contain development work
     which is not yet ready to be merged with the mainstream kernel.</P>
+
+    <P>Gitweb can give patches between specific points in the tree. To
+    obtain the full patch between Linus' official kernel tree and the
+    current MTD tree, use the following URL: <A
+    HREF="http://git.infradead.org/?p=mtd-2.6.git;a=commitdiff_plain;h=master;hp=linus">http://git.infradead.org/?p=mtd-2.6.git;a=commitdiff_plain;h=master;hp=linus</A>. This
+    produces a full patch from the branch known as '<TT>linus</TT>' in
+    the git repository, which represents the last point at which
+    Linus' official kernel tree was merged into the MTD git tree. This
+    should apply correctly to the <em>current</em> kernel, but beware
+    that it will not include changes which were already taken by
+    Linus.</P>
     
     <P>When cloning the tree, please try to conserve network bandwidth (and
       your own disk space) by using 'alternates' -- if you have a local clone
