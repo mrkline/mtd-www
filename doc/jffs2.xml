@@ -12,8 +12,8 @@
     <h2>JFFS2</h2>
     <p>
 	JFFS2 provides a filesystem directly on the 
-	flash, rather than emulating a block device. For more information,
-	see <a href="http://sources.redhat.com/jffs2/">sources.redhat.com</a>.
+	flash, rather than emulating a block device. For more information, see
+	the JFFS2 <a href="http://linux-mtd.infradead.org/~dwmw2/jffs2.pdf">PDF</a>.
     </p>
     
     <hr size="2" />
