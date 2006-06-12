@@ -1,0 +1,67 @@
+<PAGE>
+	<VAR match="VAR_ORIGIN" replace="../" />
+	<VAR match="VAR_CVSID" replace="$Id:$"/>
+	<INCLUDE file="../inc/header.tmpl" />
+
+	<VAR match="VAR_SEL_DOC" replace="selected" />
+	<VAR match="VAR_SEL_UBI" replace="selected" />
+	<PARSE file="../menu1.xml" />
+
+	<INCLUDE file="../inc/content.tmpl" />
+
+    <h2>UBI - Unsorted Block Images</h2>
+
+    <p>UBI (Latin: "where?") manages multiple logical volumes on a single
+    flash, specifically supporting NAND flash.  More information can be found
+    here: <a href="../doc/ubidesign.pdf">ubidesign.pdf</a>.</p>
+
+    <p>UBI provides a flexible partitioning concept which still allows for
+    wear-levelling across the <strong>whole</strong> device.  Also it enables
+    for booting directly from NAND flash.  One UBI volume could be used for the
+    boot loader, another one for the kernel, and further volumes could be
+    assigned to file systems.</p>
+
+    <h3>Partitioning/Re-partitioning</h3>
+
+    <p>A UBI volume occupies a certain number of erase blocks.  This is limited
+    by a configured maximum size, which could also be viewed as the partition
+    size.  Each individual UBI volume's size can be changed independently of
+    the other UBI volumes, provided that the sum of all volume sizes doesn't
+    exceed a certain limit (smaller than the flash device size).  Only the
+    changed UBI volume is affected by such an operation, while the other UBI
+    volumes don't change their contents.</p>
+
+    <h3>Scrubbing</h3>
+
+    <p>On a NAND flash bit flips can occur on any write operation, sometimes
+    also on read.  If bit flips persist on the device, at first they can still
+    be corrected by ECC, but once they accumulate, correction will become
+    impossible.  Thus it is best to proactively <strong>scrub</strong> the
+    affected erase block, by first copying it to a free block and then erasing
+    the original.  The UBI layer performs this type of scrubbing under the
+    covers, transparently to the UBI volume users.</p>
+
+    <h3>Erase Counts</h3>
+
+    <p>UBI maintains an erase count header per erase block.  This frees
+    higher-level layers (like file systems) from doing this and allows for
+    centralized erase count management instead.  The erase counts are used by
+    the wear-levelling algorithm in the UBI layer.  The algorithm itself is
+    exchangeable.</p>
+
+    <h3>Booting from NAND</h3>
+
+    <p>For booting directly from NAND flash the hardware must at least be
+    capable of fetching and executing a small portion of the NAND flash.  Some
+    NAND flash controllers have this kind of support.  They usually limit the
+    window to a few kilobytes in erase block 0.  This "initial program loader"
+    (IPL) must then contain sufficient logic to load and execute the next boot
+    phase.</p>
+
+    <p>When using UBI, the "secondary program loader" (SPL) will be stored in a
+    UBI volume, to be loaded and executed by the IPL.  In a very minimal
+    configuration the SPL could already be the OS kernel.  Otherwise it will be
+    some boot loader, like U-Boot, grub, etc.</p>
+
+	<INCLUDE file="../inc/footer.tmpl" />
+</PAGE>

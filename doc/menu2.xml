@@ -6,5 +6,6 @@
 	<MENU topic="JFFS2" link="jffs2.html" mode="VAR_SEL_JFFS2" />
 	<MENU topic="JFFS3" link="jffs3.html" mode="VAR_SEL_JFFS3" />
 	<MENU topic="Logfs" link="logfs.html" mode="VAR_SEL_LOGFS" />
+	<MENU topic="UBI" link="ubi.html" mode="VAR_SEL_UBI" />
 	<ENDMENU />
 </PAGE>

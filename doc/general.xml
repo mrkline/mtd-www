@@ -21,7 +21,8 @@
     <li><a href="../tech/mtdnand/index.html">NAND Flash API</a> documentation</li>
     <li><a href="jffs2.html">JFFS2</a>documentation section</li>
     <li><a href="jffs3.html">JFFS3</a>documentation section</li>
-	<li><a href="logfs.html">logfs</a>documentation section</li>
+    <li><a href="logfs.html">logfs</a>documentation section</li>
+    <li><a href="ubi.html">UBI</a>documentation section</li>
     </ul>
     </div>	
 
