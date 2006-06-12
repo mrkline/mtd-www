@@ -1,0 +1,2494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+  [
+    <!ENTITY ubiboot    SYSTEM "ubiboot.xml">
+    <!-- <!ENTITY reviewinfo SYSTEM "reviewinfo.xml"> -->
+]>
+
+<book id="UBI">
+  <bookinfo>
+    <title>UBI - Unsorted Block Images</title>
+    <authorgroup>
+      <author>
+	<firstname>Thomas</firstname>
+	<surname>Gleixner</surname>
+	<!-- <affiliation>
+	  <address>
+	    <email>gleixner@de.ibm.com</email>
+	  </address>
+	</affiliation> -->
+      </author>
+      <author>
+	<firstname>Frank</firstname>
+	<surname>Haverkamp</surname>
+	<!-- <affiliation>
+	  <address>
+	    <email>haverkam@de.ibm.com</email>
+	  </address>
+	</affiliation> -->
+      </author>
+      <author>
+	<firstname>Artem</firstname>
+	<surname>Bityutskiy</surname>
+	<!-- <affiliation>
+	  <address>
+	    <email>dedekind@oktetlabs.ru</email>
+	  </address>
+	</affiliation> -->
+      </author>
+    </authorgroup>
+    
+    <revhistory>
+<!--
+      <revision>
+	<revnumber>v0.1</revnumber>
+	<date>2005-12-12</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Initial creation</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.2</revnumber>
+	<date>2005-12-15</date>
+	<authorinitials>tglx, haver</authorinitials>
+	<revremark>Added more information</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.3</revnumber>
+	<date>2005-12-16</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Basic design</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.4</revnumber>
+	<date>2005-12-20</date>
+	<authorinitials>dedekind</authorinitials>
+	<revremark>
+	  Rework the design chapter. Create document framework - some
+	  sections are empty. Various fixes.
+	</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.5</revnumber>
+	<date>2005-12-23</date>
+	<authorinitials>haver</authorinitials>
+	<revremark>
+	  Added block copy procedure for UBI blocks in an fs volume.
+	</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.6</revnumber>
+	<date>2005-12-23</date>
+	<authorinitials>haver</authorinitials>
+	<revremark>
+	  Added some of the information Artem marked as missing.
+	</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.7</revnumber>
+	<date>2006-01-19</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Major revamp</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.8</revnumber>
+	<date>2006-01-21</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Filled more gaps and TODOS. Reformatting.</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.9</revnumber>
+	<date>2006-01-23</date>
+	<authorinitials>haver</authorinitials>
+	<revremark>Added figure title, added info about spare erase 
+          blocks.</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.9.1</revnumber>
+	<date>2006-01-24</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Update of review questions</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.9.2</revnumber>
+	<date>2006-01-25</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Continued update of review questions</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.9.3</revnumber>
+	<date>2006-01-25</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Extended user space interface</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.9.4</revnumber>
+	<date>2006-01-29</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Updates of 2nd review</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.9.5</revnumber>
+	<date>2006-01-31</date>
+	<authorinitials>haver</authorinitials>
+	<revremark>Added chapter about booting and review 
+                   information</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.9.6</revnumber>
+	<date>2006-02-13</date>
+	<authorinitials>tglx</authorinitials>
+	<revremark>Update volume changes. Naming conventions.</revremark>
+      </revision>
+      <revision>
+	<revnumber>v0.9.7</revnumber>
+	<date>2006-03-09</date>
+	<authorinitials>haver</authorinitials>
+	<revremark>UBI header description changed,
+                   Added more information about the user space 
+                   interface characteristics.</revremark>
+      </revision>
+-->
+      <revision>
+	<revnumber>v1.0.0</revnumber>
+	<date>2006-06-09</date>
+	<authorinitials>haver</authorinitials>
+	<revremark>Release Version.</revremark>
+      </revision>
+    </revhistory>
+
+    <copyright>
+      <year>2006</year>
+      <holder>International Business Machines Corp.</holder>
+    </copyright>
+
+    <!-- <legalnotice></legalnotice> -->
+  </bookinfo>
+
+  <toc></toc>
+
+  <chapter>
+    <title>Document conventions</title>
+    <para>
+      All sections marked as <emphasis>Enhancements</emphasis> are not
+      part of the initial implementation. These sections are informal
+      and not part of the design review process. The sections are
+      provided to point out future extensions and answers to questions
+      which came up during the design, i.e. scalability and
+      speed. They have to be considered in the base implementation in
+      a way that the extensibility is not prohibited or unnecessarily
+      complicated.
+    </para>
+  </chapter>
+
+  <chapter>
+    <title>Introduction</title>
+    <para> 
+      UBI is a general purpose flash management layer which has
+      similar functionality as the Logical Volume Manager. The name
+      was created with the picture of Unsorted Block Images in mind
+      and accidentally is also a Latin word, which means: where.
+    </para>
+    <para>
+      The basic idea is that the UBI layer provides the management for
+      multiple logical volumes, which can contain either static data
+      or dynamic contents e.g file systems.
+    </para>
+    <para>
+      The management of multiple logical volumes on one or more flash
+      devices of the same type requires the following functionality:
+      <itemizedlist>
+	<listitem><para>Bad block management</para></listitem>
+	<listitem><para>Wear levelling across the device(s)</para></listitem>
+	<listitem><para>Logical to physical block mapping</para></listitem>
+	<listitem><para>Volume information storage</para></listitem>
+	<listitem><para>Device information</para></listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      UBI is not a traditional FLASH Translation Layer for block
+      device emulation. UBI encapsulates the FLASH chip management
+      from file systems and user space interfaces. A traditional FLASH
+      Translation Layer can easily be built on top of an UBI
+      volume.
+    </para>
+
+    <para>
+      UBI addresses common FLASH handling mechanisms which have been
+      redundantly implemented in FTLs and FLASH file systems. This
+      allows FLASH file system developers to concentrate on the file
+      system design while participating on the ongoing development and
+      improvement of UBI.
+    </para>
+
+    <para>
+      The separation of the FLASH management and the file systems,
+      FTLs and other possible users provides a better layered concept
+      than the intermingled solutions which are available
+      today. Beside the replacement of redundant and single purpose
+      implementations this provides a benefit in testability and error
+      analysis.
+    </para>
+
+    <section>
+      <title>UBI Volumes</title>
+      <para>
+	UBI volumes are container for different data contents. The UBI
+	client can only access the data contents, not the UBI metadata.
+      </para>
+      <para>
+	UBI handles two volume types:
+	<itemizedlist>
+	  <listitem><para>static volumes</para></listitem>
+	  <listitem><para>dynamic volumes</para></listitem>
+	</itemizedlist>
+      </para>
+
+      <section>
+	<title>Static Volumes</title>
+	<para>
+	  Static volumes contain only static data e.g. boot-code,
+	  operating-system images, initial-ramdisks, or read-only
+	  file-systems. Before writing blocks of a static volume, the
+	  data to be written into the blocks is completely known and
+	  treated read-only during later operation. Static volumes
+	  have:
+	  <itemizedlist>
+	    <listitem><para>Linear usage of logical eraseblocks</para></listitem>
+	    <listitem><para>Known number of used eraseblocks</para></listitem>
+	    <listitem><para>CRC protection across all used eraseblocks</para></listitem>
+	  </itemizedlist>
+	  It is required that static volumes have a linear
+	  (consecutive) usage of logical erase blocks to simplifiy
+	  consistency checks and allow fast access to the data
+	  contents. This applies especially for use cases, where a
+	  boot loader has to load e.g. a kernel image from an UBI
+	  device. A static volume which does not have all blocks in
+	  place is not usable.
+	</para>
+      </section>
+
+      <section>
+	<title>Dynamic Volumes</title>
+	<para>
+	  The dynamic volumes contain data which can be changed during
+	  operation. Dynamic volumes are a requirement to provide
+	  support for writeable filesystems. Dynamic volumes have:
+	  <itemizedlist>
+	    <listitem><para>Nonlinear usage of logical eraseblocks</para></listitem>
+	    <listitem><para>Unknown number of used eraseblocks</para></listitem>
+	    <listitem><para>CRC protection only for block moving</para></listitem>
+	  </itemizedlist>
+	  The users of dynamic volumes have to implement their own
+	  mechanisms for data integrity. UBI has no way to provide
+	  this because the content of a block is not known when the
+	  UBI header is written. The usage pattern of the logical
+	  erase blocks is not limited and UBI handles holes in the
+	  allocated blocks by treating them as empty, i.e. reading
+	  such a block returns an all 0xFF buffer of the requested
+	  size without accessing the pyhsical FLASH chip, writing to
+	  an unallocated block results in allocation before the data
+	  contents are written.
+	</para>
+      </section>
+    </section> <!-- Static and dynamic volumes -->
+
+  </chapter>  <!--- Introduction -->
+
+  <chapter>
+    <title>MTD integration</title>
+    <para>
+      <figure>
+	<title>UBI/MTD Integration</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="ubi_mtd_integration.png" scale="25" align="center"></imagedata>
+	  </imageobject>
+	</mediaobject>
+      </figure>
+      This image shows how UBI fits into the MTD software
+      architecture. Note that almost all services like read/write-able
+      and read-only static data blob based file systems are based on
+      the UBI support.  The raw access to the MTD devices is available
+      due to the layered structure of MTD. It would require to change
+      the complete base infrastructure of MTD to avoid this.
+    </para>
+
+    <para>
+      One UBI instance handles one MTD device. This can be a physical
+      device, a MTD partition or a concatenated MTD device consisting
+      of multiple MTD devices. The concatenation support is available
+      via mtdconcat in the kernel. The MTD NAND FLASH layer is also
+      capable of concatenating multiple equally sized NAND chips.
+    </para>
+    <para>
+      Note, that the usage of UBI on concatenated devices requires
+      equvivalent boot loader support.
+    </para>
+    <para>
+      Note, that the usage of UBI on top of a partitioned MTD device
+      is not intended, but is possible due to the existing MTD
+      infrastructure. In some cases, where e.g. a special area of the
+      FLASH has to be excluded from the UBI block management,
+      partitions can be used to do so.
+    </para>
+    <section>
+      <title>Simple partitioning</title>
+      <table frame="none">
+	<title>Simple partitioning scheme</title>
+	<tgroup cols="2">
+	  <thead>
+	    <row>
+	      <entry>Partition</entry>
+	      <entry>Physical erase blocks</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>Bootloader</entry>
+	      <entry>0 - 3</entry>
+	    </row>
+	    <row>
+	      <entry>UBI</entry>
+	      <entry>4 - max. blocks</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+      <para>
+	This would allow to have wear levelling across the different
+	volumes on the UBI partition and ensures that the bootloader
+	area is not touched.
+      </para>
+      <para>
+	Another possibility is to mark the boot loader blocks with a
+	"non movable" flag in the UBI header, so UBI does not include
+	these blocks into the wear levelling. This requires an UBI aware
+	boot loader design and might not be possible at all, when the
+	boot code is required to start at offset 0 of a block.
+      </para>
+    </section>
+    <section>
+      <title>Complex partitioning</title>
+      <table frame="none">
+	<title>Complex partitioning scheme 1</title>
+	<tgroup cols="2">
+	  <thead>
+	    <row>
+	      <entry>Partition</entry>
+	      <entry>Physical erase blocks</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>Bootloader 0</entry>
+	      <entry>0 - 3</entry>
+	    </row>
+	    <row>
+	      <entry>UBI</entry>
+	      <entry>4 - 63</entry>
+	    </row>
+	    <row>
+	      <entry>Bootloader 1</entry>
+	      <entry>64 - 67</entry>
+	    </row>
+	    <row>
+	      <entry>UBI</entry>
+	      <entry>68 - max. blocks</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+      <table frame="none">
+	<title>Complex partitioning scheme 2</title>
+	<tgroup cols="3">
+	  <thead>
+	    <row>
+	      <entry>Partition</entry>
+	      <entry>Physical erase blocks</entry>
+	      <entry>Chip</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>Bootloader</entry>
+	      <entry>0 - 3</entry>
+	      <entry>0</entry>
+	    </row>
+	    <row>
+	      <entry>UBI</entry>
+	      <entry>4 - max. blocks</entry>
+	      <entry>0</entry>
+	    </row>
+	    <row>
+	      <entry>Bootloader</entry>
+	      <entry>0 - 3</entry>
+	      <entry>1</entry>
+	    </row>
+	    <row>
+	      <entry>UBI</entry>
+	      <entry>4 - max. blocks</entry>
+	      <entry>1</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+      <para>
+	For such complex paritioning schemes following usage variants
+	are possible:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Seperate UBI instances on the UBI partitons.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Concatenation of the UBI partitions to a single MTD
+	      device and one UBI instance of top of the concatenated
+	      device.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      No paritioning is necessary, when the boot loader or
+	      whatever non movable area of the FLASH can be marked
+	      with UBI headers and excluded from wear levelling by
+	      marking the blocks as unmovable in the header.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+    </section>
+  </chapter>  <!--- MTD integration -->
+
+  <chapter>
+    <title>UBI design</title>
+
+    <para>
+      The design consists of two parts. The base design and the
+      enhancements. The base design is simple and straight forward,
+      but has some limitations in terms of scalability. The
+      enhancements are built on top of the base design and are marked
+      accordingly. The enhancements do not change the interfaces and
+      are designed with backward compability in mind.
+    </para>
+
+    <section>
+      <title>Eraseblock assignement</title>
+
+      <para>
+	Each eraseblock of an UBI volume corresponds to one physical
+	flash eraseblock.  Although logical eraseblocks appear
+	contiguous to UBI users, the corresponding physical
+	eraseblocks may be spread over the underlying flash chip(s) in
+	a non ordered way.
+      </para>
+
+      <para>
+	Basically UBI uses a table, referred to as <emphasis>the
+	eraseblock assignement table (EAT)</emphasis>, which maps
+	logical eraseblocks to physical eraseblocks. When a physical
+	eraseblock is assigned to a volume, the corresponding entry in
+	EAT is changed. Also, if a logical eraseblock is used too
+	actively and UBI decides to assign it to another (less worn
+	out) physical eraseblock, the corresponding entry in EAT is
+	changed as well.
+      </para>
+
+      <para>
+	In the basic UBI implementation the eraseblock assignement
+	table is kept and maintained in RAM. The EAT is built during
+	the initial scan of the erase blocks. This does not scale very
+	well, but it is simple to implement and is acceptable for the
+	FLASH sizes used in the first projects. Based on first tests
+	50us per erase block are required during the scan. The test
+	machine was a 300MHz PPC board on a NAND FLASH device. The per
+	block scan time consists of the FLASH read command time (~
+	20us), the read out of the header and the analysis of the
+	data. This sums up to following scan times:
+      </para>
+
+      <table frame="all">
+	<title>Scan time versus FLASH size</title>
+	<tgroup cols="3">
+	  <thead>
+	    <row>
+	      <entry>FLASH size</entry>
+	      <entry>Erase size</entry>
+	      <entry>Scan time</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>64 MiB</entry>
+	      <entry>16 KiB</entry>
+	      <entry>200 ms</entry>
+	    </row>
+	    <row>
+	      <entry> 128 MiB</entry>
+	      <entry>  64 KiB</entry>
+	      <entry> 100 ms</entry>
+	    </row>
+	    <row>
+	      <entry> 256 MiB</entry>
+	      <entry>  64 KiB</entry>
+	      <entry> 200 ms</entry>
+	    </row>
+	    <row>
+	      <entry> 512 MiB</entry>
+	      <entry>  64 KiB</entry>
+	      <entry> 400 ms</entry>
+	    </row>
+	    <row>
+	      <entry>1024 MiB</entry>
+	      <entry>  64 KiB</entry>
+	      <entry> 800 ms</entry>
+	    </row>
+	    <row>
+	      <entry> 512 MiB</entry>
+	      <entry> 128 KiB</entry>
+	      <entry> 200 ms</entry>
+	    </row>
+	    <row>
+	      <entry>1024 MiB</entry>
+	      <entry> 128 KiB</entry>
+	      <entry> 400 ms</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+
+      <section>
+	<title>Enhancements</title>
+	<para>
+	  Of course it is possible to implement more comprehensive EAT
+	  management methods and to maintain EAT on Flash.
+	</para>
+	<para>
+	  The scan based EAT build must be guaranteed as a fall back
+	  option, when a FLASH based EAT is inconsistent or unusable.
+	</para>
+	<para>
+	  UBI manages an internal EAT Volume. The EAT volume is a
+	  dynamic UBI volume. For wear-leveling reasons, the physical
+	  eraseblocks which are used for the EAT volume must be
+	  changed, but should be kept in an area near the beginning or
+	  the end of the FLASH device to limit the number of blocks to
+	  scan in order to find the EAT volume.
+	</para>
+	<para>
+	  The challenge of FLASH based EAT management is the balance
+	  of consistency, access speed and low FLASH update
+	  frequency. A possible solution was identified by the
+	  following algortihm. UBI writes an EAT table to flash, which
+	  consists of real block references and a number of erase
+	  block references which have to be scanned during the
+	  initialization of the UBI device. The content of these erase
+	  blocks are unknown before they have been scanned. The blocks
+	  are references to blocks in the free block pool of UBI at
+	  the time the table was written to FLASH. These blocks are
+	  the ones which UBI gives out for new usage to UBI
+	  clients. During the scan UBI either adds or updates the
+	  block references in the FLASH table. The table has to be
+	  updated on FLASH when:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		the blocks which are required to be scanned are used
+		up and UBI has to add new blocks from the free block
+		pool to this list.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		larger updates to the table happen, e.g by adding,
+		removing, updating volumes.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		wear levelling requires large modifications of the
+		erase block table.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+      </section> <!-- Enhancements -->
+
+    </section> <!-- Eraseblock assignement -->
+
+    <section>
+      <title>Eraseblock headers</title>
+
+      <para>
+	The basic flash management is based on erase blocks. UBI
+	requires equally sized erase blocks. For block management UBI
+	uses headers at the beginning of each erase block which reduces
+	the usable size of the erase block slightly. The headers are
+	used for two purposes:
+	<itemizedlist>
+	  <listitem><para>erase count tracking;</para></listitem>
+	  <listitem><para>volume identification.</para></listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Thus, there are two erase block header types in UBI:
+	<itemizedlist>
+	  <listitem><para>the erase counter;</para></listitem>
+	  <listitem><para>the volume identificator.</para></listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Note, the two eraseblock headers are written independently to
+	flash, i.e., UBI requires to perform two write operations to
+	the beginning of an eraseblock. For example, when a physical
+	erase block is not assigned to any volume, it has only an
+	erase count header, but as soon as it is assigned to a volume,
+	the volume identifier must be added.
+      </para>
+
+      <para>
+	The eraseblock headers have a fixed position, depending on
+	FLASH type.  On NOR the headers are written at the beginning
+	of the erase block on consectutive adresses. On NAND flash
+	devices the erase count header is written to offset 0 of the
+	block without ECC and later the volume header is written to
+	the last subscetion of the first page in the erase block. On
+	small page devices (512 byte / page) this is at offset 256. On
+	large page devices (2048 Byte/ page) this is at offset (2048 -
+	ECC-Size). The ECC size depends on the hardware / software ECC
+	configuration and is retrieved from the NAND FLASH driver.
+      </para>
+      <para>
+      <figure>
+	<title>NAND headers</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="nand-headers.png" scale="40" align="center"></imagedata>
+	  </imageobject>
+	</mediaobject>
+      </figure>
+      </para>
+      <para>
+	There are two reasons for this layout on NAND flash.
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Speed up scan time. 
+	    </para>
+	    <para>
+	      In order to reduce the scan time to identify the erase
+	      blocks the proposed layout requires only to read the
+	      last ECC-size part of a NAND FLASH page. On large page
+	      NAND devices this reduces the number of bytes to read
+	      from 2080 to 288 assumed that the ECC size is 256 Byte
+	      and the page layout is 8*(256 Byte data) + 8 * (3 Byte
+	      ECC).
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Page aligment of the usable FLASH size due to write
+	      buffering in file systems.
+	    </para>
+	    <para>
+	      NAND flash aware filesystems require page aligned erase
+	      block sizes, as writing to NAND FLASH must be page
+	      aligned. JFFS2 uses a NAND page sized write buffer to
+	      accumulate smaller chunks for writing. Changing this
+	      would require non trivial changes which are not
+	      considered worth the effort in order to avoid the loss
+	      of (NAND page size) - (UBI header size) FLASH space.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <section>
+	<title>General Header format</title>
+	<para>
+	  All UBI headers are written in Big Endian format. This
+	  allows removable media to be used on systems with different
+	  endianess and all UBI support tools - e.g. for analysis of
+	  raw FLASh content, creation of production images - can be
+	  written target machine independend
+	</para>
+	<para>
+	  All reserved fields in the header structures are filled with
+	  0 to allow later versions of UBI to handle UBI volumes
+	  created by an earlier version.
+	</para>
+      </section>
+
+      <section>
+	<title>Erase counter format</title>
+	<para>
+
+	  <programlisting>
+struct ubi_ec_hdr {
+        ubi32_t magic;
+        uint8_t version;
+        uint8_t padding1[3];
+        ubi64_t ec;
+        ubi32_t vid_hdr_offset;
+        ubi32_t data_offset;
+        uint8_t padding2[36];
+        ubi32_t hdr_crc;
+} __attribute__((packed));
+	  </programlisting>
+	  
+	  <informaltable frame='none'>
+	    <tgroup cols='2'>
+	      <colspec colwidth="1*" />
+	      <colspec colwidth="4*" />
+	      <tbody>
+		<row><entry>magic</entry>
+		<entry>
+		  The magic number to identify the erase count header.
+                  The value of this magic number is 0x55424923, which 
+                  is ASCII: "UBI#".
+		</entry></row>
+		<row><entry>version</entry>
+		<entry>
+		  UBI version number to identify the UBI version which
+		  created this header.
+		</entry></row>
+		<row><entry>ec</entry>
+		<entry>
+		  The number of erasures for this erase block.
+		</entry></row>
+		<row><entry>vid_hdr_offset</entry>
+		<entry>
+		  The position of the volume header in the erase
+		  block. This is a constant value depending on FLASH
+		  type but it allows to decode raw FLASH dumps without
+		  further information.
+		</entry></row>
+		<row><entry>data_offset</entry>
+		<entry>
+		  The position of the data in the erase
+		  block.
+		</entry></row>
+		<row><entry>hdr_crc</entry>
+		<entry>
+		  CRC protection for the erase count header.
+		</entry></row>
+	      </tbody>
+	    </tgroup>
+	  </informaltable>
+	</para>
+      </section>
+
+      <section>
+	<title>Volume identifier format</title>
+
+	<para>
+	  <programlisting>
+struct ubi_vid_hdr {
+        ubi32_t magic;
+        uint8_t version;
+        uint8_t vol_type;
+        uint8_t copy_flag;
+        uint8_t compat;
+        ubi32_t vol_id;
+        ubi32_t lnum;
+        ubi32_t leb_ver;
+        ubi32_t data_size;
+        ubi32_t used_ebs;
+        ubi32_t data_pad;
+        ubi32_t data_crc;
+        uint8_t padding1[12];
+        uint8_t ivol_data[UBI_VID_HDR_IVOL_DATA_SIZE];
+        ubi32_t hdr_crc;
+} __attribute__((packed));
+	  </programlisting>
+
+	  <informaltable frame='none'>
+	    <tgroup cols='2'>
+	      <colspec colwidth="1*" />
+	      <colspec colwidth="4*" />
+	      <tbody>
+		<row><entry>magic</entry>
+		  <entry>
+	          The magic number to identify the volume header. The value
+                  of this magic number is 0x55424921, which is ASCII: "UBI!".
+	          </entry>
+		</row>
+		<row><entry>version</entry>
+		  <entry>
+	          UBI version number to identify the UBI version which
+	          created this header.</entry>
+		</row>
+		<row><entry>vol_type</entry>
+		  <entry>The volume type.</entry>
+		</row>
+		<row><entry>vol_id</entry>
+		  <entry>The volume id to which this erase block belongs.
+                  </entry>
+		</row>
+		<row><entry>lnum</entry>
+		  <entry>The logical block number of this erase block.</entry>
+		</row>
+		<row><entry>leb_ver</entry>
+		  <entry>The version number of this erase block.</entry>
+		</row>
+		<row><entry>compat</entry>
+		  <entry>Flags associated to this erase block.</entry>
+		</row>
+		<row><entry>vol_type</entry>
+		  <entry>Volume type dependend information.</entry>
+		</row>
+		<row><entry>hdr_crc</entry>
+		  <entry>CRC protection for the header.</entry>
+		</row>
+	      </tbody>
+	    </tgroup>
+	  </informaltable>
+
+	  The volume information for static volume contains:
+	  <informaltable frame='none'>
+	    <tgroup cols='2'>
+	      <colspec colwidth="1*" />
+	      <colspec colwidth="4*" />
+	      <tbody>
+		<row><entry>data_size</entry>
+		  <entry>
+	          Data size in this erase block. This field is
+	          relevant for the last logical block of a static
+	          volume as the last block propably does not contain
+	          content up to the usable size of the block. So this
+	          field is necessary to prevent access beyond the
+	          stored contents boundary.</entry>
+		</row>
+		<row><entry>data_crc</entry>
+		  <entry>Data CRC for this erase block.</entry>
+		</row>
+		<row><entry>used_ebs</entry>
+		  <entry>
+	          The number of total used blocks in the volume. This
+	          information is necessary for consistency checks of a
+	          static volume.</entry>
+		</row>
+	      </tbody>
+	    </tgroup>
+	  </informaltable>
+
+	  The volume information for dynamic volume contains:
+
+	  <informaltable frame='none'>
+	    <tgroup cols='2'>
+	      <colspec colwidth="1*" />
+	      <colspec colwidth="4*" />
+	      <tbody>
+		<row><entry>data_crc</entry>
+		  <entry>Data CRC for this erase block</entry>
+		</row>
+	      </tbody>
+	    </tgroup>
+	  </informaltable>
+	</para>
+      </section>
+
+      <section>
+	<title>Erase counter update atomicity</title>
+	<para>
+	  When ever an erase block has to be erased the current erase
+	  count is kept in RAM and after the erase has completed the
+	  incremented erase count is written back to FLASH. When the
+	  operation is interupted after the erase block has been
+	  erased but before the erase counter has been written
+	  completely, the erase counter is lost. When this is
+	  discovered later on then the erase counter of the affected
+	  block is set to the average erase count of all blocks. Same
+	  applies when an erase count header is corrupted.
+	</para>
+	<para>
+	  Note, it might be possible to add a journal to guarantee
+	  atomic erase counter updates.
+	</para>
+      </section> <!-- Erase counter update -->
+    </section> <!-- Eraseblock headers -->
+
+    <section>
+      <title>Volumes</title>
+      <para>
+	UBI volume numbers are in the range of 0 - 65535. The volume
+	number field in the header structures would allow a larger
+	range, but there is no real use case for more volume ids.
+      </para>
+      <para>
+	Aside of user accesible volumes, UBI maintains internal volumes
+	to store UBI related information e.g. volume information,
+	flash based erase block assignment tables.
+      </para>
+      <para>
+	The volume numbers 0 - 65279 are available for user volumes. The
+	volume number 65280 - 65535 are reserved for UBI internal
+	volumes. The volume name strings for the internal volumes
+	start with "ubi-".
+      </para>
+      <para>
+	There are no ordering restrictions for use volumes. The user
+	can choose free volume numbers, e.g. 0,7,8,300. This allows
+	flexible association of volumes for user purposes.
+      </para>
+      <para>
+        <emphasis>Please note that the currently existing implementation does
+        only support volumes numbers from 0 to 127 for users.</emphasis>
+      </para>
+      <section>
+	<title>The layout volume</title>
+	<para>
+	  Volume number 65280 (called <emphasis>layout
+	  volume</emphasis>) contains UBI layout information,
+	  i.e. number of volumes, their sizes and properties. The
+	  volume name string is "ubi-layout".
+	</para>
+
+	<para>
+	  The layout volume requires two erase blocks. The data is
+	  stored redundantly. The volume information is stored as a
+	  consecutive list of volume information structures of all
+	  available user volumes.
+	</para>
+
+	<para>
+	  The volume information ist stored in following structure.
+
+	  <programlisting>
+struct ubi_vol_tbl_record {
+        ubi32_t reserved_pebs;
+        ubi32_t alignment;
+        ubi32_t data_pad;
+        uint8_t vol_type;
+        uint8_t padding1;
+        ubi16_t name_len;
+        uint8_t name[UBI_VOL_NAME_MAX + 1];
+        uint8_t padding2[24];
+        ubi32_t crc;
+} __attribute__ ((packed));
+	  </programlisting>
+	</para>
+
+	<para>
+	  The layout volume is updated when a volume is created,
+	  deleted or resized. When one of these operations has been
+	  performed, a new layout volume is written to FLASH. The
+	  version number of the logical erase block (always nr. 0) is
+	  increased and when the data has been written sucessfully the
+	  original layout volume is erased. The robustness aspects of
+	  moving static content erase blocks which are discussed
+	  further down apply to this mechanism.
+	</para>
+
+	<para>
+	  The information about the volumes - reserved, used size -
+	  and the free space on the UBI device is accessible via the
+	  sysfs interface of the UBI device and the UBI volumes.
+	</para>
+
+	<section>
+	  <title>Robustness</title>
+	  <para>
+	    When the layout volume is defective, then UBI derives the
+	    volume sizes from the scan information.
+	  </para>
+	  <para>
+	    The number of reserved blocks per volume is set to the
+	    largest logical erase block number found for each volume.
+	  </para>
+	  <para>
+	    This allows the system to get into operational state. UBI
+	    emits appropriate warnings to the system log and provides
+	    status information via the sysfs interface.
+	  </para>
+	</section> <!-- Robustness -->
+      </section> <!-- layout volume -->
+    </section> <!--Volumes -->
+
+    <section>
+      <title>FLASH space requirements</title>
+      <section>
+	<title>Spare erase blocks</title>
+	<para>
+	  UBI needs to keep a number of spare erase blocks to ensure
+	  life time operation. These spare blocks reduce the total
+	  usable FLASH size.
+	</para>
+	<para>
+	  The minimum requirement of UBI is one spare erase block for
+	  wear levelling and update mechanisms.
+	</para>
+	<para>
+	  On some FLASH types e.g. NAND it is required to reserve a
+	  number of spare blocks for bad block handling. The minimum
+	  number is the number of initial bad blocks. The maximum
+	  number is the number of blocks which the system designer
+	  wants to reserve in order that UBI keeps fully operational.
+	  This is the total number of bad blocks per UBI device. There
+	  is no need to take bad blocks into account when calculating
+	  the volume sizes. UBI guarantees full functionality up to
+	  the configured number of bad blocks.
+	</para>
+	<section>
+	  <title>Bad block parameter</title>
+	  <para>
+	    The maximum number of bad blocks is related to the FLASH
+	    type and FLASH size so it is a natural choice to extend
+	    the MTD info structure with a parameter which can hold the
+	    maximum number of bad blocks which are acceptable on a
+	    particular device.
+	  </para>
+	  <para>
+	    This requires also that the mtd concat layer sums up these
+	    parameters for concatenated devices.
+	  </para>
+	  <para>
+	    A command line option to override the device driver value
+	    should be provided to make template drivers usable and
+	    configurable for a specific hardware.
+	  </para>
+	</section> <!-- Bad block parameter -->
+	<section>
+	  <title>Robustness</title>
+	  <para>
+	    When the number of bad blocks exceeds the specified
+	    maximum, then UBI denies write access to all
+	    volumes. Manual interaction is necessary. The solution is
+	    to increase the maximum number of bad blocks. This is only
+	    possible when there is free space on the UBI device. If
+	    the complete available space is used, then either volumes
+	    have to be deleted or size reduzed before increasing the
+	    number of maximum bad blocks.
+	  </para>
+	  <para>
+	    The actual number of bad blocks is always available
+	    through the sysfs interface of the UBI device.
+	  </para>
+	  <para>
+	    UBI also emits appropriate warning messages to the system
+	    log, when the delta of maximum and actual number of bad
+	    blocks is less than two.
+	  </para>
+	  <para>
+	    It's recommended to monitor the actual number of bad blocks
+	    via the sysfs interface of the UBI device with a
+	    surveillance application. This allows early information of
+	    service personal to ensure device replacement or change of
+	    parameters before the maximum number of bad blocks is
+	    reached and the device is switched to a restricted
+	    operational state.
+	  </para>
+	</section> <!-- Robustness -->
+      </section> <!-- Spare erase blocks  -->
+      <section>
+	<title>Space calculation</title>
+	<para>
+	  The available space is calculated via:
+	  <literallayout>
+	      n<subscript>user</subscript> = n<subscript>tot</subscript> - n<subscript>ubi</subscript>
+	      where
+	      n<subscript>user</subscript> = number of erase blocks available to users
+	      n<subscript>tot</subscript> = number of physical erase blocks 
+	      n<subscript>ubi</subscript> = number of UBI reserved erase blocks
+	  </literallayout>
+	  The number of UBI reserved blocks is calculated by:
+	  <literallayout>
+	      n<subscript>ubi</subscript> = n<subscript>maxbad</subscript> + n<subscript>intvol</subscript> + 1
+	      where
+	      n<subscript>maxbad</subscript> = number of maximum bad blocks
+	      n<subscript>intvol</subscript> = number of blocks used by internal volumes
+	  </literallayout>
+	  The number of blocks used by UBI internal volumes is one -
+	  used for the layout volume - in the initial
+	  implementation. Further enhancements like a flash based EAT
+	  will require more reserved blocks for internal purposes. The
+	  total number of bytes available for content storage is:
+	  <literallayout>
+	      bytes<subscript>tot</subscript> = n<subscript>user</subscript> * bytes<subscript>block</subscript>
+	      where
+	      bytes<subscript>tot</subscript> = number of bytes available for storage
+	      bytes<subscript>block</subscript> = number of bytes available for storage per erase block
+	  </literallayout>
+	  The number of bytes available for storage per eraseblock is:
+	  <literallayout>
+	      bytes<subscript>block</subscript> = bytes<subscript>phys</subscript> - bytes<subscript>ubi</subscript>
+	      where
+	      bytes<subscript>phys</subscript> = number of bytes per erase block
+	      bytes<subscript>ubi</subscript> = number of bytes reserved by UBI
+	  </literallayout>
+	  The number of bytes reserved by UBI is:
+	  <literallayout>
+	      For NOR:
+	      bytes<subscript>ubi</subscript> = 2 * sizeof(eraseblock header)
+	      For NAND:
+	      bytes<subscript>ubi</subscript> = NAND page size
+	  </literallayout>
+	</para>
+	<para>
+	  The size of an UBI volume is always a multiple of the number
+	  of bytes which are available for content store per erase
+	  block.
+	</para>
+      </section> <!-- Space calculation -->
+    </section> <!-- FLASH space requirements -->
+
+    <section>
+      <title>Volume management</title>
+      <para>
+	UBIs volume management is based on space accounting. The total
+	number of erase blocks available for user volumes can not be
+	exceeded by the sum of erase blocks which are reserved for the
+	volumes. Even when volumes do not use up the reserved space,
+	UBI does not implement overcommitment mechanisms.
+      </para>
+      <para>
+	UBI implements three functions related to volume management:
+	<itemizedlist>
+	  <listitem><para>Volume creation</para></listitem>
+	  <listitem><para>Volume deletion</para></listitem>
+	  <listitem><para>Volume resizing</para></listitem>
+	</itemizedlist>
+      </para>
+      <section>
+	<title>Volume creation</title>
+	<para>
+	  A new volume can be created as long as there is enough free
+	  space available. The creator requests the size of the new
+	  volume and UBI aligns it to a multiple of bytes per erabe
+	  block which are available for content storage.
+	</para>
+	<para>
+	  In order to support a block device layer on top of UBI it is
+	  necessary to provide an optional parameter which can adjust
+	  the minimum unusable space - which is 2 * sizeof (ubi
+	  header) to a greater size which ensures that the usable
+	  space of an erase block is a multiple of the block device sub
+	  block size.
+	</para>
+      </section> <!-- Volume creation -->
+      <section>
+	<title>Volume deletion</title>
+	<para>
+	  An existing volume can be deleted, when it is not in
+	  use. The erase blocks which were allocated for the volume
+	  are erased and put back into the free block pool. The erase
+	  operation must be completed before the volume resize can be
+	  propagated into the layout volume.
+	</para>
+      </section> <!-- Volume deletion -->
+      <section>
+	<title>Volume resizing</title>
+	<para>
+	  An existing volume can be resized, when it is not in use.
+	</para>
+	<para>
+	  In  case the volume is expanded the required space must be free
+	  in the ubi device. 
+	</para>
+	<para>
+	  When the volume size is reduced, then the number of used
+	  blocks in the volume must be less or equal than the new
+	  size. Note, that by default UBI will not reduce the size of
+	  dynamic volumes unless the number range of logical erase
+	  blocks which will be removed from the volume contains only
+	  unused blocks. A specical parameter allows to override this
+	  default. UBI then moves the contents of logical blocks from
+	  the number range which will be removed from the volume to
+	  unused logical erase blocks with lower numbers before
+	  resizing the volume. The move operation must be completed
+	  before the volume resize can be propagated into the layout
+	  volume.
+	</para>
+      </section> <!-- Volume resizing -->
+    </section> <!-- Volume management -->
+
+    <section>
+      <title>Logical blocks</title>
+      <para>
+	An UBI volume consists of logical blocks. The maximum number
+	of logical blocks for a volume is specified by the size
+	requirements given at volume creation or resizing.
+      </para>
+      <para>
+	The logical blocks associated to a volume can hold the logical
+	block numbers 0 to maxblocks-1. The logical block numbers of a
+	volume are unique.
+      </para>
+      <para>
+	For short periods of time block moving, scrubbing and wear
+	levelling functions can create a second instance of a logical
+	block number. UBI ensures that write access to such blocks is
+	not possible.
+      </para>
+    </section> <!-- Logical blocks -->
+
+    <section>
+      <title>Block management</title>
+      <section>
+	<title>Block allocation</title>
+	<para>
+	  UBI uses late block allocation to ensure optimized wear
+	  levelling. A block is allocated and the volume header is
+	  written to it when a write access happens to an logical
+	  block number which has not been allocated yet. All erase
+	  blocks which are not allocated for any volume are kept in a
+	  free block pool.
+	</para>
+      </section> <!-- Block allocation -->
+      <section>
+	<title>Block erasure</title>
+	<para>
+	  Block erasure is triggered by:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		erase request from an UBI client
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		volume deletion
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		volume content update
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		internal block move operations due to wear levelling
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		internal block move operations due to scrubbing
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	  In most cases the block erasure is an asynchronous operation
+	  and is deferred to a background operation. Synchronous block
+	  erasure requirements are marked in the sections of the
+	  functionality which requires them.
+	</para>
+      </section> <!-- Block erasure -->
+      <section>
+	<title>Block content movement</title>
+	<para>
+	  Block content movement can be triggered by:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		wear levelling
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		bit flip correction (scrubbing)
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		volume resizing
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	  In most cases the movement of block contents is an
+	  asynchronous operation and is deferred to a background
+	  operation. Synchronous requirements are marked in the
+	  sections of the functionality which requires them.
+	</para>
+	<para>
+	  When UBI decides to move a logical eraseblock to another
+	  physical eraseblock due to wear-leveling or scrubbing
+	  considerations, it needs to:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		move the contents of the previous physical eraseblock
+		to the new physical eraseblock;
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		update the corresponding entry in the EAT table.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		erase the old erase block
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+	  
+	<section>
+	  <title>Static volumes</title>
+	  <para>
+	    The update mechanism for blocks of a static volume is
+	    simple. The volume header of the erase block is copied and
+	    the version number of the erase block is incremented. The
+	    header CRC is updated, but the data CRC is unchanged. Then
+	    the block content is copied to the new block. When the
+	    contents have been copied completely, the original erase
+	    block is erased.
+	  </para>
+	  <para>
+	    In case the copying of block contents is interrupted
+	    before all data has been transferred, then UBI detects two
+	    versions of the same logical block in a volume. UBI tries
+	    to use the one with the higher version number first. Due
+	    to the interruption of the copying the data CRC is invalid
+	    and UBI falls back to the block with the lower version
+	    number. The incomplete block is erased and a new move
+	    operation can be started.
+	  </para>
+	  <para>
+	    In case the moving operation is interrupted before the
+	    original erase block has been erased, then UBI detects two
+	    versions of the same logical block in a volume. UBI tries
+	    to use the one with the higher version number first. In
+	    this case the data CRC of this block is valid and the
+	    block with the lower version number can be erased.
+	  </para>
+	  <para>
+	    The moving operation is not blocking the read access to
+	    the data contents. Until the contents are completely
+	    copied the data can be read from the original erase block.
+	  </para>
+	</section> <!-- Static volumes -->
+
+	<section>
+	  <title>Dynamic volumes</title>
+	  <para>
+	    For dynamic volumes a slightly different mechanism is
+	    necessary. UBI blocks write access to the logical erase
+	    block for the move process. A CRC checksum is generated
+	    over the complete data area of the block. This checksum is
+	    written to the volume header of the new erase block along
+	    with an incremented version number of the logical block
+	    and an updated header CRC. Then the block content is
+	    copied. Note, that empty content (containing all 0xff) is
+	    not copied, but accounted in the data CRC. When the block
+	    content has been copied completely then the original erase
+	    block is erased and the write access to the logical block
+	    is enabled again.
+	  </para>
+
+	  <para>
+	    In case the copying of block contents is interrupted
+	    before all data has been transferred, then UBI detects two
+	    versions of the same logical block in a volume. UBI tries
+	    to use the one with the higher version number first. Due
+	    to the interruption of the copying the data CRC is invalid
+	    and UBI falls back to the block with the lower version
+	    number. The incomplete block is erased and a new move
+	    operation can be started.
+	  </para>
+
+	  <para>
+	    In case the moving operation is interrupted before the
+	    original erase block has been erased, then UBI detects two
+	    versions of the same logical block in a volume. UBI tries
+	    to use the one with the higher version number first. The
+	    data CRC is valid, so the block with the lower version
+	    number can be erased. Until the original block has been
+	    erased write access to the logical block has to be
+	    disabled.
+	  </para>
+	  <para>
+	    The moving operation is not blocking the read access to
+	    the data contents. Until the contents are completely
+	    copied the data can be read from the original erase
+	    block. Write access to an logical block which contents are
+	    moved is not allowed until the moving operation has been
+	    finished completely, i.e. the original erase block must
+	    have been erased before write access can be granted
+	    again. Write access to other erase blocks of the volume is
+	    allowed during a moving operation.
+	  </para>
+	</section> <!-- Dynamic volumes -->
+
+	<section>
+	  <title>Scrubbing</title>
+	  <para>
+	    Scrubbing is a safety mechanism to handle bit flips. When
+	    a bit flip occures and the ECC algorithm can recover the
+	    original data contents, then the contents of the affected
+	    block are moved to a free block according to the
+	    algorithms described above. The scrubbing operation is
+	    scheduled in the background, when a in kernel or user
+	    space initiated read operation detects a bit flip.
+	  </para>
+	  <para>
+	    The following figure shows how an UBI block of a
+	    file-system volume is treated, when a bit-error has
+	    occurred. UBI block A) needs to be copied into a free
+	    block to eliminate the bit-error. The version number is
+	    increased and the CRC is calculated and added to the new
+	    UBI header. Because the data of this particular kind of
+	    UBI block is controlled by the file-system using it, the
+	    CRC is usually unused (like A)). But when the block is
+	    scrubbed the data CRC is calculated to be able to identify
+	    the latest valid version of the block when the copy/erase
+	    process should have been interrupted.
+
+	    <figure>
+	      <title>Scrubbing of an UBI block in a filesystem volume</title>
+	      <mediaobject>
+		<imageobject>
+		  <imagedata fileref="scrub_block_in_fs_volume.png" scale="25" align="center"></imagedata>
+		</imageobject>
+	      </mediaobject>
+	    </figure>
+	    
+	    <itemizedlist>
+	      <listitem><para>Imagine block A) and B) exist at the
+	      same time. Here the block with the highest version
+	      number should be kept if and only if the data CRC is
+	      valid. The existence of both blocks can happen due to an
+	      interruption before or while A) is deleted. In the
+	      latter case block A) has undefined data but B) is still
+	      valid.</para></listitem>
+
+	      <listitem><para>The transformation from block B) into
+	      block C) happens when the file-system needs to add more
+	      data to the non-empty block. In this case the data CRC
+	      becomes invalid. When two blocks exist only the newer
+	      blocks data CRC is to be checked. This can be seen in
+	      the next step.</para></listitem>
+
+	      <listitem><para>Over the time a bit-error occurred in
+	      block C) which needs now to be copied to a new block
+	      D). This case is the same like the first one. The data
+	      CRC is now calculated, the version number is increased
+	      by one and the new block D) is written. If interrupted
+	      C) and D) exist at the same time and the CRC of the
+	      newer block D) is used to determine its validity. If
+	      D)'s CRC is invalid C) is used.</para></listitem>
+	    </itemizedlist>
+
+	    The displayed algorithm ensures that in any cases where
+	    the scrubbing process can be interrupted a valid copy of
+	    the UBI block exists can be identified by the block's
+	    version number and/or the associated data CRC.
+	  </para>
+	</section> <!-- Scrubbing -->
+      </section> <!-- Block movement -->
+    </section> <!-- Block management -->
+
+    <section>
+      <title>UBI Initialization</title>
+      <para>
+	The first simple UBI implementation performs full flash scan
+	in order to find out positions of layout volume eraseblocks,
+	to build the EAT table.  When UBI scans flash media, it reads
+	eraseblock headers and builds all the necessary data
+	structures in main memory.
+      </para>
+
+      <para>
+	The scan based mechanism requires seperate scans in the boot
+	loader and the kernel. It would be technically possible to
+	hand the boot loader scan table to the kernel, but this would
+	require a more unified boot loader kernel interface across the
+	different architectures and boards. Such an interface is not
+	available and therefor such an attempt would be a single
+	purpose hack rather than a useful generic solution.
+      </para>
+
+      <section>
+	<title>Future enhancements</title>
+	<para>
+	  In order to avoid scanning of the complete FLASH it is
+	  necessary to implement a flash based EAT mechanism.
+	</para>
+      </section>
+    </section> <!-- Initialization -->
+
+    <section>
+      <title>Background operation</title>
+      <para>
+	UBI uses a background thread or utilizes the available
+	background Linux worker threads for following operations:
+	  <itemizedlist>
+	    <listitem><para>Wear levelling</para></listitem>
+	    <listitem><para>Block moving</para></listitem>
+	    <listitem><para>Block scrubbing</para></listitem>
+	    <listitem><para>Block erasure</para></listitem>
+	  </itemizedlist>
+      </para>
+    </section> <!-- Background operation -->
+
+    <section>
+      <title>Wear leveling</title>
+      <para>
+	Wear levelling is done across the complete flash device with
+	help of the erase counters.
+      </para>
+      <para>
+	The default selection criteria is to use the blocks with the
+	lowest erase count.
+      </para>
+      <para>
+	UBI keeps track of the maximum and minimum erase counts over
+	all erase blocks. To avoid permanent wear levelling activities
+	a treshold of 5000 erase cycles is introduced. Wear levelling
+	is checked when ever a block has been erased. When the newly
+	erased block is the block with the highest erase count and the
+	delta of erase cycles versus the block with the lowest erase
+	count has reached the treshold then UBI selects a long term
+	storage block with a low erase count and copies the block
+	contents to the block with the high erase count using the
+	block moving function. When copying is done the block with the
+	low erase count is erased and enqueued into the free block
+	pool. In case of a very low number of free blocks this may
+	slow down the allocation of erase blocks for UBI clients.
+      </para>
+      <para>
+	The free - unallocated - erase blocks are kept in a sorted
+	list in erase count order to ensure O(1) selection of a block
+	when allocation is requested.
+      </para>
+      <section>
+	<title>Enhancements</title>
+	<para>
+	  An UBI client might provide a callback function, which is
+	  called by UBI before trying to move block content. The
+	  rationale of the function is, that the client might veto the
+	  movage of the block contents. One reason for this might be
+	  that the client has this block in use for writing or has the
+	  block scheduled for garbage collection. In such a case the
+	  moving of the block content makes no sense and can be
+	  deferred to a later time or the block is made available by
+	  garbage collection in the near future.
+	</para>
+	<para>
+	  A function to signal the intended use of a logical erase
+	  block can be implemented. An UBI client could signal whether
+	  the block is used for long term or short term storage. This
+	  would allow to implement more efficient wear levelling
+	  algorithms.
+	</para>
+      </section>
+    </section> <!-- wear levelling -->
+
+    <section>
+      <title>Volume update</title>
+      <para>
+	Update of UBI volumes happen from userspace. The update
+	mechanisms writes raw data contents without meta
+	information. The meta information - i.e. Volume headers - are
+	created by UBI on the fly.
+      </para>
+      <para>
+	The update tool opens the ubi volume and issues a start_update
+	ioctl command. The argument of start_update is the total
+	number of bytes, which will be written to the volume. This is
+	necessary to provide robustness versus interruption of the
+	update and to calculate the number of total used blocks for
+	static volumes. UBI checks whether the requested data length
+	fits into the volume.
+      </para>
+      <para>
+        In case of updating a dynamic UBI volume, first a block is
+        written with a volume update header containing the reserved
+        VOLUME_UPDATE volume id and the logical block number 0. The
+        number of the volume which is updated is stored in the data
+        payload of this block. The existence of this block signals the
+        update in progress. UBI erases the eventually existing blocks
+        which are assigned to the volume. The erase of the existing
+        blocks has to be completed before new content can be written.
+      </para>
+      <para>
+        When a static volume is updated, writing a volume update
+        marker is not necessary. The completeness and correctness 
+        of the data is ensured if all used erase blocks are found
+        and their header and data CRC is correct.
+      </para>
+      <para>
+        Now the data content is written and UBI creates the volume
+        headers for the logical erase blocks and calculates the data
+        CRC in case of a static volume.
+      </para>
+      <para>
+        When all data of the dynamic volume has been written
+        successfully, then the update volume block is erased.
+      </para>
+
+      <para>
+	Note, that a size of 0 bytes given to the start_update command
+	is valid. This creates the update in progress block and erases
+	the existing logical erase block. The update in progress
+	marker is removed after all existing blocks have been
+	erased. This is useful to empty a volume.
+      </para>
+      <para>
+	When a volume update is interrupted then the block with the
+	reserved update volume id is on the FLASH and invalidates all
+	other eventually existing logical erase blocks for the
+	volume which is protected. A new update has to be started. 
+	A possible UBI client which tries to access such a volume is
+	informed by an appropriate error code and the access is denied.
+	See also "Programming Interfaces". In the volume layout the volume
+	still exists, but the number of used blocks is zero. UBI does
+	automatically erase the eventually existing blocks of such an
+	volume, but the block indicating volume update in progress is
+	not erased. User interaction is necessary to resolve this. The
+	update in progress block can be removed by a new update
+	command or by deleting the volume.
+      </para>
+      <para>
+	The usage of an extra erase block to indicate an update in
+	progress looks like a waste, but for dynamic content volumes
+	there is no other way to ensure the completeness of an update
+	operation before allowing the usage of such a volume. This
+	might change once the enhancements of a journal / super block
+	have been implemented. On the other hand the update in
+	progress marker is perfectly reasonable because such updates
+	happen rather seldom during the lifetime of a device and it
+	allows a simple scan based identification of volume
+	completeness e.g. in a boot loader.
+      </para>
+      <para>
+	Note, that the extra block is an per UBI device overhead which
+	is reserved anyway for wear levelling and block move
+	purposes. This limits the number of concurrent volume updates
+	to one. Thats not a big problem as volume updates are usually
+	done in a code update situation where time is not the critical
+	factor. Also the limiting factor of an update is the FLASH
+	device itself which allows no erase / program operations in
+	parallel.
+      </para>
+      <para>
+	Partial updates of volumes are not possible.
+      </para>
+    </section> <!-- Volume update -->
+
+    <section>
+      <title>Volume readout</title>
+      <para>
+	The data contents of an UBI volume can be read out from user
+	space. A read out can only be performed on unused volumes or
+	on volumes with read only client.
+      </para>
+    </section> <!-- Volume readout -->
+
+  </chapter> <!-- UBI design -->
+
+  <chapter>
+    <title>Programming Interfaces</title>
+
+    <section>
+      <title>Kernel Space</title>
+      <para>
+	<itemizedlist>
+	  <listitem><para>read</para></listitem>
+	  <listitem><para>write</para></listitem>
+	  <listitem><para>erase</para></listitem>
+	  <listitem><para>get_volume</para></listitem>
+	  <listitem><para>put_volume</para></listitem>
+	  <listitem><para>Enhanced: move_modify</para></listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	The kernel space interfaces access the volumes by logical
+	block number and offset inside of the logical block rather
+	than providing a full offset which would have be converted
+	into logical block number and offset inside of the block for
+	following reasons.
+      </para>
+
+      <para>
+	A FLASH aware file system has to be aware of erase block
+	boundaries anyway and usually operates on blocks. The
+	currently used MTD interface which requires full offsets is
+	called by adding the in block offset to the block base
+	offset. So the seperate information is available anyway. Of
+	course could UBI deal with the full offset, but due to the
+	fact that UBI reduces the net data size of an erase block this
+	would require a (64bit offset) / (usable block size)
+	division. 64 / 32 bit divisions are perfomance critical on 32
+	bit CPUs. Otherwise there would be an limitation of 32 bit
+	offsets, which would limit UBI to 4GiB maximum device size.
+      </para>
+
+      <para>
+	The implementation of a block device on top of UBI will divide
+	the UBI erase block into smaller sized blocks which are
+	exposed to the block device interface. There is an explicit
+	requirement that the size of the usable UBI block size must be
+	a multiple of the size of these sub blocks. The size of the
+	sub blocks is also influenced by the NAND page size, when the
+	block device is writeable. The minimum sensible sub block size
+	will be 512 byte, which allows the usage of pure 32 bit
+	operations to calculate the logical block number. This
+	increases the device limit to 2 Terrabyte which seems to be a
+	reasonable limitation.
+      </para>
+
+      <section>
+	<title>read</title>
+	<para>
+	  The read function takes following arguments:
+	  <itemizedlist>
+	    <listitem><para>volume descriptor</para></listitem>
+	    <listitem><para>block number</para></listitem>
+	    <listitem><para>offset</para></listitem>
+	    <listitem><para>length</para></listitem>
+	    <listitem><para>buffer pointer</para></listitem>
+	  </itemizedlist>
+	  The return value is the number of bytes read or an error
+	  code.
+	</para>
+	<para>
+	  When an UBI client of a dynamic volume wants to read an
+	  unallocated logical erase block, then UBI fills the requested
+	  number of bytes in the data buffer with 0xFF without
+	  accessing the FLASH chip.
+	</para>
+	<para>
+	  The following error codes can be returned:
+	  <simplelist type='horiz' columns='2'>
+	    <member>-EIO</member>
+	    <member>
+	      A fatal I/O error occured, e.g. device removal, timeouts.
+	    </member>
+	    <member>-EINVAL</member>
+	    <member>
+	      An invalid block number, offset or length was requested.
+	    </member>
+	  </simplelist>
+	</para>
+	<para>
+	  UBI does not provide a read_ecc version because this is not
+	  relevant for the UBI client and the ecc related problems are
+	  handled inside UBI itself.
+	</para>
+      </section> <!-- read -->
+
+      <section>
+	<title>write</title>
+	<para>
+	  The write function takes following arguments:
+	  <itemizedlist>
+	    <listitem><para>volume descriptor</para></listitem>
+	    <listitem><para>block number</para></listitem>
+	    <listitem><para>offset</para></listitem>
+	    <listitem><para>length</para></listitem>
+	    <listitem><para>buffer pointer</para></listitem>
+	  </itemizedlist>
+	  The return value is the number of bytes written or an error
+	  code. When the offset is 0 and no physical erase block has
+	  been assigned to the logical erase block then UBI assignes
+	  automatically a physical erase block and writes the volume
+	  header. This function is only available for dynamic content
+	  volumes.
+	</para>
+	<para>
+	  The following error codes can be returned:
+	  <simplelist type='horiz' columns='2'>
+	    <member>-EIO</member>
+	    <member>
+	      A fatal I/O error occured, e.g. device removal, timeouts.
+	    </member>
+	    <member>-EROFS</member>
+	    <member>
+	      Attempt to write to a read only volume.
+	    </member>
+	    <member>-EINVAL</member>
+	    <member>
+	      An invalid block number, offset or length was requested.
+	    </member>
+	  </simplelist>
+	</para>
+	<para>
+	  The write operation is synchronous. UBI guarantees that data
+	  has been written to FLASH when the funtion returns without
+	  an error.
+	</para>
+	<para>
+	  Write errors which are detected by the hardware level driver
+	  - e.g. write-verify of the NAND driver - are handled by UBI
+	  before returning from the write function. In such a case UBI
+	  moves the existing block contents to a free erase block
+	  according to the block movement mechanisms and writes the
+	  data in the data buffer to this new block when the block
+	  content move operation has been completed.
+	</para>
+	<para>
+	  UBI does not provide a write_ecc version because this is not
+	  relevant for the UBI client and the ecc related problems are
+	  handled inside UBI itself.
+	</para>
+      </section> <!-- write -->
+
+      <section>
+	<title>erase</title>
+	<para>
+	  The erase function takes following arguments:
+	  <itemizedlist>
+	    <listitem><para>volume descriptor</para></listitem>
+	    <listitem><para>block number</para></listitem>
+	  </itemizedlist>
+	  The erase function schedules the logical erase block for
+	  erasure. UBI ensures that the physical erase block has been
+	  erased before the next write access to the same logical
+	  block number, which allocates a new physical erase
+	  block. This function is only available for dynamic content
+	  volumes.
+	</para>
+	<para>
+	  The following error codes can be returned:
+	  <simplelist type='horiz' columns='2'>
+	    <member>-EIO</member>
+	    <member>
+	      A fatal I/O error occured, e.g. device removal, timeouts.
+	    </member>
+	    <member>-EROFS</member>
+	    <member>
+	      Attempt to erase a block on a read only volume.
+	    </member>
+	    <member>-EINVAL</member>
+	    <member>
+	      An invalid block number was requested.
+	    </member>
+	  </simplelist>
+	</para>
+      </section> <!-- erase -->
+
+      <section>
+	<title>get_volume</title>
+	<para>
+	  The get_volume function takes following arguments:
+	  <itemizedlist>
+	    <listitem><para>ubi device id</para></listitem>
+	    <listitem><para>volume id</para></listitem>
+	    <listitem><para>mode read/write - readonly</para></listitem>
+	  </itemizedlist>
+	  The function must be called before any of the other
+	  functions can be used. The function marks the volume as
+	  used. Only one user per volume is allowed.
+	</para>
+	<para>
+	  On success the function returns a pointer to the UBI volume
+	  description structure. Otherwise an error code is returned.
+	</para>
+	<para>
+	  The following error codes can be returned:
+	  <simplelist type='horiz' columns='2'>
+	    <member>-ENODEV</member>
+	    <member>
+	      The requested volume does not exists.
+	    </member>
+	    <member>-EROFS</member>
+	    <member>
+	      Attempt to get R/W access on a read only volume.
+	    </member>
+	    <member>-EBUSY</member>
+	    <member>
+	      The volume is already in use.
+	    </member>
+	    <member>-EUCLEAN</member>
+	    <member>
+	      The volume is corrupted.
+	    </member>
+	  </simplelist>
+	</para>
+      </section> <!-- get_volume -->
+
+      <section>
+	<title>put_volume</title>
+	<para>
+	  The put_volume function takes following arguments:
+	  <itemizedlist>
+	    <listitem><para>volume descriptor</para></listitem>
+	  </itemizedlist>
+	  The function is called to finish the usage of a volume.
+	  The function marks the volume as unused.
+	</para>
+      </section> <!-- put_volume -->
+
+      <section>
+	<title>Enhanced: move_update</title>
+	<para>
+	  The move_update function takes following arguments:
+	  <itemizedlist>
+	    <listitem><para>volume descriptor</para></listitem>
+	    <listitem><para>block number</para></listitem>
+	    <listitem><para>offset</para></listitem>
+	    <listitem><para>length</para></listitem>
+	    <listitem><para>buffer pointer</para></listitem>
+	  </itemizedlist>
+	  The function moves the contents of a logical erase block to
+	  a free block using the basic block moving algorithm of
+	  UBI. The block moving algorithm has to be extended to allow
+	  the update of the block content on the fly.
+	</para>
+	<para>
+	  This function allows to implement robust update of block
+	  contents, which is a preliminary for r/w block device
+	  emulation.
+	</para>
+      </section> <!-- move_update -->
+
+    </section> <!-- Kernel space -->
+
+    <section>
+      <title>Userspace Interface UBI</title>
+
+      <para>
+	The user space interface is implemented in sysfs. Device nodes
+	for I/O operations have to be created by the udev mechanism in
+	userspace.
+      </para>
+      
+      <para>
+	The sysfs interface provides mostly read only information
+	about the UBI device and the UBI volumes. The operational
+	functions are accessible via character devices, which have to
+	be created by the udev mechanism.
+      </para>
+
+      <para>
+	The sysfs interface exposes all status information about the
+	UBI device and the volumes in a human readable way. This has
+	several advantages over ioctl based binary information
+	exchange. The sysfs interface allows simple script based
+	analysis and monitoring and there is no need to keep changes
+	of data structures between kernel and userspace synchronized.
+      </para>
+
+      <para>
+	The enumeration of available volume ids is a simple
+	<literallayout>
+	`ls /sys/devices/ubi/0/volumes`
+	</literallayout>
+	command.
+      </para>
+
+      <section>
+	<title>sysfs interface</title>
+
+	<section>
+	  <title>Deviceinfo (sysfs)</title>
+	  <itemizedlist>
+	    <listitem><para>nr. volumes</para></listitem>
+	    <listitem><para>nr. bad blocks</para></listitem>
+	    <listitem><para>nr. used blocks</para></listitem>
+	    <listitem><para>nr. free blocks</para></listitem>
+	    <listitem><para>blockbitmap</para></listitem>
+	    <listitem><para>stats - erase count statistics, bitflips</para></listitem>
+	    <listitem><para>debug switch</para></listitem>
+	  </itemizedlist>
+	</section> <!-- device info -->
+	
+	<section>
+	  <title>Volumeinfo (sysfs)</title>
+	  <itemizedlist>
+	    <listitem><para>name</para></listitem>
+	    <listitem><para>size</para></listitem>
+	    <listitem><para>type/flags</para></listitem>
+	    <listitem><para>used blocks</para></listitem>
+	    <listitem><para>blockbitmap</para></listitem>
+	    <listitem><para>status</para></listitem>
+	  </itemizedlist>
+	</section> <!-- Volume info -->
+
+	<section>
+	  <title>Examples</title>
+	  <para>
+	    <literallayout>
+/sysfs/devices/ubi/0/device_info/nr_volumes
+                                 nr_used
+                                 nr_free
+                                 bitmap
+                                 erase_stats
+                                 device - mtd
+                                 name
+                                 volumes/0/used_size
+                                           bitmap
+                                           ...
+	    </literallayout>
+	  </para>
+	</section> <!-- Examples -->
+      </section> <!-- sysfs interface -->
+
+      <section>
+	<title>UBI device I/O functions</title>
+	<para>
+	  The UBI device provides following ioctl functions:
+	  <itemizedlist>
+	    <listitem><para>create_volume</para></listitem>
+	    <listitem><para>delete_volume</para></listitem>
+	    <listitem><para>resize_volume</para></listitem>
+	  </itemizedlist>
+	</para>
+	
+	<section>
+	  <title>create_volume</title>
+	  <para>
+	    The create_volume ioctl takes following arguments:
+	    <itemizedlist>
+	      <listitem><para>volume id</para></listitem>
+	      <listitem><para>volume type</para></listitem>
+	      <listitem><para>volume size</para></listitem>
+	      <listitem><para>volume name</para></listitem>
+	      <listitem><para>minimum subblock size</para></listitem>
+	    </itemizedlist>
+	    The volume type is either dynamic or static. The minimum
+	    subblock size is either 0 to select the system default or
+	    a value to adjust the subblock size for UBI clients e.g. a
+	    block device layer. See also section "Volume creation" in
+	    the chapter "UBI design".
+	  </para>
+          <para>
+            The create_volume ioctl is a synchronous operation.
+          </para>
+	  <para>
+	    The volume must not exist and the size of the volume must
+	    fit into the free size of the ubi device.
+	  </para>
+	  <para>
+	    The following error codes can be returned:
+	    <simplelist type='horiz' columns='2'>
+	      <member>-EEXIST</member>
+	      <member>
+		The volume exists already
+	      </member>
+	      <member>-EINVAL</member>
+	      <member>
+		An invalid parameter was given.
+	      </member>
+	      <member>-ENOSPACE</member>
+	      <member>
+		The requested size is not available on the device.
+	      </member>
+	    </simplelist>
+	  </para>
+	</section> <!-- create volume -->
+	  
+	<section>
+	  <title>delete_volume</title>
+	  <para>
+	    The delete_volume ioctl takes following arguments:
+	    <itemizedlist>
+	      <listitem><para>volume id</para></listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>
+	    The volume must exist and not be in use.
+	  </para>
+          <para>
+            The delete_volume ioctl is a synchronous operation.
+            After returning without an error the volume and 
+            all its data is deleted in flash.
+          </para>
+	  <para>
+	    The following error codes can be returned:
+	    <simplelist type='horiz' columns='2'>
+	      <member>-EBUSY</member>
+	      <member>
+		The volume is in use and can not be deleted.
+	      </member>
+	      <member>-EINVAL</member>
+	      <member>
+		An invalid parameter was given.
+	      </member>
+	    </simplelist>
+	  </para>
+	</section> <!-- delete volume -->
+	
+	<section>
+	  <title>resize_volume</title>
+	  <para>
+	    The resize_volume ioctl takes following arguments:
+	    <itemizedlist>
+	      <listitem><para>volume id</para></listitem>
+	      <listitem><para>volume size</para></listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>
+	    The volume must exist and not be in use. In case the volume
+	    is expanded the required space must be free in the ubi
+	    device. When the volume size is reduced, then the number of
+	    used blocks in the volume must be less or equal than the new
+	    size.
+	  </para>
+	  <para>
+	    The following error codes can be returned:
+	    <simplelist type='horiz' columns='2'>
+	      <member>-EBUSY</member>
+	      <member>
+		The volume is in use and can not be resized.
+	      </member>
+	      <member>-EINVAL</member>
+	      <member>
+		An invalid parameter was given.
+	      </member>
+	      <member>-ENOSPACE</member>
+	      <member>
+		The requested size is not available on the device.
+	      </member>
+	    </simplelist>
+	  </para>
+	</section> <!-- resize volume -->
+      </section> <!-- UBI device I/O functions -->
+      
+      <section>
+	<title>UBI volume I/O functions</title>
+	
+	<para>
+	  The UBI volume provides following ioctl functions:
+	  <itemizedlist>
+	    <listitem><para>start_update</para></listitem>
+	  </itemizedlist>
+	</para>
+	
+	<para>
+	  The UBI device provides following file I/O functions:
+	  <itemizedlist>
+	    <listitem><para>open</para></listitem>
+	    <listitem><para>llseek</para></listitem>
+	    <listitem><para>read</para></listitem>
+	    <listitem><para>write</para></listitem>
+	    <listitem><para>close</para></listitem>
+	  </itemizedlist>
+	</para>
+	
+	<section>
+	  <title>start_update ioctl</title>
+	  <para>
+	    The start_update ioctl takes following arguments:
+	    <itemizedlist>
+	      <listitem><para>data size</para></listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>
+	    The data size must be less or equal to the reserved size
+	    of the volume. When the size is valid then the existing
+	    erase blocks of the volume are erased. This is a
+	    synchronous operation to ensure that no remains of the
+	    previous volume are on FLASH before writing the new image
+	    data. This call is necessary to enable write access to the
+	    volume through the write file I/O function.
+	  </para>
+	  <para>
+	    The following error codes can be returned:
+	    <simplelist type='horiz' columns='2'>
+	      <member>-EBUSY</member>
+	      <member>
+		Another operation is active so the volume can not be updated.
+	      </member>
+	      <member>-EINVAL</member>
+	      <member>
+		An invalid parameter was given.
+	      </member>
+	      <member>-ENOSPACE</member>
+	      <member>
+		The requested size is not available on the device.
+	      </member>
+	    </simplelist>
+	  </para>
+	</section> <!-- ioctl start_update -->
+
+	<section>
+	  <title>open</title>
+	  <para>
+	    The open interface is the standard open system call. A
+	    file descriptor is returned on success.
+	  </para>
+	  <para>
+	    The following error codes can be returned:
+	    <simplelist type='horiz' columns='2'>
+	      <member>-EBUSY</member>
+	      <member>
+		The volume is in use and can not be opened.
+	      </member>
+	      <member>-ENODEV</member>
+	      <member>
+		The volume is not available.
+	      </member>
+	    </simplelist>
+	  </para>
+	</section> <!-- open -->
+
+	<section>
+	  <title>llseek</title>
+	  <para>
+	    The llseek interface is the standard lseek system call. 
+	  </para>
+	  <para>
+	    The following error codes can be returned:
+	    <simplelist type='horiz' columns='2'>
+	      <member>-EINVAL</member>
+	      <member>
+		An invalid parameter was given.
+	      </member>
+	      <member>-EUCLEAN</member>
+	      <member>
+		The volume is corrupted.
+	      </member>
+	    </simplelist>
+	  </para>
+	</section> <!-- read -->
+	
+	<section>
+	  <title>read</title>
+	  <para>
+	    The read interface is the standard read system call. The
+	    volume data content is read in the order of logical erase
+	    blocks. The start offset can be set by the llseek
+	    function.
+	  </para>
+	  <para>
+	    The following error codes can be returned:
+	    <simplelist type='horiz' columns='2'>
+	      <member>-EINVAL</member>
+	      <member>
+		An invalid parameter was given.
+	      </member>
+	      <member>-EUCLEAN</member>
+	      <member>
+		The volume is corrupted.
+	      </member>
+	    </simplelist>
+	  </para>
+	</section> <!-- read -->
+	
+	<section>
+	  <title>write</title>
+	  <para>
+	    The write interface is the standard write system call. The
+	    volume data content is written in a consecutive binary
+	    stream. The write call which contains the last byte 
+	    of the stream is a synchronous operation to ensure that 
+            the complete data is written to FLASH.
+          </para>
+          <para>
+            There are two write modes possible
+	    <itemizedlist>
+	      <listitem><para>Volume update write mode</para></listitem>
+	      <listitem><para>Dynamic volume write mode</para></listitem>
+	    </itemizedlist>
+	    Dynamic volume write mode is an enhancement. Volume update
+	    write mode is a basic requirement.
+	  </para>
+	  <section>
+	   <title>Volume update write mode</title>
+	   <para>
+	     Volume update is available for static and dynamic
+	     volumes.
+	   </para>
+	   <para>
+	     The start_update ioctl is called immidiately before the
+	     write. The complete volume data has to be written in
+	     consecutive order. The write is terminated when the size of
+	     data which was announced via the start_update ioctl has
+	     been written.
+	   </para>
+	   <para>
+	     The following error codes can be returned:
+	     <simplelist type='horiz' columns='2'>
+	       <member>-EINVAL</member>
+	       <member>
+		 An invalid parameter was given.
+	       </member>
+	     </simplelist>
+	   </para>
+	  </section> <!-- Volume update write mode -->
+	  <section>
+	   <title>Enhancement: Dynamic volume write mode</title>
+	   <para>
+	     This write mode is only available for dynamic volumes.
+	   </para>
+	   <para>
+	     The application has to llseek to the offset which should
+	     be written to. The application has to be aware of basic
+	     FLASH handling restrictions. Writes to non empty
+	     locations are not allowed. Writes accross logical erase
+	     block boundaries are not allowed.
+	   </para>
+	   <para>
+	     The following error codes can be returned:
+	     <simplelist type='horiz' columns='2'>
+	       <member>-EINVAL</member>
+	       <member>
+		 An invalid parameter was given.
+	       </member>
+	       <member>-EUCLEAN</member>
+	       <member>
+		 The volume is corrupted.
+	       </member>
+	       <member>-PERM</member>
+	       <member>
+		 Returned when a write on a static volume without a previous update
+		 command was requested.
+	       </member>
+	     </simplelist>
+	   </para>
+	  </section> <!-- Volume update write mode -->
+	</section> <!-- write -->
+      </section> <!-- UBI volume I/O functions -->
+    </section> <!-- User space interface -->
+  </chapter> <!-- Programming interface -->
+
+  <chapter>
+    <title>MTD modifications</title>
+    <para>
+      The MTD code needs some small modifications to provide optimal
+      UBI support.
+    </para>
+    <section>
+      <title>Maximum bad block parameter</title>
+      <para>
+	As mentionened above the mtd info structure has to be extended
+	to provide a parameter which informs UBI about the maximum
+	number of bad blocks which UBI has to handle. This reduces the
+	usable FLASH space as UBI has to reserve backup blocks for
+	those.
+      </para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>UBI kernel clients</title>
+    <section>
+      <title>JFFS2</title>
+      <para>
+	JFFS2 needs some modifications to be used on top of UBI. The
+	major changes are:
+	<itemizedlist>
+	  <listitem><para>interface wrapping</para></listitem>
+	  <listitem><para>block erasure</para></listitem>
+	  <listitem><para>bad block handling</para></listitem>
+	  <listitem><para>write failure handling</para></listitem>
+	</itemizedlist>
+      </para>
+      <section>
+	<title>Interface wrapping</title>
+	<para>
+	  Most of the JFFS2 MTD access functions are wrapped into
+	  macros anyway, so only the macros need to be replaced. The
+	  few remaining open coded mtd access function have to wrapped
+	  into the existing macros.
+	</para>
+	<para>
+	  The interface wrapping substitutes the mtd structure by an
+	  UBI structure, so JFFS2 has to be configured for use on top
+	  of UBI at compile time. Runtime switching is not necessary
+	  and would be hard to implement.
+	</para>
+      </section>
+      <section>
+	<title>Block erasure</title>
+	<para>
+	  JFFS2 on top of MTD handles erasure of blocks itself. The
+	  necessary changes are quite small. Instead of queueing a
+	  block to the erase(pending) list, JFFS2 calls the UBI erase
+	  function and schedules the block for erasure. The block is
+	  immidiately put back to the free block list. UBI guarantees
+	  that the logical block number can not be reused until the
+	  previous block has been erased. That means a write to a
+	  logical erase block scheduled for erasure is blocked until
+	  the erasure has taken place. To avoid that this happens when
+	  JFFS2 is not under space pressure it is required to enqueue
+	  the block at the end of the free block list and pull blocks
+	  for usage from the top.
+	</para>
+      </section>
+      <section>
+	<title>Bad block handling</title>
+	<para>
+	  JFFS2 does not need to keep track of bad blocks anymore. The
+	  bad block handling is done in UBI and the bad block related
+	  functions of JFFS2 can be deactivated when used on top of
+	  UBI.
+	</para>
+      </section>
+      <section>
+	<title>Write failure handling</title>
+	<para>
+	  The JFFS2 functions related to write failure handling can be
+	  kept in place for the time being, but those functions will
+	  not be invoked as UBI will handle the write failure
+	  recovery.
+	</para>
+      </section>
+      <section>
+	<title>Enhancements</title>
+	<para>
+	  Further enhancements to JFFS2 are possible. UBI knows due to
+	  late allocation which blocks are used by JFFS2 and which
+	  blocks are empty. This information is available to JFFS2 and
+	  can be used to build the free block list without scanning
+	  the blocks.
+	</para>
+      </section>
+    </section> <!-- JFFS2 -->
+    <section>
+      <title>Enhancement clients</title>
+      <section>
+	<title>Block device emulation</title>
+	<para>
+	  Block device emulation layers on top of UBI benefit from the
+	  generic UBI infrastructure:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		Bad block managment
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		Wear levelling
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		Erase block assignement infrastructure
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+	<section>
+	  <title>Static read only block device</title>
+	  <para>
+	    A read only block device emulation on top of a static UBI
+	    volume is rather simple to implement. The data contents are
+	    readable via the in kernel API and the block emulation has
+	    only to provide the basic functionality. 
+	  </para>
+	</section>
+	<section>
+	  <title>Read/write block device</title>
+	  <para>
+	    A read/write block device emulation on top of a dynamic UBI
+	    volume is easier to implement than a block device emulation
+	    on top of a raw FLASH device. UBI provides a lot of basic
+	    functionality to the client already.
+	  </para>
+	  <para>
+	    Still there has to be the implementation of the cached write
+	    with respect to the necessary erase function, but UBI
+	    provides the functions for this already and the above
+	    discussed enhanced move_modify kernel interface allows an
+	    implementation which does not lose a complete logical erase
+	    block on interruption.
+	  </para>
+	</section>
+      </section>
+    </section>
+  </chapter> <!-- UBI kernel clients -->
+
+  &ubiboot;
+  <!-- &reviewinfo; -->
+
+</book>

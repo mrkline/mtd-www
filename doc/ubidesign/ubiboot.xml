@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <chapter id="UBI-Boot">
+    <title>Booting with UBI</title>
+    
+    <para>This chapter describes the the general considerations to be
+    made when booting a UBI-aware system. In particular it describes
+    the impacts of UBI on the boot loader design.</para>
+    
+    <para>When processors are powered on, they need to be initialized
+    and brought into a state where more complex software, like an
+    operating system, can be executed. The environment used for
+    boot-strapping is mostly very limited and its resources are at a
+    location predetermined by the processor architecture.</para>
+
+    <para>In traditional embedded systems usually NOR FLASH was used
+    to store the boot-strap code, which needs to be mapped to
+    contiguous memory range. NAND FLASH does not provide automatically
+    a contiguous memory range for the first couple of instructions
+    needed for the boot-strap process. Instead a special hardware
+    needs to be added as a macro on the chip itself, e.g. the NDFC
+    used in the PowerPC 440EP, an external solution using an FPGA, or
+    exploiting vendor specific solutions like Samsung OneNAND or
+    M-System DiskOnChip.</para>
+
+    <para>Important is to note, that even in a UBI-aware system, the
+    FLASH erase block containing this initial boot-strap code, must
+    not be moved, like UBI does with any other flash erase blocks.
+    Particular care needs to be taken when this memory is deleted, or
+    updated, because when this is interrupted, the system might not be
+    able to boot anymore. To overcome this limitation the hardware
+    design must provide watchdog mechanisms used to switch to a
+    different memory location if the predefined memory is accidently
+    invalid.</para>
+
+    <section>
+      <title>NOR FLASH system</title>
+      
+      <para>The erase-blocks containing the boot-strap code need to be
+      fixed, by using a non-UBI partition. The system design can
+      reserve here as many blocks as needed for boot-loaders like
+      U-Boot, Redboot or similar. The FLASH update of those special
+      areas is to be implemented differently than the update of a UBI
+      based volume.</para>
+
+      <table frame="none">
+	<title>Partitioning for a NOR system</title>
+	<tgroup cols="2">
+	  <thead>
+	    <row>
+	      <entry>Partition</entry>
+	      <entry>Physical erase blocks</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>Boot-strap code</entry>
+	      <entry>0 - 4</entry>
+	    </row>
+	    <row>
+	      <entry>UBI</entry>
+	      <entry>5 - max. blocks</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+      
+      <para>The erase blocks excluded from UBI are not due to
+      wear-leveling or scrubbing. If bit-errors occur or the blocks
+      need to be updated, the system must not be turned off.  If the
+      system should be able to recover from power-loss or
+      interruption, it must provide system specific hardware
+      mechanisms with a watchdog and a method to use a redundant copy
+      of the boot-code, stored at a different location.</para>
+
+      <para>To be able to load the operating system from a static UBI
+      volume the code must contain a UBI scanning procedure as well as
+      a UBI loader.</para>
+
+    </section> <!-- NOR FLASH system -->
+    
+    <section>
+      <title>NAND FLASH system</title>
+      
+      <para>The FLASH erase block used for storage of the boot-strap
+      code is usually NAND erase block 0. This block is guaranteed to
+      be a good block by the NAND chip vendors.</para>
+
+      <para>A PowerPC 440EP with a build in NDFC provides 4 Kbyte
+      contignous memory for boot-strapping. A device using a Samsung
+      OneNAND chip offers 2 KByte memory and a M-Systems DiskOn Chip
+      comes with 1 KByte. Some ARM chips have on-board flash usable
+      for processor boot-strap. The sizes are varying from 16 to 32
+      Kbyte, depending on the processor.</para>
+
+      <para>Because in NAND based systems contignous memory for the
+      initial code is limited, complex boot-code needs to be split
+      into two parts. Those parts are referred to as IPL (initial
+      program loader) and SPL (secondary program loader). It is
+      beneficial to store the SPL in a static UBI-volume, which can
+      even be redundant, allowing a safe update procedure and gaining
+      the advantages of UBI. The user does not need to make us his
+      mind about wear-leveling, bad block handling and scrubbing for
+      this code.</para>
+
+      <para>It is possible to scan a NAND chip for UBI data and do
+      error correction using ECC in about 2 to 3 KByte.</para>
+
+      <para>Instead of using an SPL, the system designer may consider
+      using an operating system image directly, if he is able to do
+      the necessary system initialization in the IPL.</para>
+
+      <para>In this system NAND block 0 needs to be defined at a fixed
+      location.</para>
+      
+      <table frame="none">
+	<title>Partitioning for a NAND system</title>
+	<tgroup cols="2">
+	  <thead>
+	    <row>
+	      <entry>Partition</entry>
+	      <entry>Physical erase blocks</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>Initial Program Loader</entry>
+	      <entry>0</entry>
+	    </row>
+	    <row>
+	      <entry>UBI</entry>
+	      <entry>1 - max. blocks</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </section> <!-- NAND FLASH system -->
+
+    <section>
+      <title>IPL and SPL</title>
+      
+      <para>We assume that most NAND implementations will use a split
+      of IPL and SPL. Instead of using an SPL we think that some size
+      restricted designs will choose to load the OS image
+      directly. The following examples should illustrate how a systems
+      with redundant SPL and OS images may be setup.</para>
+      
+      <section>
+	<title>Example volume layout</title> 
+
+	<para>The example layout shows the fixed erase block 0. Block
+	0 contains redundant versions of the IPL, selected by a
+	watchdog mechanism. The UBI volume numbering starts here at 2
+	used for the first redundant copy of the SPL. The second copy
+	of the SPL is stored in volume 3. Volume 4 and 5 are used for
+	SPL configuration data like boot-parameter or platform
+	description data (PDD). Volumes 6 and 7 are used for the
+	operating system binary image. All of the listed UBI volumes
+	are static. Subsequent volumes e.g. 8, 9 and 10 can be used
+	for file systems. Those would be dynamic UBI volumes.</para>
+
+	<figure>
+	  <title>Example volume layout</title>
+	  <mediaobject>
+	    <imageobject>
+	      <imagedata fileref="ipl_spl_volumes.png" scale="25" align="center"></imagedata>
+	    </imageobject>
+	  </mediaobject>
+	</figure>
+      </section> <!-- Example volume layout -->
+      
+      <section>
+	<title>IPL operations - Example: PPC44x using NAND</title> 
+
+	<para>When using a PowerPC 440EP with an NDFC, the IPL size is
+	restricted to 4 Kbyte. Initially the NDFC is operating in the
+	so called AUTOREAD-mode presenting the 4 Kbyte IPL code at the
+	memory range from 0xfffff000 to 0xffffffff. The IPL needs to
+	boot-strap itself either into iCache or into DRAM because the
+	AUTOREAD-mode needs to be disabled for the UBI-scan and when
+	loading the SPL/OS-image.</para>
+
+	<figure>
+	  <title>IPL operations</title>
+	  <mediaobject>
+	    <imageobject>
+	      <imagedata fileref="ipl_operations.png" scale="25" align="center"></imagedata>
+	    </imageobject>
+	  </mediaobject>
+	</figure>
+
+	<para>The first part of the IPL executed via AUTOREAD-mode
+	using the NDFC needs to do the following tasks:</para>
+
+	<itemizedlist>
+	  <listitem><para>Basic system initialization</para></listitem>
+	  <listitem><para>RAM initialization</para></listitem>
+	  <listitem><para>TLB setup</para></listitem>
+	  <listitem><para>Load the IPL from NAND into RAM</para></listitem>
+	</itemizedlist>
+	
+	<para>The second part of the IPL run form RAM. Because the
+	AUTOREAD-mode must be disabled to load the SPL UBI volume, it
+	is required to load the IPL code to a different location. This
+	can be SRAM, DRAM or even the iCache is possible. The code
+	running from RAM is responsible for the following
+	tasks:</para>
+
+	<itemizedlist>
+	  <listitem><para>CRC checking of the uploaded IPL. Because
+	  the ECC of the IPL is not checked automatically by the
+	  hardware, it is important to verify if the uploaded code is
+	  good. If this is not the case the system is in an unknown
+	  state.</para></listitem>
+
+	  <listitem><para>UBI volume header scanning, and building up
+	  the scan table required to find the operating system
+	  image.</para></listitem>
+
+	  <listitem><para>SPL selection. It is possible to use more
+	  than one copy of the SPL for reliability reasons. In most
+	  systems using just one should be fine too.</para></listitem>
+
+	  <listitem><para>Loading SPL with ECC correction. If the ECC
+	  needs to be corrected, the UBI layer in the OS must take
+	  care that this erase block is copied to a new block and the
+	  ECC failure is corrected. Most hardware, like the 440EP
+	  implementation can correct one bit failures and detect two
+	  bit failures. The system design must ensure that bit flips
+	  are corrected as soon as possible to prevent a situation
+	  where the code required for booting becomes invalid.</para>
+          </listitem>
+	</itemizedlist>
+
+	<para>Since the IPL has to scan the flash to find the UBI blocks
+        of the SPL it makes sense to pass the scanning information to the
+        SPL to save some boot-time. </para>
+
+      </section> <!-- IPL operations -->
+    </section> <!-- IPL and SPL -->
+
+    <section>
+      <title>UBI support in boot-loader</title>
+
+      <para>The boot-loader must be extended to handle UBI managed
+      FLASH devices. The implementation might not provide
+      full fledged UBI support, but basic functionalities have to be
+      implemented.</para>
+      
+      <itemizedlist>
+	<listitem>
+	  <para>Device scan</para>
+	</listitem>
+	<listitem>
+	  <para>Read volume contents</para>
+	</listitem>
+	<listitem>
+	  <para> Update volume contents (optional)</para>
+	</listitem>
+      </itemizedlist>
+
+      <section>
+	<title>Device scan</title>
+
+	<para>The scan of an UBI device is necessary in the initial
+	boot loader to be able to load the next step boot-code or
+	operating system using an UBI volume. The result of the
+	initial scan result is recommended to be passed to the SPL to
+	speed up the boot-process.</para>
+
+	<para>The scan of an UBI device is either performed by a full
+	FLASH scan or when available by analyzing a FLASH based erase
+	block translation table. Since the FLASH based erase block
+	table does not need to exist or be valid, a full scan is
+	always be possible. This was one of the UBI design
+	requirements.</para>
+
+	<para>A full scan reads the headers of all FLASH erase blocks
+	and creates a list of the available UBI volumes. The scan can be
+	performed in 3 steps. First each header is read into an RAM
+	array and checked for the availability of the UBI magic number
+	and consistency of the header CRC. The number of erase blocks
+	per volume is accounted. This information is used to create a
+	table which contains the volume offsets in the final load
+	order table. This table is created in the last step of the
+	scan. For each found volume the erase block numbers of the
+	image parts is stored in load order.</para>
+
+	<para>To optimize the scanning time reading out the OOB area,
+	for a system using NAND, can be omitted. The information if
+	the data is valid is concluded from the correctness of the
+	data CRC.</para>
+
+	<para>Handling of FLASH based erase block translation tables
+	is not described yet as the design of this mechanism in UBI is
+	not done at the moment.</para>
+
+	<para>The result of the scan in the SPL or Initial boot loader
+	can be stored in a RAM based structure which lists all found
+	volumes, the number of used blocks per volume and the
+	references to the logical blocks of each volume in load
+	order.</para>
+
+	<section>  
+	  <title>Scan result table</title>
+	  
+	  <para>In an IPL/SPL implementation the information is
+	  generated by the IPL, because it needs it to load the
+	  SPL. The SPL can reuse the table to load e.g. different
+	  versions of the operating system image.</para>
+
+	</section> <!-- Scan Result Table -->
+      </section> <!-- device scan --> 
+
+      <section>
+	<title>read volumes</title>
+
+	<para>Boot-code support for reading UBI volumes can be
+	restricted to static volumes to keep it as simple as
+	possible. Reading the raw contents of dynamic volumes is
+	possible of course, but usage of the content requires
+	detailed knowledge of its data structures.</para>
+	
+	<para>The read support for static volumes is used to load
+	binary images e.g. kernel, initrd or the boot-parameter data
+	blob from FLASH into RAM.</para>
+
+	<para>The read support should be aware of interrupted updates
+	and block moving operations. In case of an interrupted update
+	the volume content can not be retrieved. In case of an
+	interrupted block moving operation the robustness mechanism
+	described in the UBI design document apply.</para>
+	
+      </section> <!-- read volumes -->
+
+      <section>
+	<title>write volumes</title>
+	
+	<para>Write support for UBI volumes requires to implement
+	following functionality:</para>
+
+	<itemizedlist>
+	  <listitem><para>Bad block awareness</para></listitem>
+	  <listitem><para>Analyzing the layout volume</para></listitem>
+	  <listitem><para>Erase count preserving block erasure</para></listitem>
+	  <listitem><para>UBI aware writing of logical erase blocks</para></listitem>
+	  <listitem><para>UBI aware updating of static volumes</para></listitem>
+	  <listitem><para>Awareness about the reserved blocks</para></listitem>
+	</itemizedlist>
+	
+      </section> <!-- write volumes -->
+    </section> <!-- UBI support -->
+  </chapter>

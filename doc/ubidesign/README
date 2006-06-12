@@ -1,0 +1,16 @@
+README
+======
+
+On a Debian system you can install this docbook toolchain:
+
+	apt-get install docbook docbook-utils sgml2x
+
+We are using docbook-2-pdf to convert our xml file into a pdf.
+On old Redhat/Fedora systems we have seen some trouble when trying
+to generate the pdf.
+
+
+Versions
+========
+1.0.0 First version released to the public
+
