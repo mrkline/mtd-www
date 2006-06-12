@@ -21,7 +21,7 @@
     maps logical eraseblocks to physical eraseblocks.</p>
 
     <p>More information may be found in the UBI design documentation:
-    <a href="../doc/ubidesign.pdf">ubidesign.pdf</a>.</p>
+    <a href="../doc/ubidesign/ubidesign.pdf">ubidesign.pdf</a>.</p>
 
     <h3>Partitioning/Re-partitioning</h3>
 
