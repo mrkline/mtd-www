@@ -20,7 +20,8 @@
     Whereas LVM maps logical sector numbers to physical HDD sector numbers, UBI
     maps logical eraseblocks to physical eraseblocks.</p>
 
-    <p>More information may be found here:<a href="../doc/ubidesign.pdf">ubidesign.pdf</a>.</p>
+    <p>More information may be found in the UBI design documentation:
+    <a href="../doc/ubidesign.pdf">ubidesign.pdf</a>.</p>
 
     <h3>Partitioning/Re-partitioning</h3>
 
@@ -58,8 +59,6 @@
     the wear-levelling algorithm in the UBI layer. The algorithm itself is
     exchangeable.</p>
 
-    <h3>Volume update</h3>
-
     <h3>Booting from NAND</h3>
 
     <p>For booting directly from NAND flash the hardware must at least be
@@ -70,10 +69,10 @@
     phase.</p>
 
     <p>Due to bad eraseblocks, which may be randomly scattered over the flash
-    device, it is difficult to store the  "secondary program loader" (SPL)
-    statically. Also, due to bit-flips it may go corrupted with time. UBI
-    allows to solve this problem gracefully by means of storing the SPL in a
-    small static UBI volume</p>
+    device, it is problematic to store the  "secondary program loader" (SPL)
+    statically. Also, due to bit-flips it may become corrupted over time. UBI
+    allows to solve this problem gracefully by storing the SPL in a
+    small static UBI volume.</p>
 
     <h2>UBI volumes vs. static partitions</h2>
 
@@ -84,11 +83,13 @@
 	<li>both support three basic operations - read, write, erase.</li>	    
     </ul>
 
-    <p>But UBI volumes are devoid of some nasty features of static MTD partitions:</p>
+    <p>But UBI volumes have the following advantages over traditional
+    static MTD partitions:</p>
     
     <ul>
-        <li>there are no eraseblock wear constraints in case of UBI volumes, so
-	the user should not care about this;</li>
+        <li>there are no eraseblock wear-leveling constraints in case
+        of UBI volumes, so the user should not care about this;</li>
+
         <li>there are no bit-flips and bad eraseblocks in case of UBI
 	volumes.</li>
     </ul>
