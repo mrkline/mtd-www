@@ -58,12 +58,33 @@ Linus' tree, so that unnecessary merges are avoided.
 different machine to the old <tt>cvs.infradead.org</tt>) may send trivial patches
 to the mailing list -- but expect to be given an account and expected to
 use git if you make a habit of it.</P>
+
+<h3>Patch Format Guidelines</h3>
 <p>
-Have a look at our <a href="http://lists.infradead.org/pipermail/linux-mtd/2005-July/012985.html">
-patch submission format guidelines.</a>
+In order to make the lives of the patchmonkeys/maintainers easier, a few
+simple rules should be followed when submitting patches</p>
 
+<ol>
+<li>Provide a short summary line of the patch in the format:</li><br />
+<code>[PATCH] [MTD] DETAILEDTARGET: short summary</code>
+<p>
+DETAILEDTARGET should be one of the MTD subcomponents, e.g. NAND, CHIPS,
+MAPS, CORE, and/or a filename if it simplifies the review/recognition of
+patch relevance.</p>
 
-</p>
+<li>Empty new line</li>
+<li>Add a long comment to explain the patch</li>
+<p>
+Please use understandable wording.  We are not experts in witchcraft.  Please
+omit comments which just resemble the short summary line for simple patches.</p>
+
+<li>Add the appropriate origin information</li>
+<code>
+[From: Realname &amp;lt;realmail&amp;gt;]<br />
+[Acked-by: Realname &amp;lt;realmail&amp;gt;]<br />
+Signed-off-by: Realname &amp;lt;realmail&amp;gt;<br />
+</code>
+</ol>
 
 <hr size="2" />
 
