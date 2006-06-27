@@ -57,5 +57,38 @@ debug  ubi0  ubi1  version
 <P>Now you may start hacking/debugging UBI even without an embedded platform
 and without a real flash device.</P>
 
+
+<H3>Enable debugging messages</H3>
+
+<P>UBI makes it possible to enable debugging messages which greatly help when
+hunting bugs. As UBI internally consists of several separate software units,
+debugging messages may be toggled for different units separately. So, if you
+suspect a certain UBI unit, enable the corresponding debugging messages.</P>
+
+<P>UBI supports so called "dynamic debugging", which may be enabled in the
+Linux configuration menu (re-compilation is required). If it is enabled, you'll
+have <CODE>/sys/class/ubi/debug</CODE> directory in your sysfs tree, and
+you'll be able to enable/disable debugging by writing ASCII 0 or 1 to files in
+this directory. For example
+<PRE>
+echo 1 > /sys/class/ubi/debug/debug_wl
+</PRE>
+enables debugging messages from the UBI wear-leveling unit. The cost of dynamic
+debugging is larger and a bit slower code.</P>
+
+<H3>Enable assertions and paranoid checks</H3>
+
+<P>UBI code includes assertions and so-called "paranoid checks" which are
+designated to facilitate bug hunting. You may consider to enable them to catch
+problems on earlier stages.</P>
+
+<P>Both paranoid checks and assertions may be enabled under "UBI debugging"
+Linux configuration menu option (re-compilation is required). Paranoid checks
+may be enabled/disabled separately for each UBI unit.</P>
+
+<P>Note, some paranoid checks makes UBI considerably slower, especially the
+I/O unit paranoid checks.</P>
+
+
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
