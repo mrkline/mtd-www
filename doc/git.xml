@@ -90,7 +90,7 @@ through the <A HREF="http://git.infradead.org/">gitweb</A> interface
 
 <hr size="2" />
 
-<H3>Local trees: simple, single-branch method (requires git 1.3.0 or newer)</H3>
+<H3>Working with your MTD GIT tree (requires git 1.3.0 or newer)</H3>
 
 <H4>Clone Linus' tree</H4>
 If you don't already have a copy of Linus' tree locally, get one:
@@ -115,67 +115,5 @@ own tree from your <TT>public_git</TT> directory:
 Having cloned your tree, you can now commit to it using git-commit
 and push the results back with git-push.
 
-<hr size="2" />
-
-<H3>Local trees: Multiple-branch method</H3>
-
-<H4>Clone Linus' tree</H4>
-As above, if you don't already have a copy of Linus' tree locally, get one:
-<PRE>
-$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git linux-2.6
-$ cd linux-2.6
-</PRE>
-
-<H4>Add a branch for the MTD tree and pull from it, if you want a
-  local copy of the MTD tree:</H4>
-<PRE>
-$ cat &amp;gt; .git/remotes/mtd &amp;lt;&amp;lt;EOF
-URL: git://git.infradead.org/mtd-2.6
-Pull: master:mtd
-EOF
-$ git-fetch mtd
-</PRE>
-
-<H4>Add a branch for your own tree, if you have one:</H4>
-<PRE>
-$ cat &amp;gt; .git/remotes/myfoo &amp;lt;&amp;lt;EOF
-URL: git+ssh://git.infradead.org/~/public_git/foo-2.6
-Pull: master:myfoo
-Push: myfoo:master
-EOF
-$ git-fetch myfoo
-</PRE>
-
-<H4>Working with branches</H4>
-
-Now that you have multiple branches within the same tree, you need to
-explicitly switch to the one you want to work on. If you just wanted
-a copy of the MTD tree and fetched that, then you can do this as
-follows:
-<PRE>
-$ git checkout mtd
-</PRE>
-If you are intending to work on your own tree and commit to it, then
-switch to that instead. Assuming you called it '<TT>myfoo</TT>' as
-shown above:
-<PRE>
-$ git checkout myfoo
-</PRE>
-
-<P>Now, you can edit files using your favourite editor, and tell git
-about new files with '<TT>git add</TT>'. When you're ready to commit,
-do so with '<TT>git commit -a -s</TT>'. Don't forget the '-s' part or
-you'll have to add the <TT>Signed-Off-By:</TT> line yourself.</P>
-
-<P>Remember that the first line of the commit is treated like a 'subject'
-and should summarise the commit. If it's intended to be pulled into
-the MTD tree and then into Linus' tree, then it should also be
-relevant in the context of the mainstream kernel -- so the first line
-should perhaps contain 'MTD' or 'JFFS2' somewhere.</P>
-
-<P>You can push your commits back to git.infradead.org with the command
-'<TT>git push myfoo</TT>'. New commits will visible in gitweb
-immediately -- it's only new trees which take a while to appear.</P>
-
-	<INCLUDE file="../inc/footer.tmpl" />
+<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
