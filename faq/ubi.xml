@@ -1,0 +1,61 @@
+<PAGE>
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="$Id: jffs2.xml,v 1.8 2006/03/31 14:38:41 jwboyer Exp $"/>
+<INCLUDE file="../inc/header.tmpl" />
+
+<VAR match="VAR_SEL_FAQ" replace="selected" />
+<VAR match="VAR_SEL_UBI" replace="selected" />
+<PARSE file="../menu1.xml" />
+
+<INCLUDE file="../inc/content.tmpl" />
+
+<H2>How to debug UBI?</H2>
+
+<H3>Use fake MTD device</H3>
+
+<P>When debugging UBI you don't have to use a real embedded platform and real
+flash. You may use a PC with a mtd device emulator and run UBI on top of this
+emulated MTD device.</P>
+
+<P>There are 3 MTD device emulators:</P>
+
+<UL>
+	<LI><B>mtdram</B> which simulates NOR flash in RAM;</LI>
+	<LI><B>nandsim</B> which simulates NAND flash in RAM;</LI>
+	<LI><B>block2mtd</B> which simulates NOR flash on top of a block device;</LI>
+</UL>
+
+<P>So, for example, to get a 32MiB fake NOR flash, run
+"<CODE>modprobe mtdram total_size=32768</CODE>"
+or if you need a 64MiB fake NAND flash, run
+"<CODE>modprobe nandsim second_id_byte=0x36</CODE>".</P>
+
+<P>Note, nandsim's module parameters are rather obfuscated, they mean NAND ID
+bytes, which identify flash geometry. Basically, you have to look at nand_bbt.c
+and pick your NAND IDs. Somebody definitly should make it more user-friendly</P>
+
+<P>To ensure you have fake MTD devices, run "<CODE>cat /proc/mtd</CODE>". You
+have to see something like</P>
+<PRE>
+dev:    size   erasesize  name
+mtd0: 02000000 00020000 "mtdram test device"
+mtd1: 04000000 00004000 "NAND simulator partition"
+</PRE>
+
+<P>Now you should load the UBI module:
+"<CODE>modprobe ubi mtd_devs=0,1</CODE>",
+which will attach both mtd0 and mtd1 devices to UBI, and you'll end up with 2
+UBI devices.</P>
+
+<P>Should all fo smoothly, you have to see sorresponding UBI entrise in your
+sysfs:</P>
+<PRE>
+# ls /sys/class/ubi/
+debug  ubi0  ubi1  version
+</PRE>
+
+<P>Now you may start hacking/debugging UBI even without an embedded platform
+and without a real flash device.</P>
+
+<INCLUDE file="../inc/footer.tmpl" />
+</PAGE>

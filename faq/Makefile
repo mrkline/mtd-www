@@ -1,7 +1,7 @@
 #
 CONV 	= "../html.py"
 
-TARGETS	= general.html jffs2.html jffs3.html nand.html
+TARGETS	= general.html ubi.html jffs2.html jffs3.html nand.html
 
 all: $(TARGETS)
 
