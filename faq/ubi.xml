@@ -86,7 +86,7 @@ problems on earlier stages.</P>
 Linux configuration menu option (re-compilation is required). Paranoid checks
 may be enabled/disabled separately for each UBI unit.</P>
 
-<P>Note, some paranoid checks makes UBI considerably slower, especially the
+<P>Note, some paranoid checks make UBI considerably slower, especially the
 I/O unit paranoid checks.</P>
 
 
