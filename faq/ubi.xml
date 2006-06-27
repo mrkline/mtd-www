@@ -32,7 +32,7 @@ or if you need a 64MiB fake NAND flash, run
 
 <P>Note, nandsim's module parameters are rather obfuscated, they mean NAND ID
 bytes, which identify flash geometry. Basically, you have to look at nand_bbt.c
-and pick your NAND IDs. Somebody definitly should make it more user-friendly</P>
+and pick your NAND IDs. Somebody definitely should make it more user-friendly</P>
 
 <P>To ensure you have fake MTD devices, run "<CODE>cat /proc/mtd</CODE>". You
 have to see something like</P>
@@ -47,7 +47,7 @@ mtd1: 04000000 00004000 "NAND simulator partition"
 which will attach both mtd0 and mtd1 devices to UBI, and you'll end up with 2
 UBI devices.</P>
 
-<P>Should all fo smoothly, you have to see sorresponding UBI entrise in your
+<P>Should all go smoothly, you have to see corresponding UBI entries in your
 sysfs:</P>
 <PRE>
 # ls /sys/class/ubi/
