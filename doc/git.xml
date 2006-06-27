@@ -82,7 +82,7 @@ through the <A HREF="http://git.infradead.org/">gitweb</A> interface
   too.</P>
 <P>You can then make a local clone of your public tree, make commits
   to it and push them back using the URL
-<TT>git+ssh://git.infradead.org/home/user/public_git/foo-2.6.git</TT>.</P>
+<TT>ssh://git.infradead.org/home/user/public_git/foo-2.6.git</TT>.</P>
 
 <P>Note, when working with <TT>git://</TT> URLs, ~ (tilde) may be used
    to specify home directory, but you should use full path in case of
@@ -104,7 +104,7 @@ Using Linus' tree as a reference for existing objects, clone the MTD
 <H4>Clone your own tree</H4>
 Again uUsing Linus' tree as a reference for existing objects, clone your
 own tree from your <TT>public_git</TT> directory:
-<PRE>$ git clone --reference linux-2.6 git+ssh://git.infradead.org/home/user/public_git/foo-2.6.git myfoo-2.6</PRE>
+<PRE>$ git clone --reference linux-2.6 ssh://git.infradead.org/home/user/public_git/foo-2.6.git myfoo-2.6</PRE>
 
 <P><I>(Note that you <b>must</b> specify the linux-2.6 tree as a
   reference rather than the mtd-2.6 tree if you cloned them as shown
