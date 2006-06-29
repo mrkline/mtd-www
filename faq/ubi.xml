@@ -62,10 +62,17 @@ done in background, in context of the UBI background thread, so it is completely
 transparent to UBI users and consumes CPU and flash I/O bandwidth on competitive
 basis.</P>
 
-<P>Of course, as always, the implementation is more difficult because of
+<P>Of course, as always, the implementation is more complex because of
 different corner cases and optimizations. See <CODE>wl.c</CODE> and
 <CODE>wl.h</CODE> files for more details.</P>
 
+<P>Note, in this (first) implementation the UBI WL unit memory consumption
+linearly depends on the total number of physical eraseblocks on the underlying
+MTD device - there is a 32-byte in-RAM structure for each non-bad physical
+eraseblock. In other words, the scalability is is not ideal. But as UBI is
+highly modular inside (there is quite narrow interface between the WL unit and
+the rest of UBI exists), on can implement the WL unit other way and improve
+scalability, or just change the working algorithm.</P>
 
 <H2>How to debug UBI?</H2>
 
