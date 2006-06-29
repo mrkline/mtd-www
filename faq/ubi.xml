@@ -9,6 +9,64 @@
 
 <INCLUDE file="../inc/content.tmpl" />
 
+<H2>How does UBI ensure wear-leveling?</H2>
+
+<P>UBI keeps a small header at the beginning of each physical eraseblock which
+contains the erase counter (the header is called <B>erase counter header</B>
+or <B>EC header</B>). After each physical eraseblock erasure, the erase
+counter is incremented.</P>
+
+<P>Wear-leveling is ensured by the following two basic mechanisms.</P>
+<UL>
+	<LI><B>Data movement:</B>UBI moves data from less worn-out physical
+	eraseblocks (low erase counter) to more worn-out physical eraseblocks
+	(high erase counter) from time to time This ensures that static data
+	is not stored in the same set of physical eraseblocks too long, and
+	wear is evenly distributed over all physical eraseblocks.</LI>
+
+	<LI><B>Picking appropriate eraseblocks:</B> when a free physical
+	eraseblock is needed, UBI picks either a more worn-out physical
+	eraseblock, or a less worn-out physical eraseblock, depending
+	on the data which is going to be stored on this physical
+	eraseblock. If this is long-term, static data, UBI picks a less
+	worn-out physical eraseblock, if this is short-term,
+	temporary data, UBI picks a more worn-out one, or, if data type
+	is unknown, UBI picks a middle one. It's up to users to inform
+	UBI whether the data they are writing to the volume is
+	short-term, long-term or unknown.</LI>
+</UL>
+
+<P>The wear-leveling in UBI is ensured by the so-called <B>WL unit</B>. The idea
+of the wear-levelling algorithm is fairly simple: there are two trees in the WL
+unit - <I>free</I> and <I>used</I>. Both trees are Red-Black trees and are
+indexed by the erase counter. Each physical eraseblock in UBI has a
+corresponding small in-RAM data structure, and these data structures are the
+elements of these Red-Black trees.</P>
+
+<P>The <I>free</I> tree contains free physical eraseblocks (to be more precise,
+the corresponding mentioned small data structures), the <I>used</I> tree contains
+used physical eraseblocks. When the WL unit is asked to provide a free physical
+eraseblock, it picks it from the <I>free</I> tree (taking into account the data
+type hint), moves it to the <I>used</I> tree, and returns this physical
+eraseblock number to the caller. When user returns a physical eraseblock to the
+WL unit, it is removed from the <I>used</I> tree, scheduled for erasure, and
+inserted back to the <I>free</I> tree. Note, the physical eraseblock erasure
+is done in background, not synchronously, so it mostly does not block user
+tasks.</P>
+
+<P>The WL unit constantly looks at the difference between the lowest erase
+counter in the <I>free</I> tree and the highest erase counter in the <I>used</I>
+tree. If this difference exceeds certain threshold, the WL unit moves data from
+the least worn-out physical eraseblock to a highly worn-out one. The movement is
+done in background, in context of the UBI background thread, so it is completely
+transparent to UBI users and consumes CPU and flash I/O bandwidth on competitive
+basis.</P>
+
+<P>Of course, as always, the implementation is more difficult because of
+different corner cases and optimizations. See <CODE>wl.c</CODE> and
+<CODE>wl.h</CODE> files for more details.</P>
+
+
 <H2>How to debug UBI?</H2>
 
 <H3>Use fake MTD device</H3>
@@ -18,7 +76,6 @@ flash. You may use a PC with a mtd device emulator and run UBI on top of this
 emulated MTD device.</P>
 
 <P>There are 3 MTD device emulators:</P>
-
 <UL>
 	<LI><B>mtdram</B> which simulates NOR flash in RAM;</LI>
 	<LI><B>nandsim</B> which simulates NAND flash in RAM;</LI>
@@ -32,7 +89,7 @@ or if you need a 64MiB fake NAND flash, run
 
 <P>Note, nandsim's module parameters are rather obfuscated, they mean NAND ID
 bytes, which identify flash geometry. Basically, you have to look at nand_bbt.c
-and pick your NAND IDs. Somebody definitely should make it more user-friendly</P>
+and pick your NAND IDs. Somebody definitely should make it more user-friendly.</P>
 
 <P>To ensure you have fake MTD devices, run "<CODE>cat /proc/mtd</CODE>". You
 have to see something like</P>
@@ -67,7 +124,7 @@ suspect a certain UBI unit, enable the corresponding debugging messages.</P>
 
 <P>UBI supports so called "dynamic debugging", which may be enabled in the
 Linux configuration menu (re-compilation is required). If it is enabled, you'll
-have <CODE>/sys/class/ubi/debug</CODE> directory in your sysfs tree, and
+have <CODE>class/ubi/debug/</CODE> directory in your sysfs tree, and
 you'll be able to enable/disable debugging by writing ASCII 0 or 1 to files in
 this directory. For example
 <PRE>
@@ -88,7 +145,6 @@ may be enabled/disabled separately for each UBI unit.</P>
 
 <P>Note, some paranoid checks make UBI considerably slower, especially the
 I/O unit paranoid checks.</P>
-
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
