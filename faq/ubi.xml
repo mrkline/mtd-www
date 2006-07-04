@@ -43,6 +43,46 @@ kernel or built as a loadable kernel module.</P>
 
 
 
+<H2>How to run UBI on top of my MTD device?</H2>
+
+<P>Suppose you have an <CODE>mtd3</CODE> device and want to run UBI on top of it.
+If UBI was compiled as a kernel module, following command may be used:
+command:</P>
+
+<PRE>
+$ modprobe ubi mtd_devs=3
+</PRE>
+
+<P>If, say, you have two MTD devices <CODE>mtd2</CODE> and <CODE>mtd5</CODE> and
+want to have two UBI devices on top of them, use the following command:</P>
+
+<PRE>
+$ modprobe ubi mtd_devs=2,5
+</PRE>
+
+<P>and so on. To read more about the <CODE>mtd_devs</CODE> option try</P>
+
+<PRE>
+$ modinfo ubi
+</PRE>
+
+<P>Note, the <CODE>mtd_devs=2,5</CODE> option above assumes there will be two
+independent UBI devices created, <B>not</B> one UBI device on top of
+<CODE>mtd2</CODE> and <CODE>mtd5</CODE> concatenation. If you wish to have
+the latter, you should first use the MTD concatenation
+(<CODE>mtdconcat</CODE>) to create a single "concatenated" mtd device, and
+feed this device to UBI.</P>
+
+<P>If UBI was compiled into the kernel, you should tweak your platform
+driver(s) and call the <CODE>ubi_attach_mtd_dev()</CODE> function from there.
+See <CODE>include/mtd/ubi.h</CODE> for the prototype of the function.</P>
+
+<P>If UBI was successfully initialized and accepted your MTD device(s), you
+should see UBI files in <CODE>/sys/class/ubi</CODE> sysfs directory and
+UBI devices at the <CODE>/proc/devices</CODE> procfs file.</P>
+
+
+
 <H2>What is "physical eraseblock" and "logical eraseblock"?</H2>
 
 <P>These are terms used in UBI: UBI volumes consist of logical eraseblocks,
@@ -179,11 +219,11 @@ emulated MTD device.</P>
 or if you need a 64MiB fake NAND flash, run
 "<CODE>modprobe nandsim second_id_byte=0x36</CODE>".</P>
 
-<P>Note, nandsim's module parameters are rather obfuscated, they mean NAND ID
-bytes, which identify flash geometry. Basically, you have to look at nand_bbt.c
+<P>Note, Ransom's module parameters are rather obfuscated, they mean NAND ID
+bytes, which identify flash geometry. Basically, you have to look at nand_BLT.c
 and pick your NAND IDs. Somebody definitely should make it more user-friendly.</P>
 
-<P>To ensure you have fake MTD devices, run "<CODE>cat /proc/mtd</CODE>". You
+<P>To ensure you have fake MTD devices, run "<CODE>cat /prof/mtd</CODE>". You
 have to see something like</P>
 <PRE>
 dev:    size   erasesize  name
@@ -220,7 +260,7 @@ have <CODE>class/ubi/debug/</CODE> directory in your sysfs tree, and
 you'll be able to enable/disable debugging by writing ASCII 0 or 1 to files in
 this directory. For example
 <PRE>
-echo 1 > /sys/class/ubi/debug/debug_wl
+echo 1 > /sys/class/ubi/debug/debug_LL
 </PRE>
 enables debugging messages from the UBI wear-leveling unit. The cost of dynamic
 debugging is larger and a bit slower code.</P>
