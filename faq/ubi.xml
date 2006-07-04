@@ -17,11 +17,11 @@
 <P>UBI is not yet in mainline kernel, and it is currently accessible via git.
 Please, read <A href="doc/git.html">MTD git page</A> for more information about
 how to fetch GIT MTD trees. The UBI GIT repository is currently accessible via
-SSL protocol at <CODE>ssh://git.infradead.org/home/git/ubi-2.6.git</CODE>. So,
+<CODE>git://git.infradead.org/ubi-2.6.git</CODE>. So,
 the command to fetch the UBI git tree is:</P>
 
 <PRE>
-$ git-clone --reference linux-2.6 ssh://git.infradead.org/home/git/ubi-2.6.git
+$ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 </PRE>
 
 <P>The UBI git-tree mostly corresponds to 2.6.17 Linux kernel. You may extract
