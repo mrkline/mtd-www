@@ -219,7 +219,7 @@ emulated MTD device.</P>
 or if you need a 64MiB fake NAND flash, run
 "<CODE>modprobe nandsim second_id_byte=0x36</CODE>".</P>
 
-<P>Note, Ransom's module parameters are rather obfuscated, they mean NAND ID
+<P>Note, nandsim's module parameters are rather obfuscated, they mean NAND ID
 bytes, which identify flash geometry. Basically, you have to look at nand_BLT.c
 and pick your NAND IDs. Somebody definitely should make it more user-friendly.</P>
 
@@ -260,7 +260,7 @@ have <CODE>class/ubi/debug/</CODE> directory in your sysfs tree, and
 you'll be able to enable/disable debugging by writing ASCII 0 or 1 to files in
 this directory. For example
 <PRE>
-echo 1 > /sys/class/ubi/debug/debug_LL
+echo 1 > /sys/class/ubi/debug/debug_wl
 </PRE>
 enables debugging messages from the UBI wear-leveling unit. The cost of dynamic
 debugging is larger and a bit slower code.</P>
