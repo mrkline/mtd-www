@@ -83,7 +83,22 @@ UBI devices at the <CODE>/proc/devices</CODE> procfs file.</P>
 
 
 
+<H2>Do I have to format my flash to run UBI on top of it?</H2>
+
+<P>No, you don't have to. Although UBI stores some internal information,
+you may feed it an empty MTD device and UBI will format it automatically.
+The resulting MTD device will have all the internal data in place and no
+user volumes.</P>
+
+<P>Note, "empty flash" means that it has to contain only <CODE>0xFF</CODE>
+bytes, i.e., be fully erased. You may use the <CODE>flash_eraseall</CODE>
+utility to wipe out MTD devices.</P>
+
+
+
+<A NAME="UBI_faq_leb_and_peb">
 <H2>What is "physical eraseblock" and "logical eraseblock"?</H2>
+</A>
 
 <P>These are terms used in UBI: UBI volumes consist of logical eraseblocks,
 while the underlying MTD device consists of physical eraseblocks.</P>
