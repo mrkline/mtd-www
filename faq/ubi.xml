@@ -10,12 +10,12 @@
 <INCLUDE file="../inc/content.tmpl" />
 
 
-<A name="UBI_src">
+<A NAME="UBI_src">
 <H2>How can I find UBI source?</H2>
 </A>
 
 <P>UBI is not yet in mainline kernel, and it is currently accessible via git.
-Please, read <A href="../doc/git.html">MTD git page</A> for more information about
+Please, read <A HREF="../doc/git.html">MTD git page</A> for more information about
 how to fetch GIT MTD trees. The UBI GIT repository is currently accessible via
 <CODE>git://git.infradead.org/ubi-2.6.git</CODE>. So,
 the command to fetch the UBI git tree is:</P>
@@ -96,9 +96,10 @@ while the underlying MTD device consists of physical eraseblocks.</P>
 	<LI><B>Logical eraseblocks</B> are eraseblocks the UBI volume. Logical
 	eraseblocks are less in size then physical eraseblocks because UBI
 	stores its own headers at the beginning of each physical eraseblock.
-	For example, in case of NOR flash, logical eraseblock is 64 bytes smaller
-	then the physical eraseblock (note, how much UBI headers take depends
-	on the MTD device type).</LI>
+	For example, in case of NOR flash, logical eraseblock is 128 bytes
+	smaller then the physical eraseblock (note, how much UBI headers take
+	depends on the MTD device type, see
+	<A HREF="#UBI_faq_hdrsize">here</A>)</LI>
 </UL>
 
 
@@ -129,6 +130,60 @@ it with a logical eraseblock, so each physical eraseblock which belongs to a
 logical eraseblock in UBI has both EC and VID headers.</P>
 
 <P>Both UBI headers are protected by CRC-32 checksums.</P>
+
+
+
+<A NAME="UBI_faq_why_2_hdrs">
+<H2>Why does UBI need two headers, not just one?</H2>
+</A>
+
+<P>UBI maintains two per-eraseblock headers because it needs to write different
+information on flash at different moments of time:</P>
+
+<UL>
+	<LI>after a physical eraseblock is erased, the EC header is written,
+	which minimizes the probability of loosing the erase counter due to
+	an unclean reboot;</LI>
+
+	<LI>when UBI associates a physical eraseblock with a logical eraseblock,
+	the VID header is written down to the physical eraseblock.</LI>
+</UL>
+
+<P>When the EC header is written, UBI does not yet know the volume ID and
+logical eraseblock number this physical eraseblock will be associated with.
+This is why UBI needs to do two write operations and write two headers.</P>
+
+
+
+<A NAME="UBI_faq_hdrsize">
+<H2>How much flash space do UBI headers consume?</H2>
+</A>
+
+<P>This depends on the flash flash you are using. Both EC and VID headers
+take 64 bytes, so in case of NOR flash UBI headers consume 128 bytes,
+and the logical eraseblock size is equivalent to the physical eraseblock
+size minus 128 bytes. But the situation may be different in case of
+other flash types.</P>
+
+<P>As it is noted <A HREF="UBI_faq_why_2_hdrs">here</A>, UBI writes twice
+to the flash, not just both UBI headers in one go. But many flashes have
+a notion of the "minimal Input/Output unit size". For example, in case 
+of NAND flash it is typically equivalent to the NAND page size, which is
+either 512 bytes or 2KiB. In this case, the EC header would be situated
+at the first NAND page, the VID header - at the second NAND page, and
+both headers would take two NAND pages (1KiB or 4KiB). The situation
+is similar in case of other flash types.</P>
+
+<P>Implementation-wise, UBI just looks at the <CODE>writesize</CODE> field
+of the <CODE>struct mtd_info</CODE> MTD device description object
+and uses it as the min. I/O unit when calculating sizes and positions of
+UBI headers.</P>
+
+<P>Fortunately, many NAND flashes allow several (typically 4) write
+operations to one NAND page. Thus, say, in case of a Samsung flash with
+2KiB NAND pages one may fit UBI headers at the first two 512-byte chunks
+of the NAND page. But this must be supported by the MTD flash driver
+(<CODE>writesize</CODE> has to be 512 bytes, not 2KiB).</P>
 
 
 
@@ -245,7 +300,6 @@ debug  ubi0  ubi1  version
 
 <P>Now you may start hacking/debugging UBI even without an embedded platform
 and without a real flash device.</P>
-
 
 <H3>Enable debugging messages</H3>
 
