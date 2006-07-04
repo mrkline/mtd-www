@@ -10,6 +10,27 @@
 <INCLUDE file="../inc/content.tmpl" />
 
 
+<H2>How can I find UBI source?</H2>
+
+<P>UBI is not yet in mainline kernel, and is currently accessible via git,
+Please, read <a href="doc/git.html">MTD git page</a> for more information about
+how to fetch GIT MTD trees. The UBI GIT repository is currently accessible via
+SSL protocol at <CODE>ssh://git.infradead.org/home/git/ubi-2.6.git</CODE>. So,
+the command to fetch the UBI git tree is</P>
+
+<PRE>
+$ git-clone --reference linux-2.6 ssh://git.infradead.org/home/git/ubi-2.6.git
+</PRE>
+
+<P>The UBI git-tree mostly corresponds to 2.6.17 Linux kernel. You may extract
+UBI patch and apply it to vanilla 2.6.17 Linux kernel or to another kernel,
+using the following command:</P>
+
+<PRE>
+$ git-diff 62ed948cb1405fe95d61d8c6445c102e0c9da0a6 > ubi-git.diff
+</PRE>
+
+
 <H2>What is "physical eraseblock" and "logical eraseblock"?</H2>
 
 <P>These are terms used in UBI: UBI volumes consist of logical eraseblocks,
