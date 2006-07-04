@@ -10,20 +10,22 @@
 <INCLUDE file="../inc/content.tmpl" />
 
 
+<A name="UBI_src">
 <H2>How can I find UBI source?</H2>
+</A>
 
-<P>UBI is not yet in mainline kernel, and is currently accessible via git,
-Please, read <a href="doc/git.html">MTD git page</a> for more information about
+<P>UBI is not yet in mainline kernel, and is currently accessible via git.
+Please, read <A href="doc/git.html">MTD git page</A> for more information about
 how to fetch GIT MTD trees. The UBI GIT repository is currently accessible via
 SSL protocol at <CODE>ssh://git.infradead.org/home/git/ubi-2.6.git</CODE>. So,
-the command to fetch the UBI git tree is</P>
+the command to fetch the UBI git tree is:</P>
 
 <PRE>
 $ git-clone --reference linux-2.6 ssh://git.infradead.org/home/git/ubi-2.6.git
 </PRE>
 
 <P>The UBI git-tree mostly corresponds to 2.6.17 Linux kernel. You may extract
-UBI patch and apply it to vanilla 2.6.17 Linux kernel or to another kernel,
+UBI patch and apply it to vanilla 2.6.17 Linux kernel or to another kernel
 using the following command:</P>
 
 <PRE>
