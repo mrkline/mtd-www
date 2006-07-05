@@ -16,7 +16,7 @@
 
 <P>UBI is not yet in mainline kernel, and it is currently accessible via git.
 Please, read <A HREF="../doc/git.html">MTD git page</A> for more information about
-how to fetch GIT MTD trees. The UBI GIT repository is currently accessible via
+how to fetch MTD GIT trees. The UBI GIT repository is currently accessible via
 <CODE>git://git.infradead.org/ubi-2.6.git</CODE>. So,
 the command to fetch the UBI git tree is:</P>
 
@@ -36,7 +36,7 @@ $ git-diff 62ed948cb1405fe95d61d8c6445c102e0c9da0a6 > ubi-git.diff
 
 <H2>How to enable UBI?</H2>
 
-<P>In the linux configuration menu go to "<B>DeviceDrivers</B>" ->
+<P>In the linux configuration menu go to "<B>Device Drivers</B>" ->
 "<B>Memory Technology Devices (MTD)</B>" -> "<B>UBI - Unsorted block images</B>",
 and mark the "<B>Enable UBI</B>" check-box. UBI may be either compiled into the
 kernel or built as a loadable kernel module.</P>
