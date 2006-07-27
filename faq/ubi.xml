@@ -10,7 +10,7 @@
 <INCLUDE file="../inc/content.tmpl" />
 
 
-<A NAME="UBI_src">
+<A NAME="UBI_faq_find_ubi_src">
 <H2>How can I find UBI source?</H2>
 </A>
 
@@ -34,7 +34,9 @@ $ git-diff 62ed948cb1405fe95d61d8c6445c102e0c9da0a6 > ubi-git.diff
 
 
 
+<A NAME="UBI_faq_enable_ubi">
 <H2>How to enable UBI?</H2>
+</A>
 
 <P>In the linux configuration menu go to "<B>Device Drivers</B>" ->
 "<B>Memory Technology Devices (MTD)</B>" -> "<B>UBI - Unsorted block images</B>",
@@ -43,7 +45,9 @@ kernel or built as a loadable kernel module.</P>
 
 
 
+<A NAME="UBI_faq_run_ubi">
 <H2>How to run UBI on top of my MTD device?</H2>
+</A>
 
 <P>Suppose you have an <CODE>mtd3</CODE> device and want to run UBI on top of it.
 If UBI was compiled as a kernel module, following command may be used:
@@ -83,7 +87,32 @@ UBI devices at the <CODE>/proc/devices</CODE> procfs file.</P>
 
 
 
+<A NAME="UBI_faq_ext2_over_ubi">
+<H2>Can I run file systems like ext2 on top of UBI?</H2>
+</A>
+
+<P>UBI is <B>not</B> a block device emulation layer, so the answer is - no.</P>
+
+<P>Ext2 and other "conventional" file systems are designed for block devices.
+Block devices basically have 2 operations: read block and write
+block. UBI devices, similarly to MTD devices, roughly, have 3 operations:
+read eraseblock, write eraseblock, and erase eraseblock.
+And eraseblocks are usually much larger then disk blocks (say, 128K vs 512
+bytes).</P>
+
+<P>It is fairly easy to create a block device emulation layer with block size
+equivalent to eraseblock size. But this barely makes sense. And this is not
+so trivial to implement a decent block emulation layer.</P>
+
+<P>The merit of UBI is that it hides some complexities of flash chips, like
+wearing and bad blocks. This makes it much easier to implement further
+layers like block device emulation layers and file systems by means of stacking
+them on top of UBI.</P>
+
+
+<A NAME="UBI_faq_format_mtd">
 <H2>Do I have to format my flash to run UBI on top of it?</H2>
+</A>
 
 <P>No, you don't have to. Although UBI stores some internal information,
 you may feed it an empty MTD device and UBI will format it automatically.
@@ -114,7 +143,7 @@ while the underlying MTD device consists of physical eraseblocks.</P>
 	For example, in case of NOR flash, logical eraseblock is 128 bytes
 	smaller then the physical eraseblock (note, how much UBI headers take
 	depends on the MTD device type, see
-	<A HREF="#UBI_faq_hdrsize">here</A>)</LI>
+	<A HREF="ubi.html#UBI_faq_hdrsize">here</A>)</LI>
 </UL>
 
 
@@ -180,8 +209,8 @@ and the logical eraseblock size is equivalent to the physical eraseblock
 size minus 128 bytes. But the situation may be different in case of
 other flash types.</P>
 
-<P>As it is noted <A HREF="UBI_faq_why_2_hdrs">here</A>, UBI writes twice
-to the flash, not just both UBI headers in one go. But many flashes have
+<P>As it is noted <A HREF="ubi.html#UBI_faq_why_2_hdrs">here</A>, UBI writes
+twice to the flash, not just both UBI headers in one go. But many flashes have
 a notion of the "minimal Input/Output unit size". For example, in case 
 of NAND flash it is typically equivalent to the NAND page size, which is
 either 512 bytes or 2KiB. In this case, the EC header would be situated
