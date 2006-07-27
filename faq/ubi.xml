@@ -110,6 +110,29 @@ layers like block device emulation layers and file systems by means of stacking
 them on top of UBI.</P>
 
 
+
+<A NAME="UBI_faq_run_jffs2">
+<H2>Can I run JFFS2 on top of UBI devices?</H2>
+</A>
+
+<P>Yes, you can use the following methods to mount UBI devices:</P>
+
+<UL>
+	<LI><CODE>mount -t jffs2 ubiX_Y dir/</CODE> - mount UBI device number
+	X, volume Y;</LI>
+
+	<LI><CODE>mount -t jffs2 ubiY dir/</CODE> - mount UBI device number 0,
+	volume Y;</LI>
+
+	<LI><CODE>mount -t jffs2 ubiX:NAME dir/</CODE> - mount UBI device X,
+	volume with name NAME;</LI>
+
+	<LI><CODE>mount -t jffs2 ubi:NAME dir</CODE> - mount UBI device 0,
+	volume with name NAME.</LI>
+</UL>
+
+
+
 <A NAME="UBI_faq_format_mtd">
 <H2>Do I have to format my flash to run UBI on top of it?</H2>
 </A>
