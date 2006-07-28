@@ -16,8 +16,8 @@
 	<LI><A HREF="ubi.html#UBI_faq_find_ubi_src">How can I find UBI source?</A></LI>
 	<LI><A HREF="ubi.html#UBI_faq_enable_ubi">How to enable UBI?</A></LI>
 	<LI><A HREF="ubi.html#UBI_faq_run_ubi">How to run UBI on top of my MTD device?</A></LI>
-	<LI><A HREF="ubi.html#UBI_faq_ext2_over_ubi">Can I run file systems like ext2 on top of UBI?</A></LI>
 	<LI><A HREF="ubi.html#UBI_faq_run_jffs2">Can I run JFFS2 on top of UBI devices?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_ext2_over_ubi">Can I run file systems like ext2 on top of UBI?</A></LI>
 	<LI><A HREF="ubi.html#UBI_faq_format_mtd">Do I have to format my flash to run UBI on top of it?</A></LI>
 	<LI><A HREF="ubi.html#UBI_faq_leb_and_peb">What is "physical eraseblock" and "logical eraseblock"?</A></LI>
 	<LI><A HREF="ubi.html#UBI_faq_why_headers">What for does UBI need headers in physical eraseblocks?</A></LI>
@@ -26,6 +26,7 @@
 	<LI><A HREF="ubi.html#UBI_faq_how_wl">How does UBI ensure wear-leveling?</A></LI>
 	<LI><A HREF="ubi.html#UBI_faq_how_debug">How to debug UBI?</A></LI>
 </OL>
+
 
 
 <A NAME="UBI_faq_find_ubi_src">
@@ -43,7 +44,7 @@ $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 </PRE>
 
 <P>The UBI git-tree mostly corresponds to the mtd-2.6.git tree. There is a
-patch for the 2.6.17 hernel available
+patch for the 2.6.17 kernel available
 <A HREF="http://www.infradead.org/~dedekind/ubi/ubi-patch-01.diff">here</A>,
 but it does not include JFFS2-to-UBI port.</P>
 
@@ -53,7 +54,7 @@ but it does not include JFFS2-to-UBI port.</P>
 <H2>How to enable UBI?</H2>
 </A>
 
-<P>In the linux configuration menu go to "<B>Device Drivers</B>" ->
+<P>In the linux configuration menu, go to "<B>Device Drivers</B>" ->
 "<B>Memory Technology Devices (MTD)</B>" -> "<B>UBI - Unsorted block images</B>",
 and mark the "<B>Enable UBI</B>" check-box. UBI may be either compiled into the
 kernel or built as a loadable kernel module.</P>
@@ -79,18 +80,18 @@ want to have two UBI devices on top of them, use the following command:</P>
 $ modprobe ubi mtd_devs=2,5
 </PRE>
 
-<P>and so on. To read more about the <CODE>mtd_devs</CODE> option try</P>
+<P>and so on. To read more about the <CODE>mtd_devs</CODE> option, try</P>
 
 <PRE>
 $ modinfo ubi
 </PRE>
 
 <P>Note, the <CODE>mtd_devs=2,5</CODE> option above assumes there will be two
-independent UBI devices created, <B>not</B> one UBI device on top of
+independent UBI devices created, <B>not</B> one UBI device on top of a
 <CODE>mtd2</CODE> and <CODE>mtd5</CODE> concatenation. If you wish to have
-the latter, you should first use the MTD concatenation
-(<CODE>mtdconcat</CODE>) to create a single "concatenated" mtd device, and
-feed this device to UBI.</P>
+the latter, you should first use MTD concatenation (<CODE>mtdconcat</CODE>)
+feature to create a single "concatenated" mtd device, and then feed it to
+UBI.</P>
 
 <P>If UBI was compiled into the kernel, you should tweak your platform
 driver(s) and call the <CODE>ubi_attach_mtd_dev()</CODE> function from there.
@@ -102,36 +103,11 @@ UBI devices at the <CODE>/proc/devices</CODE> procfs file.</P>
 
 
 
-<A NAME="UBI_faq_ext2_over_ubi">
-<H2>Can I run file systems like ext2 on top of UBI?</H2>
-</A>
-
-<P>UBI is <B>not</B> a block device emulation layer, so the answer is - no.</P>
-
-<P>Ext2 and other "conventional" file systems are designed for block devices.
-Block devices basically have 2 operations: read block and write
-block. UBI devices, similarly to MTD devices, roughly, have 3 operations:
-read eraseblock, write eraseblock, and erase eraseblock.
-And eraseblocks are usually much larger then disk blocks (say, 128K vs 512
-bytes).</P>
-
-<P>It is fairly easy to create a block device emulation layer with block size
-equivalent to eraseblock size. But this barely makes sense. And this is not
-so trivial to implement a decent block emulation layer.</P>
-
-<P>The merit of UBI is that it hides some complexities of flash chips, like
-wearing and bad blocks. This makes it much easier to implement further
-layers like block device emulation layers and file systems by means of stacking
-them on top of UBI.</P>
-
-
-
 <A NAME="UBI_faq_run_jffs2">
 <H2>Can I run JFFS2 on top of UBI devices?</H2>
 </A>
 
 <P>Yes, you can use the following methods to mount UBI devices:</P>
-
 <UL>
 	<LI><CODE>mount -t jffs2 ubiX_Y dir/</CODE> - mount UBI device number
 	X, volume Y;</LI>
@@ -145,6 +121,29 @@ them on top of UBI.</P>
 	<LI><CODE>mount -t jffs2 ubi:NAME dir</CODE> - mount UBI device 0,
 	volume with name NAME.</LI>
 </UL>
+
+
+
+<A NAME="UBI_faq_ext2_over_ubi">
+<H2>Can I run file systems like ext2 on top of UBI?</H2>
+</A>
+
+<P>UBI is <B>not</B> a block device emulation layer, so the answer is - no.</P>
+
+<P>Ext2 and other "conventional" file systems are designed for block devices.
+Roughly, block devices have 2 operations: read block and write block. UBI
+devices, similarly to MTD devices, have 3 operations: read eraseblock,
+write eraseblock, and erase eraseblock. And eraseblocks are usually much
+larger then disk blocks (say, 128K vs 512bytes).</P>
+
+<P>It is fairly easy to create a block device emulation layer with block size
+equivalent to eraseblock size. But this barely makes sense. But it is not
+so trivial to implement a decent block emulation layer.</P>
+
+<P>The merit of UBI is that it hides some complexities of flash chips, like
+wearing and bad blocks. This makes it much easier to implement further
+layers like block device emulation layers and file systems by means of stacking
+them on top of UBI.</P>
 
 
 
@@ -251,7 +250,7 @@ other flash types.</P>
 
 <P>As it is noted <A HREF="ubi.html#UBI_faq_why_2_hdrs">here</A>, UBI writes
 twice to eraseblocks, not just both UBI headers in one go. But many flashes
-havea notion of the "minimal Input/Output unit size". For example, in case
+have a notion of the "minimal Input/Output unit size". For example, in case
 of NAND flash it is typically equivalent to the NAND page size, which is
 either 512 bytes or 2KiB. In this case, the EC header would be situated
 at the first NAND page, the VID header - at the second NAND page, and
