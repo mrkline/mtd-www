@@ -250,8 +250,8 @@ size minus 128 bytes. But the situation may be different in case of
 other flash types.</P>
 
 <P>As it is noted <A HREF="ubi.html#UBI_faq_why_2_hdrs">here</A>, UBI writes
-twice to the flash, not just both UBI headers in one go. But many flashes have
-a notion of the "minimal Input/Output unit size". For example, in case 
+twice to eraseblocks, not just both UBI headers in one go. But many flashes
+havea notion of the "minimal Input/Output unit size". For example, in case
 of NAND flash it is typically equivalent to the NAND page size, which is
 either 512 bytes or 2KiB. In this case, the EC header would be situated
 at the first NAND page, the VID header - at the second NAND page, and
