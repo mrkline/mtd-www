@@ -11,6 +11,23 @@
 
 
 
+<H2>Table of contents</H2>
+<OL>
+	<LI><A HREF="ubi.html#UBI_faq_find_ubi_src">How can I find UBI source?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_enable_ubi">How to enable UBI?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_run_ubi">How to run UBI on top of my MTD device?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_ext2_over_ubi">Can I run file systems like ext2 on top of UBI?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_run_jffs2">Can I run JFFS2 on top of UBI devices?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_format_mtd">Do I have to format my flash to run UBI on top of it?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_leb_and_peb">What is "physical eraseblock" and "logical eraseblock"?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_why_headers">What for does UBI need headers in physical eraseblocks?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_why_2_hdrs">Why does UBI need two headers, not just one?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_hdrsize">How much flash space do UBI headers consume?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_how_wl">How does UBI ensure wear-leveling?</A></LI>
+	<LI><A HREF="ubi.html#UBI_faq_how_debug">How to debug UBI?</A></LI>
+</OL>
+
+
 <A NAME="UBI_faq_find_ubi_src">
 <H2>How can I find UBI source?</H2>
 </A>
@@ -169,7 +186,9 @@ while the underlying MTD device consists of physical eraseblocks.</P>
 
 
 
+<A NAME="UBI_faq_why_headers">
 <H2>What for does UBI need headers in physical eraseblocks?</H2>
+</A>
 
 <P>The headers are needed to keep track of erase counters and
 physical-to-logical eraseblock associations. There are two UBI headers stored
@@ -252,7 +271,9 @@ of the NAND page. But this must be supported by the MTD flash driver
 
 
 
+<A NAME="UBI_faq_how_wl">
 <H2>How does UBI ensure wear-leveling?</H2>
+</A>
 
 <P>UBI keeps a small header at the beginning of each physical eraseblock which
 contains the erase counter (the header is called <B>erase counter header</B>
@@ -319,7 +340,9 @@ scalability, or just change the working algorithm.</P>
 
 
 
+<A NAME="UBI_faq_how_debug">
 <H2>How to debug UBI?</H2>
+</A>
 
 <H3>Use fake MTD device</H3>
 
