@@ -268,6 +268,10 @@ operations to one NAND page. Thus, say, in case of a Samsung flash with
 of the NAND page. But this must be supported by the MTD flash driver
 (<CODE>writesize</CODE> has to be 512 bytes, not 2KiB).</P>
 
+<P>Also, UBI provides two module parameters: <CODE>data_offsets</CODE> and
+<CODE>vid_hdr_offsets</CODE>, which may be used to manually specify EC and VID
+header positions.</P>
+
 
 
 <A NAME="UBI_faq_how_wl">
