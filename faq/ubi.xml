@@ -10,6 +10,7 @@
 <INCLUDE file="../inc/content.tmpl" />
 
 
+
 <A NAME="UBI_faq_find_ubi_src">
 <H2>How can I find UBI source?</H2>
 </A>
@@ -24,13 +25,10 @@ the command to fetch the UBI git tree is:</P>
 $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 </PRE>
 
-<P>The UBI git-tree mostly corresponds to 2.6.17 Linux kernel. You may extract
-UBI patch and apply it to vanilla 2.6.17 Linux kernel or to another kernel
-using the following command:</P>
-
-<PRE>
-$ git-diff 62ed948cb1405fe95d61d8c6445c102e0c9da0a6 > ubi-git.diff
-</PRE>
+<P>The UBI git-tree mostly corresponds to the mtd-2.6.git tree. There is a
+patch for the 2.6.17 hernel available
+<A HREF="http://www.infradead.org/~dedekind/ubi/ubi-patch-01.diff">here</A>,
+but it does not include JFFS2-to-UBI port.</P>
 
 
 
