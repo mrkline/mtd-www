@@ -45,8 +45,7 @@ $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 
 <P>The UBI git-tree mostly corresponds to the mtd-2.6.git tree. There is a
 patch for the 2.6.17 kernel available
-<A HREF="http://www.infradead.org/~dedekind/ubi/ubi-patch-01.diff">here</A>,
-but it does not include JFFS2-to-UBI port.</P>
+<A HREF="http://www.infradead.org/~dedekind/ubi/ubi-patch-01.diff">here</A>.</P>
 
 
 
@@ -107,7 +106,18 @@ UBI devices at the <CODE>/proc/devices</CODE> procfs file.</P>
 <H2>Can I run JFFS2 on top of UBI devices?</H2>
 </A>
 
-<P>Yes, you can use the following methods to mount UBI devices:</P>
+<P>There is a patch which adds UBI support to JFFS2 available
+<A HREF="http://www.infradead.org/~dedekind/ubi/jffs2-ubi-support-01.diff">here</A>
+(or broken-out version available
+<A HREF="http://www.infradead.org/~dedekind/ubi/jffs2-ubi-support-01-broken-out/">here</A>).
+The patches are against JFFS2 from the UBI GIT tree (which should be
+equivalent to the latest JFFS2 from the MTD GIT tree).</P>
+
+<P>Also, there is a git tree which contains UBI together with those patches available at
+<CODE>git://git.infradead.org/~dedekind/public_git/dedekind-ubi-2.6.git</CODE>.
+This git tree is basically equivalent to the UBI GIT tree + the JFFS2-to-UBI port.</P>
+
+<P>With the above patch, you can use the following techniques to mount jffs2:</P>
 <UL>
 	<LI><CODE>mount -t jffs2 ubiX_Y dir/</CODE> - mount UBI device number
 	X, volume Y;</LI>
