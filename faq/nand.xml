@@ -43,7 +43,7 @@ is also neccecary before you copy a fs-image to the chip.
 <p>Yes, as long as your chip does not contain bad blocks. Make sure, that the erasesize you set to mkfs.jffs2 
 is the same as the erasesize of your chip. Data will only be written with ECC, if your default settings for
 oob-layout selection are set for JFFS2. For bad block aware copying, use nandwrite from mtd-utils.<br />
-nandwrite -j /dev/mtdX image
+nandwrite /dev/mtdX image
 </p>
 
 <h3>Can I use seek/read/write on /dev/mtdX ?</h3>
