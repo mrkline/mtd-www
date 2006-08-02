@@ -114,7 +114,7 @@ The patches are against JFFS2 from the UBI GIT tree (which should be
 equivalent to the latest JFFS2 from the MTD GIT tree).</P>
 
 <P>Also, there is a git tree which contains UBI together with those patches available at
-<CODE>git://git.infradead.org/~dedekind/public_git/dedekind-ubi-2.6.git</CODE>.
+<CODE>git://git.infradead.org/~dedekind/public_git/dedekind-jffs2-ubi-2.6.git</CODE>.
 This git tree is basically equivalent to the UBI GIT tree + the JFFS2-to-UBI port.</P>
 
 <P>With the above patch, you can use the following techniques to mount jffs2:</P>
