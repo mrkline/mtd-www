@@ -21,6 +21,7 @@
 	<LI><A HREF="ubi.html#L_ext2_over_ubi">Can I run file systems like ext2 on top of UBI?</A></LI>
 	<LI><A HREF="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</A></LI>
 	<LI><A HREF="ubi.html#L_leb_and_peb">What is "physical eraseblock" and "logical eraseblock"?</A></LI>
+	<LI><A HREF="ubi.html#L_volume_update">What is volume update?</A></LI>
 	<LI><A HREF="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</A></LI>
 	<LI><A HREF="ubi.html#L_why_2_hdrs">Why does UBI need two headers, not just one?</A></LI>
 	<LI><A HREF="ubi.html#L_hdrsize">How much flash space do UBI headers consume?</A></LI>
@@ -219,6 +220,48 @@ consists of <B>physical eraseblocks</B> (<B>PEB</B>).</P>
 	bytes smaller then PEB (note, UBI headers size depends on the MTD
 	device type, see <A HREF="ubi.html#L_hdrsize">here</A>).</LI>
 </UL>
+
+
+
+<A NAME="L_volume_update">
+<H2>What is volume update?</H2>
+</A>
+
+<P>The <B>volume update</B> operation is a way update the contents of UBI
+volumes. UBI does not allow to directly write to and erase eraseblocks of
+UBI volumes from user-space (even for dynamic volumes). Instead, only entire
+volume contents may be changed at one go, by means of the volume update
+operation. Note, both dynamic and static volumes may be updated.</P>
+
+<P>The volume update operation is "atomic", which means that the volume update
+operation has to finish. If the operation was not finished, the volume will
+not be usable - any further read operation will fail with <CODE>EUCLEAN</CODE>
+error.</P>
+
+<P>The volume update operation is not a true transaction because it does not
+preserve previous volume contents. Instead, it wipes-out the whole volume
+as soon as an update operation starts. What the volume update operation
+guarantees that the update either successfully finishes or the volume goes
+into "corrupted" state.</P>
+
+<P>The update operation is implemented very simply - by means of so-called
+<B>update marker</B>. Before the update operation, UBI writes the update
+marker to the flash media. The update marker contains ID of the volume
+which is being updated. When all the data is successfully written to the
+flash media, the update marker is removed. If the update operation is
+interrupted by power failure, the update marker will be found and the
+volume will stay in the "corrupted" state. Only a new update operation
+may remove this update marker.</P>
+
+<P>Note, the update marker is global and is common for all volumes on
+this UBI device. This means, that only one volume may be updated at a time.
+This also means, that if there is an update marker because of an
+interrupted volume update, the only way to get rid of this marker is to
+re-start and finish update if the corrupted volume. Other volumes cannot
+be updated while the update marker exists on the flash media.</P>
+
+<P>The volume update operation may be issued via an IOCTL command of UBI
+volume character devices. See <CODE>mtd/ubi-user.h</CODE> for more details.</P>
 
 
 
@@ -449,6 +492,12 @@ Lets consider situations when unclean reboots may happen.</P>
 	guarantees that it cannot be lost/corrupted due to power failures.
 	For more information about the volume table, see
 	<A HREF="ubi.html#L_volume_table">here</A>.</LI>
+
+	<LI><I>Volume update</I>. If an unclean reboot happens during volume
+	update, UBI will detect this when running next time and will prohibit
+	any further access to this volume. Only new update operation will be
+	allowed. See <A HREF="ubi.html#L_volume_update">here</A> for more
+	information about volume update.</LI>
 </OL>
 
 
