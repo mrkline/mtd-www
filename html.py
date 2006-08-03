@@ -158,7 +158,7 @@ class docHandler(xml.sax.ContentHandler):
 		if len(self.content) > 0:
 			writeHtml(self.content)
 		self.content = ""
-		writeHtml("</" + name + ">\n")
+		writeHtml("</" + name + ">")
 	
 
 # error handler
