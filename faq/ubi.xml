@@ -21,6 +21,8 @@
 	<LI><A HREF="ubi.html#L_ext2_over_ubi">Can I run file systems like ext2 on top of UBI?</A></LI>
 	<LI><A HREF="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</A></LI>
 	<LI><A HREF="ubi.html#L_leb_and_peb">What is "physical eraseblock" and "logical eraseblock"?</A></LI>
+	<LI><A HREF="ubi.html#L_ubi_adv">What are the main advantages of UBI?</A></LI>
+	<LI><A HREF="ubi.html#L_restrict">Are there some restrictions in UBI?</A></LI>
 	<LI><A HREF="ubi.html#L_volume_update">What is volume update?</A></LI>
 	<LI><A HREF="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</A></LI>
 	<LI><A HREF="ubi.html#L_why_2_hdrs">Why does UBI need two headers, not just one?</A></LI>
@@ -223,12 +225,74 @@ consists of <B>physical eraseblocks</B> (<B>PEB</B>).</P>
 
 
 
+<A NAME="L_ubi_adv">
+<H2>What are the main advantages of UBI?</H2>
+</A>
+
+<P>The following are the key advantages of utilizing flash via the UBI->MTD
+stack, instead of utilizing it directly via MTD.</P>
+
+<OL>
+	<LI><I>Wear</I>. When you work with MTD devices, you have to bear in
+	mind that PEBs have limited life-time, and you have to utilize them
+	evenly, i.e., wear-levelling have to be done in some way. In opposite,
+	UBI volumes are devoid of this unpleasant property. Programmers do not
+	have to think about wear levelling because UBI automatically
+	distributes the load over the entire flash device.
+	For example, this means that you may erase one LEB of your volume
+	hundred times more often then the other, and the wear will still be
+	evenly distributed.<BR/><BR/>
+
+	This also means that system designers have much freedom in
+	partitioning their flash devices. They can create as many partitions
+	(UBI volumes in this context) as they want - UBI will anyway maintain
+	good wear-levelling across the whole flash chip.
+	</LI><BR/>
+
+	<LI><I>Bad PEBs</I>. Some flash chips may admit of bad PEBs. For
+	example, NAND flash chips may be shipped with few bad PEBs. Bad PEBs may
+	also dynamically appear during NAND flash utilization. Software that
+	works with those flash chips via the MTD interface has to take this
+	into account and gracefully handle bad PEBs. Very often this is a
+	really difficult task. But the UBI layer completely hides bad PEBs from
+	users and handles them automatically. The outside users don't even
+	notice that, say, some PEBs became bad and UBI moved their data to good
+	PEBs.</LI><BR/>
+
+	<LI><I>Dynamic operations</I>. UBI volumes may be dynamically created,
+	removed and re-sized. MTD partitions are static.</LI><BR/>
+
+	<LI><I>Volume update</I>. UBI provides a robust way to update the
+	contents of volumes by means of special "update" operation. For
+	example, this may greatly help to detect power failures while
+	flashing newer software and to automatically re-start the update. For more
+	information, see <A HREF="ubi.html#L_volume_update">here</A>.</LI><BR/>
+
+	<LI><I>Static volumes</I>. Static volumes provide a good way to store
+	read-only data. UBI automatically protects these volumes by CRC-32
+	checksums and guarantees data integrity.</LI>
+</OL>
+
+
+
+<A NAME="L_restrict">
+<H2>Are there some restrictions in UBI?</H2>
+</A>
+
+<P>There is one important restriction UBI programmers have to be aware of: LEBs
+of UBI volumes have to be written strictly from the beginning to the end. This
+means, that the LEB offset has to only increase when writing data. For
+example, it is forbidden to write at offset, say, <CODE>0x800</CODE>, then at
+offset <CODE>0x0</CODE>.</P>
+
+
+
 <A NAME="L_volume_update">
 <H2>What is volume update?</H2>
 </A>
 
-<P>The <B>volume update</B> operation is a way update the contents of UBI
-volumes. UBI does not allow to directly write to and erase eraseblocks of
+<P>The <B>volume update</B> operation is a way to update the contents of UBI
+volumes. UBI does not allow to directly write and erase eraseblocks of
 UBI volumes from user-space (even for dynamic volumes). Instead, only entire
 volume contents may be changed at one go, by means of the volume update
 operation. Note, both dynamic and static volumes may be updated.</P>
