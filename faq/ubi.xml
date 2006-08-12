@@ -67,9 +67,12 @@ $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 </PRE>
 
 <P>The UBI git-tree mostly corresponds to the mtd-2.6.git tree
-(<A HREF="git://git.infradead.org/mtd-2.6.git"> git://git.infradead.org/mtd-2.6.git</A>).
-There is also a patch for the 2.6.17 kernel available
-<A HREF="http://www.infradead.org/~dedekind/ubi/ubi-patch-01.diff">here</A>.</P>
+(<A HREF="git://git.infradead.org/mtd-2.6.git">git://git.infradead.org/mtd-2.6.git</A>).</P>
+
+<P>There are also an UBI patch available
+<A HREF="http://www.infradead.org/~dedekind/ubi/ubi.diff">here</A>,
+or a set of patches corresponging to git commits available
+<A HREF="http://www.infradead.org/~dedekind/ubi/ubi-broken-out">here</A>.</P>
 
 
 
@@ -136,9 +139,9 @@ directory are present, or UBI character devices in the
 </A>
 
 <P>There is a patch which adds UBI support to JFFS2 available
-<A HREF="http://www.infradead.org/~dedekind/ubi/jffs2-ubi-support-01.diff">here</A>
+<A HREF="http://www.infradead.org/~dedekind/ubi/ubi-jffs2-ubi.diff">here</A>
 (or broken-out version available
-<A HREF="http://www.infradead.org/~dedekind/ubi/jffs2-ubi-support-01-broken-out/">here</A>).
+<A HREF="http://www.infradead.org/~dedekind/ubi/jffs2-ubi-broken-out/">here</A>).
 The patches are against JFFS2 from the UBI GIT tree (which should be
 equivalent to the latest JFFS2 from the MTD GIT tree).</P>
 
