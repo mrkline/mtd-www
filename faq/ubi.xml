@@ -71,7 +71,7 @@ $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 
 <P>There are also an UBI patch available
 <A HREF="http://www.infradead.org/~dedekind/ubi/ubi.diff">here</A>,
-or a set of patches corresponging to git commits available
+or a set of patches corresponding to git commits available
 <A HREF="http://www.infradead.org/~dedekind/ubi/ubi-broken-out">here</A>.</P>
 
 
@@ -619,36 +619,110 @@ debug  ubi0  ubi1  version
 <P>Now you may start hacking/debugging UBI even without an embedded platform
 and without a real flash device.</P>
 
+<H3>Enable debugging</H3>
+
+<P>Enable UBI debugging support in the configuration menu
+(the "<B>UBI debugging</B> check-box). If UBI is compiled as a kernel module,
+the UBI debugging unit is also a kernel module named "<B>ubidbg</B>".</P>
+
+<P>When debugging is enabled, UBI uses debugfs to communicate with user-space.
+To mount debugfs, use the following command:</P>
+<PRE>
+# mount -t debugfs none /mnt/debugfs
+</PRE>
+
+<P>Or any other mount point may be specified. In debugfs, you should see an
+"<CODE>ubi</CODE>" directory, which contains different UBI debugging-related
+files:</P>
+<PRE>
+# ls /mnt/debugfs/ubi/
+acc_prints    cdev_prints  log            upd_prints
+alloc_prints  dtbl_prints  printk_output  vmt_prints
+bgt_prints    eba_prints   scan_prints    vtbl_prints
+bld_prints    io_prints    uif_prints     wl_prints
+</PRE>
+
+<P>The <CODE>*_prints</CODE> files switch on/off debugging messages from the
+corresponding UBI unit. For example, to enable messages from the scanning and
+wear-levelling units, the following commands may be used:</P>
+<PRE>
+# echo 1 > /mnt/debugfs/ubi/scan_prints
+# echo 1 > /mnt/debugfs/ubi/wl_prints
+</PRE>
+
+<P>The following are UBI unit names:</P>
+<UL>
+	<LI><I>acc</I> - accounting unit - responsible for flash space
+	accounting;</LI>
+	<LI><I>bld</I> - build unit - responsible for building all the internal
+	data structures during UBI initialization;</LI>
+	<LI><I>eba</I> - eraseblock association unit - responsible for the
+	logical-to-physical eraseblock association;</LI>
+	<LI><I>scan</I> - scanning unit - responsible for scanning the flash
+	device during UBI initialization;</LI>
+	<LI>vmt<I></I> - volume management unit - responsible for managing UBI
+	volumes;</LI>
+	<LI><I>alloc</I> - memory allocation unit - responsible for UBI memory
+	allocations;</LI>
+	<LI><I>cdev</I> - character device sub-unit - responsible for character
+	devices support (part of the user interfaces unit);</LI>
+	<LI><I>io</I> - input/output unit - responsible for UBI flash
+	input/output;</LI>
+	<LI><I>uif</I> - user interfaces unit - responsible for UBI user
+	interfaces support;</LI>
+	<LI><I>vtbl</I> - volume table unit - responsible for maintaining the
+	volume table;</LI>
+	<LI><I>bgt</I> - background thread unit - responsible for the UBI
+	background thread;</LI>
+	<LI><I>dtbl</I> - data table unit - responsible for the UBI data table
+	(an internal in-ram table);</LI>
+	<LI><I>upd</I> - update unit - responsible for volume updates and update
+	marker maintenance;</LI>
+	<LI><I>wl</I> - unit - responsible for UBI wear-levelling support.</LI>
+</UL>
+
+<P>The "<CODE>log</CODE>" file contains the debugging log. If you write anything
+to this file, the log is cleaned.</P>
+
+<P>The "<CODE>printk_output</CODE>" file switches output from "<CODE>log</CODE>"
+to the console and vice versa.</P>
+
 <H3>Enable debugging messages</H3>
 
-<P>UBI makes it possible to enable debugging messages which greatly helps when
-hunting bugs. As UBI internally consists of several separate software units,
-debugging messages may be toggled for different units separately. So, if you
-suspect a certain UBI unit, enable the corresponding debugging messages.</P>
-
-<P>UBI supports so called "dynamic debugging", which may be enabled in the
-Linux configuration menu (re-compilation is required). If it is enabled, you'll
-have <CODE>class/ubi/debug/</CODE> directory in your sysfs tree, and
-you'll be able to enable/disable debugging by writing ASCII 0 or 1 to files in
-this directory. For example
+<P>Enable debugging messages from a UBI unit you are interested in. This may be
+done via the debugfs switches, via the configuration menu
+(<B>UBI debugging messages</B>) or via <CODE>ubidbg</CODE> module parameters.
+E.g.:</P>
 <PRE>
-echo 1 > /sys/class/ubi/debug/debug_wl
+# modprobe ubidbg ubi_dbg_uif=1
 </PRE>
-enables debugging messages from the UBI wear-leveling unit. The cost of dynamic
-debugging is larger and a bit slower code.</P>
 
-<P>When dynamic debugging is disabled, UBI compiles-in only selected messages
-and compiles-out the unselected ones.</P>
+<P>enables debugging messages from the user interfaces unit. See
+<CODE>modinfo ubidbg</CODE> for more information about <CODE>ubidbg</CODE>
+parameters.</P>
 
-<H3>Enable assertions and paranoid checks</H3>
+<P>By default, UBI stores the debugging messages in the "ubi/log" debugfs file.
+But if you want the messages to go to the console, enable the
+"<B>Logging to console</B>" option in the configuration menu. The same may be
+done via <CODE>ubidbg</CODE> module options or via the "printk_output"
+file:</P>
+<PRE>
+# modprobe ubidbg printk_output=1
+</PRE>
+<P>or</P>
+<PRE>
+# echo 1 > /mnt/debugfs/printk_output
+</PRE>
 
-<P>UBI code includes assertions and so-called "paranoid checks" which are
-designated to facilitate bug hunting. You may consider to enable them to catch
-problems on earlier stages.</P>
+<H3>Enable paranoid checks</H3>
 
-<P>Both paranoid checks and assertions may be enabled under the "UBI debugging"
-Linux configuration menu option (re-compilation is required). Paranoid checks
-may be enabled/disabled separately for each UBI unit.</P>
+<P>UBI code includes so-called "paranoid checks" which add additional UBI
+self-checking code. You may consider to enable them to catch problems on
+earlier stages.</P>
+
+<P>The paranoid checks may be enabled under the "UBI debugging" Linux
+configuration menu option (re-compilation is required). Paranoid checks
+may be enabled/disabled separately for different UBI units.</P>
 
 <P>Note, some paranoid checks make UBI considerably slower, especially the
 "I/O unit paranoid check".</P>
