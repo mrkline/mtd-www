@@ -636,10 +636,10 @@ To mount debugfs, use the following command:</P>
 files:</P>
 <PRE>
 # ls /mnt/debugfs/ubi/
-acc_prints    cdev_prints  log            upd_prints
-alloc_prints  dtbl_prints  printk_output  vmt_prints
-bgt_prints    eba_prints   scan_prints    vtbl_prints
-bld_prints    io_prints    uif_prints     wl_prints
+acc_prints    cdev_prints  log           upd_prints
+alloc_prints  dtbl_prints  printk_debug  vmt_prints
+bgt_prints    eba_prints   scan_prints   vtbl_prints
+bld_prints    io_prints    uif_prints    wl_prints
 </PRE>
 
 <P>The <CODE>*_prints</CODE> files switch on/off debugging messages from the
@@ -684,7 +684,7 @@ wear-levelling units, the following commands may be used:</P>
 <P>The "<CODE>log</CODE>" file contains the debugging log. If you write anything
 to this file, the log is cleaned.</P>
 
-<P>The "<CODE>printk_output</CODE>" file switches output from "<CODE>log</CODE>"
+<P>The "<CODE>printk_debug</CODE>" file switches output from "<CODE>log</CODE>"
 to the console and vice versa.</P>
 
 <H3>Enable debugging messages</H3>
@@ -694,7 +694,7 @@ done via the debugfs switches, via the configuration menu
 (<B>UBI debugging messages</B>) or via <CODE>ubidbg</CODE> module parameters.
 E.g.:</P>
 <PRE>
-# modprobe ubidbg ubi_dbg_uif=1
+# modprobe ubidbg uif_prints=1
 </PRE>
 
 <P>enables debugging messages from the user interfaces unit. See
@@ -704,14 +704,14 @@ parameters.</P>
 <P>By default, UBI stores the debugging messages in the "ubi/log" debugfs file.
 But if you want the messages to go to the console, enable the
 "<B>Logging to console</B>" option in the configuration menu. The same may be
-done via <CODE>ubidbg</CODE> module options or via the "printk_output"
+done via <CODE>ubidbg</CODE> module options or via the "printk_debug"
 file:</P>
 <PRE>
-# modprobe ubidbg printk_output=1
+# modprobe ubidbg printk_debug=1
 </PRE>
 <P>or</P>
 <PRE>
-# echo 1 > /mnt/debugfs/printk_output
+# echo 1 > /mnt/debugfs/printk_debug
 </PRE>
 
 <H3>Enable paranoid checks</H3>
