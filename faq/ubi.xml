@@ -262,8 +262,17 @@ stack, instead of utilizing it directly via MTD.</P>
 	notice that, say, some PEBs became bad and UBI moved their data to good
 	PEBs.</LI><BR/>
 
-	<LI><I>Dynamic operations</I>. UBI volumes may be dynamically created,
+	<LI><I>Dynamic partitioning</I>. UBI volumes may be dynamically created,
 	removed and re-sized. MTD partitions are static.</LI><BR/>
+
+	<LI><I>Bit-flips handling</I>. In case of some flash chips, like NAND,
+	individual bits may randomly flip. In case of NAND this problem is
+	solved by per-NAND page ECC codes. But once one or few bits start
+	flipping, the situation may worsen over time and more bits may become
+	unstable at this PEB. And this may cause uncorrectable errors and data
+	loss. UBI gracefully fights with this phenomena - it moves data from
+	such PEBs to other PEBs and thus, gets rid of bit-flips and prevents
+	potential data losses.</LI><BR/>
 
 	<LI><I>Volume update</I>. UBI provides a robust way to update the
 	contents of volumes by means of special "update" operation. For
