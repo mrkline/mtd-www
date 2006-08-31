@@ -70,9 +70,7 @@ $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 (<A HREF="git://git.infradead.org/mtd-2.6.git">git://git.infradead.org/mtd-2.6.git</A>).</P>
 
 <P>There are also an UBI patch available
-<A HREF="http://www.infradead.org/~dedekind/ubi/ubi.diff">here</A>,
-or a set of patches corresponding to git commits available
-<A HREF="http://www.infradead.org/~dedekind/ubi/ubi-broken-out">here</A>.</P>
+<A HREF="http://www.infradead.org/~dedekind/ubi/ubi.diff">here</A>.</P>
 
 
 
@@ -645,10 +643,10 @@ To mount debugfs, use the following command:</P>
 files:</P>
 <PRE>
 # ls /mnt/debugfs/ubi/
-acc_prints    cdev_prints  log           upd_prints
-alloc_prints  dtbl_prints  printk_debug  vmt_prints
-bgt_prints    eba_prints   scan_prints   vtbl_prints
-bld_prints    io_prints    uif_prints    wl_prints
+acc_prints    cdev_prints  log              upd_prints
+alloc_prints  dtbl_prints  console_logging  vmt_prints
+bgt_prints    eba_prints   scan_prints      vtbl_prints
+bld_prints    io_prints    uif_prints       wl_prints
 </PRE>
 
 <P>The <CODE>*_prints</CODE> files switch on/off debugging messages from the
@@ -693,8 +691,8 @@ wear-levelling units, the following commands may be used:</P>
 <P>The "<CODE>log</CODE>" file contains the debugging log. If you write anything
 to this file, the log is cleaned.</P>
 
-<P>The "<CODE>printk_debug</CODE>" file switches output from "<CODE>log</CODE>"
-to the console and vice versa.</P>
+<P>The "<CODE>console_logging</CODE>" file switches output from
+"<CODE>log</CODE>" to the console and vice versa.</P>
 
 <H3>Enable debugging messages</H3>
 
@@ -713,14 +711,14 @@ parameters.</P>
 <P>By default, UBI stores the debugging messages in the "ubi/log" debugfs file.
 But if you want the messages to go to the console, enable the
 "<B>Logging to console</B>" option in the configuration menu. The same may be
-done via <CODE>ubidbg</CODE> module options or via the "printk_debug"
+done via <CODE>ubidbg</CODE> module options or via the "console_logging"
 file:</P>
 <PRE>
-# modprobe ubidbg printk_debug=1
+# modprobe ubidbg console_logging=1
 </PRE>
 <P>or</P>
 <PRE>
-# echo 1 > /mnt/debugfs/printk_debug
+# echo 1 > /mnt/debugfs/ubi/console_logging
 </PRE>
 
 <H3>Enable paranoid checks</H3>
