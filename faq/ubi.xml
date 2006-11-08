@@ -31,6 +31,7 @@
 	<LI><A HREF="ubi.html#L_volume_table">What is volume table?</A></LI>
 	<LI><A HREF="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</A></LI>
 	<LI><A HREF="ubi.html#L_how_debug">How to debug UBI?</A></LI>
+	<LI><A HREF="ubi.html#L_how_send_bugreport">How to send a bugreport?</A></LI>
 </OL>
 
 
@@ -57,10 +58,8 @@
 <P>UBI is not yet in the mainline kernel, and it is currently accessible via
 git. Please, read the <A HREF="../doc/git.html">MTD git page</A> for more
 information about how to fetch MTD GIT trees. The UBI GIT tree is
-available at
-<A HREF="git://git.infradead.org/ubi-2.6.git">
-git://git.infradead.org/ubi-2.6.git</A>,
-so the command to fetch it is:</P>
+available at <A HREF="git://git.infradead.org/ubi-2.6.git">
+git://git.infradead.org/ubi-2.6.git</A>, so the command to fetch it is:</P>
 
 <PRE>
 $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
@@ -68,9 +67,6 @@ $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 
 <P>The UBI git-tree mostly corresponds to the mtd-2.6.git tree
 (<A HREF="git://git.infradead.org/mtd-2.6.git">git://git.infradead.org/mtd-2.6.git</A>).</P>
-
-<P>There are also an UBI patch available
-<A HREF="http://www.infradead.org/~dedekind/ubi/ubi.diff">here</A>.</P>
 
 
 
@@ -96,23 +92,34 @@ it. The following command loads the UBI kernel module and attaches
 <CODE>mtd3</CODE> to it:</P>
 
 <PRE>
-$ modprobe ubi mtd_devs=3
+$ modprobe ubi mtd=3
 </PRE>
 
 <P>If, say, you have two MTD devices, <CODE>mtd2</CODE> and <CODE>mtd5</CODE>,
 and want to have two UBI devices on top of them, use the following command:</P>
 
 <PRE>
-$ modprobe ubi mtd_devs=2,5
+$ modprobe ubi mtd=2 mtd=5
 </PRE>
 
-<P>and so on. To read more about the <CODE>mtd_devs</CODE> option, try</P>
+<P>and so on.</P>
+
+<P>If the default position of UBI headers and data is not appropriate for you,
+for example because you can optimize headers overhead, VID and data positions
+may also be specified, e.g.:</P>
+
+<PRE>
+$ modprobe ubi mtd=2,256,512 mtd=5,1024,2048
+</PRE>
+
+<P>But this is needed for advanced users only. To read more about the module
+parameters, try</P>
 
 <PRE>
 $ modinfo ubi
 </PRE>
 
-<P>Note, the "<CODE>mtd_devs=2,5</CODE>" option above assumes that two
+<P>Note, the "<CODE>mtd=2 mtd=5</CODE>" options above assume that two
 independent UBI devices will be created, not one UBI device on top
 of a concatenation of <CODE>mtd2</CODE> and <CODE>mtd5</CODE>. If you wish to
 have a single UBI device, you should first use the MTD concatenation
@@ -121,14 +128,14 @@ and then feed it to UBI.</P>
 
 <H3>UBI is compiled into the kernel</H3>
 
-<P>In this case you should tweak your MTD platform driver(s) and call the
-<CODE>ubi_attach_mtd_dev()</CODE> function from it.
-See <CODE>include/mtd/ubi.h</CODE> for the prototype of this function.</P>
+<P>This case is very similar to the above one but an "<CODE>ubi.mtd=</CODE>"
+option should be used instead of the "<CODE>mtd=</CODE>" option and it should
+be passed via the kernel boot command line instead of the module parameters.</P>
 
-<P>Note, to make sure UBI was successfully initialized and accepted your MTD
-device(s), check that UBI-related files in <CODE>/sys/class/ubi</CODE> sysfs
-directory are present, or UBI character devices in the
-<CODE>/proc/devices</CODE> procfs file are mentioned.</P>
+<P>Note, to make sure that UBI was successfully initialized and accepted your
+MTD device(s), check that UBI-related files are present in the
+<CODE>/sys/class/ubi</CODE> sysfs directory, or UBI character devices are
+mentioned in the <CODE>/proc/devices</CODE> procfs file.</P>
 
 
 
@@ -136,32 +143,9 @@ directory are present, or UBI character devices in the
 <H2>Can I run JFFS2 on top of UBI volumes?</H2>
 </A>
 
-<P>There is a patch which adds UBI support to JFFS2 available
-<A HREF="http://www.infradead.org/~dedekind/ubi/ubi-jffs2-ubi.diff">here</A>
-(or broken-out version available
-<A HREF="http://www.infradead.org/~dedekind/ubi/jffs2-ubi-broken-out/">here</A>).
-The patches are against JFFS2 from the UBI GIT tree (which should be
-equivalent to the latest JFFS2 from the MTD GIT tree).</P>
-
-<P>Also, there is a git tree which contains UBI together with those patches available at
-<CODE>git://git.infradead.org/~dedekind/public_git/dedekind-jffs2-ubi-2.6.git</CODE>.
-This git tree is equivalent to the UBI GIT tree + the JFFS2-to-UBI port.</P>
-
-<P>With the above patch, you can use the following techniques to mount UBI
-volumes:</P>
-<UL>
-	<LI><CODE>mount -t jffs2 ubiX_Y dir/</CODE> - mount UBI device number
-	X, volume Y;</LI>
-
-	<LI><CODE>mount -t jffs2 ubiY dir/</CODE> - mount UBI device number 0,
-	volume Y;</LI>
-
-	<LI><CODE>mount -t jffs2 ubiX:NAME dir/</CODE> - mount UBI device X,
-	volume with name NAME;</LI>
-
-	<LI><CODE>mount -t jffs2 ubi:NAME dir</CODE> - mount UBI device 0,
-	volume with name NAME.</LI>
-</UL>
+<P>Yes, you can. UBI can emulate MTD devices for UBI volumes and JFFS2 can be
+mounted on these emulated MTD devices. You just have to enable the
+"Emulate MTD devices" configuration menu check-box.</P>
 
 
 
@@ -236,9 +220,9 @@ stack, instead of utilizing it directly via MTD.</P>
 <OL>
 	<LI><I>Wear</I>. When you work with MTD devices, you have to bear in
 	mind that PEBs have limited life-time, and you have to utilize them
-	evenly, i.e., wear-levelling have to be done in some way. In opposite,
+	evenly, i.e., wear-leveling have to be done in some way. In opposite,
 	UBI volumes are devoid of this unpleasant property. Programmers do not
-	have to think about wear levelling because UBI automatically
+	have to think about wear leveling because UBI automatically
 	distributes the load over the entire flash device.
 	For example, this means that you may erase one LEB of your volume
 	hundred times more often then the other, and the wear will still be
@@ -247,7 +231,7 @@ stack, instead of utilizing it directly via MTD.</P>
 	This also means that system designers have much freedom in
 	partitioning their flash devices. They can create as many partitions
 	(UBI volumes in this context) as they want - UBI will anyway maintain
-	good wear-levelling across the whole flash chip.
+	good wear-leveling across the whole flash chip.
 	</LI><BR/>
 
 	<LI><I>Bad PEBs</I>. Some flash chips may admit of bad PEBs. For
@@ -446,7 +430,7 @@ at each PEB. After each PEB erasure, the erase counter is incremented.</P>
 </UL>
 
 <P>The wear-leveling in UBI is ensured by the so-called <B>WL unit</B>. The idea
-of the wear-levelling algorithm is fairly simple: there are two trees in the WL
+of the wear-leveling algorithm is fairly simple: there are two trees in the WL
 unit - <I>free</I> and <I>used</I>. Both trees are Red-Black trees and are
 indexed by the erase counter. Each PEB in UBI has a corresponding small in-RAM
 data structure, and these data structures are the elements of these Red-Black
@@ -500,7 +484,7 @@ Instead, it is stored in a special internal volume (so-called <B>layout
 volume</B>) which isn't seen by UBI users. Although the layout volume is not
 seen outside, it is still an UBI volume and it similar semantics. For example,
 this means that its LEBs may be mapped to any PEBs and PEBs may be moved around
-for wear-levelling purposes.</P>
+for wear-leveling purposes.</P>
 
 <P>In fact, UBI maintains two copies of the volume table for better
 reliability. This basically means that the layout volume contains two LEBs
@@ -620,7 +604,7 @@ UBI devices.</P>
 sysfs:</P>
 <PRE>
 # ls /sys/class/ubi/
-debug  ubi0  ubi1  version
+ubi0  ubi1  version
 </PRE>
 
 <P>Now you may start hacking/debugging UBI even without an embedded platform
@@ -629,8 +613,7 @@ and without a real flash device.</P>
 <H3>Enable debugging</H3>
 
 <P>Enable UBI debugging support in the configuration menu
-(the "<B>UBI debugging</B> check-box). If UBI is compiled as a kernel module,
-the UBI debugging unit is also a kernel module named "<B>ubidbg</B>".</P>
+(the "<B>UBI debugging</B> check-box).</P>
 
 <P>When debugging is enabled, UBI uses debugfs to communicate with user-space.
 To mount debugfs, use the following command:</P>
@@ -638,20 +621,20 @@ To mount debugfs, use the following command:</P>
 # mount -t debugfs none /mnt/debugfs
 </PRE>
 
-<P>Or any other mount point may be specified. In debugfs, you should see an
+<P>or any other mount point may be specified. In debugfs, you should see an
 "<CODE>ubi</CODE>" directory, which contains different UBI debugging-related
 files:</P>
 <PRE>
 # ls /mnt/debugfs/ubi/
-acc_prints    cdev_prints  log              upd_prints
-alloc_prints  dtbl_prints  console_logging  vmt_prints
-bgt_prints    eba_prints   scan_prints      vtbl_prints
-bld_prints    io_prints    uif_prints       wl_prints
+acc_prints    cdev_prints      gluebi_prints  uif_prints     vtbl_prints
+alloc_prints  console_logging  io_prints      upd_prints     wl_prints
+bgt_prints    dtbl_prints      log            vb_err_prints
+bld_prints    eba_prints       scan_prints    vmt_prints
 </PRE>
 
 <P>The <CODE>*_prints</CODE> files switch on/off debugging messages from the
 corresponding UBI unit. For example, to enable messages from the scanning and
-wear-levelling units, the following commands may be used:</P>
+wear-leveling units, the following commands may be used:</P>
 <PRE>
 # echo 1 > /mnt/debugfs/ubi/scan_prints
 # echo 1 > /mnt/debugfs/ubi/wl_prints
@@ -677,6 +660,8 @@ wear-levelling units, the following commands may be used:</P>
 	input/output;</LI>
 	<LI><I>uif</I> - user interfaces unit - responsible for UBI user
 	interfaces support;</LI>
+	<LI><I>gluebi</I> - MTD emulation unit - responsible for MTD interfaces
+	emulation;</LI>
 	<LI><I>vtbl</I> - volume table unit - responsible for maintaining the
 	volume table;</LI>
 	<LI><I>bgt</I> - background thread unit - responsible for the UBI
@@ -685,7 +670,7 @@ wear-levelling units, the following commands may be used:</P>
 	(an internal in-ram table);</LI>
 	<LI><I>upd</I> - update unit - responsible for volume updates and update
 	marker maintenance;</LI>
-	<LI><I>wl</I> - unit - responsible for UBI wear-levelling support.</LI>
+	<LI><I>wl</I> - unit - responsible for UBI wear-leveling support.</LI>
 </UL>
 
 <P>The "<CODE>log</CODE>" file contains the debugging log. If you write anything
@@ -694,34 +679,24 @@ to this file, the log is cleaned.</P>
 <P>The "<CODE>console_logging</CODE>" file switches output from
 "<CODE>log</CODE>" to the console and vice versa.</P>
 
+<A NAME="L_dbg_messages">
 <H3>Enable debugging messages</H3>
+</A>
 
 <P>Enable debugging messages from a UBI unit you are interested in. This may be
-done via the debugfs switches, via the configuration menu
-(<B>UBI debugging messages</B>) or via <CODE>ubidbg</CODE> module parameters.
-E.g.:</P>
-<PRE>
-# modprobe ubidbg uif_prints=1
-</PRE>
-
-<P>enables debugging messages from the user interfaces unit. See
-<CODE>modinfo ubidbg</CODE> for more information about <CODE>ubidbg</CODE>
-parameters.</P>
+done via the debugfs switches or via the configuration menu
+(<B>UBI debugging messages</B>).</P>
 
 <P>By default, UBI stores the debugging messages in the "ubi/log" debugfs file.
 But if you want the messages to go to the console, enable the
-"<B>Logging to console</B>" option in the configuration menu. The same may be
-done via <CODE>ubidbg</CODE> module options or via the "console_logging"
-file:</P>
-<PRE>
-# modprobe ubidbg console_logging=1
-</PRE>
-<P>or</P>
+"<B>Logging to console</B>" option in the configuration menu.</P>
 <PRE>
 # echo 1 > /mnt/debugfs/ubi/console_logging
 </PRE>
 
+<A NAME="L_paranoid_checks">
 <H3>Enable paranoid checks</H3>
+</A>
 
 <P>UBI code includes so-called "paranoid checks" which add additional UBI
 self-checking code. You may consider to enable them to catch problems on
@@ -733,6 +708,52 @@ may be enabled/disabled separately for different UBI units.</P>
 
 <P>Note, some paranoid checks make UBI considerably slower, especially the
 "I/O unit paranoid check".</P>
+
+
+
+<A NAME="L_how_send_bugreport">
+<H2>How to send an UBI bugreport?</H2>
+</A>
+
+<P>Before sending a bug report:</P>
+<UL>
+	<LI>make sure you have compiled kernel symbols in
+	(<CODE>CONFIG_KALLSYMS_ALL=y</CODE> in <CODE>.config</CODE>);</LI>
+
+	<LI>enable UBI debugging (the "<B>UBI debugging</B> check-box);</LI>
+
+	<LI>try to enable UBI paranoid checks
+	(see <A HREF="ubi.html#L_paranoid_checks">here</A>); but if it makes
+	the bug not reproducable or makes UBI drammatically slower, do not
+	enable them or try to disable I/O unit's paranoid checks, or may be
+	have an idea of the bug's nature and may enable paranoid checks in the
+	related UBI unit;</LI>
+
+	<LI>enable at least "User interface unit messages"
+	(see <A HREF="ubi.html#L_dbg_messages">here</A>); of course, if you have
+	an idea of which UBI unit has a bug, feel free to enable its messages
+	as well.</LI>
+</UL>
+
+<P>When sending the bugreport, please include the bug-related messages from the
+kernel (e.g., use <CODE>dmesg</CODE>) and the UBI log message. The
+UBI messages may be obtained using the following method:</P>
+
+<PRE>
+$ mount -t debugfs debugfs /mnt/debugfs
+$ cat /mnt/debugfs/ubi/log > ubi_log
+</PRE>
+
+<P>If for some reasons it is impossible to obtain the UBI log from debugfs, then
+enable the "Logging to console" UBI option. In this case the UBI debugging
+output will go to the standard kernel printk buffer. But the drawback of this
+method is that you may loose messages due to the kernel ring buffer overflow as
+UBI may produce quite a lot of them. To avoid loosing messages, you may try to
+configure a serial console and capture the kernel output using minicom. But
+this assumes that UBI will be very slow because the kernel messages are printed
+synchronously. And in some cases it may interfere with the bug reproduction or
+require too much time. I hope you won't face a situation like this. But if you
+did, feel free to send a bugreport anyway!</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
