@@ -613,7 +613,7 @@ and without a real flash device.</P>
 <H3>Enable debugging</H3>
 
 <P>Enable UBI debugging support in the configuration menu
-(the "<B>UBI debugging</B> check-box).</P>
+(the "<B>UBI debugging</B>" check-box).</P>
 
 <P>When debugging is enabled, UBI uses debugfs to communicate with user-space.
 To mount debugfs, use the following command:</P>
@@ -702,8 +702,8 @@ But if you want the messages to go to the console, enable the
 self-checking code. You may consider to enable them to catch problems on
 earlier stages.</P>
 
-<P>The paranoid checks may be enabled under the "UBI debugging" Linux
-configuration menu option (re-compilation is required). Paranoid checks
+<P>The paranoid checks may be enabled under the <B>"UBI paranoid checks"</B>
+Linux configuration menu option (re-compilation is required). Paranoid checks
 may be enabled/disabled separately for different UBI units.</P>
 
 <P>Note, some paranoid checks make UBI considerably slower, especially the
@@ -720,7 +720,7 @@ may be enabled/disabled separately for different UBI units.</P>
 	<LI>make sure you have compiled kernel symbols in
 	(<CODE>CONFIG_KALLSYMS_ALL=y</CODE> in <CODE>.config</CODE>);</LI>
 
-	<LI>enable UBI debugging (the "<B>UBI debugging</B> check-box);</LI>
+	<LI>enable UBI debugging (the "<B>UBI debugging</B>" check-box);</LI>
 
 	<LI>try to enable UBI paranoid checks
 	(see <A HREF="ubi.html#L_paranoid_checks">here</A>); but if it makes
@@ -729,7 +729,7 @@ may be enabled/disabled separately for different UBI units.</P>
 	have an idea of the bug's nature and may enable paranoid checks in the
 	related UBI unit;</LI>
 
-	<LI>enable at least "User interface unit messages"
+<LI>enable at least <B>"User interface unit messages"</B>
 	(see <A HREF="ubi.html#L_dbg_messages">here</A>); of course, if you have
 	an idea of which UBI unit has a bug, feel free to enable its messages
 	as well.</LI>
@@ -745,15 +745,15 @@ $ cat /mnt/debugfs/ubi/log > ubi_log
 </PRE>
 
 <P>If for some reasons it is impossible to obtain the UBI log from debugfs, then
-enable the "Logging to console" UBI option. In this case the UBI debugging
-output will go to the standard kernel printk buffer. But the drawback of this
-method is that you may loose messages due to the kernel ring buffer overflow as
-UBI may produce quite a lot of them. To avoid loosing messages, you may try to
-configure a serial console and capture the kernel output using minicom. But
-this assumes that UBI will be very slow because the kernel messages are printed
-synchronously. And in some cases it may interfere with the bug reproduction or
-require too much time. I hope you won't face a situation like this. But if you
-did, feel free to send a bugreport anyway!</P>
+enable the <B>"Logging to console"</B> UBI option. In this case the UBI
+debugging output will go to the standard kernel printk buffer. But the drawback
+of this method is that you may loose messages due to the kernel ring buffer
+overflow as UBI may produce quite a lot of them. To avoid loosing messages, you
+may try to configure a serial console and capture the kernel output using
+minicom. But this assumes that UBI will be very slow because the kernel
+messages are printed synchronously. And in some cases it may interfere with the
+bug reproduction or require too much time. I hope you won't face a situation
+like this. But if you did, feel free to send a bugreport anyway!</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
