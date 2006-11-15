@@ -1,124 +1,322 @@
 <PAGE>
-	<VAR match="VAR_ORIGIN" replace="../" />
-	<VAR match="VAR_CVSID" replace="$Id: jffs2.xml,v 1.8 2006/03/31 14:38:41 jwboyer Exp $"/>
-	<INCLUDE file="../inc/header.tmpl" />
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="$Id: jffs2.xml,v 1.8 2006/03/31 14:38:41 jwboyer Exp $"/>
+<INCLUDE file="../inc/header.tmpl" />
 
-	<VAR match="VAR_SEL_FAQ" replace="selected" />
-	<VAR match="VAR_SEL_JFFS2" replace="selected" />
-	<PARSE file="../menu1.xml" />
+<VAR match="VAR_SEL_FAQ" replace="selected" />
+<VAR match="VAR_SEL_JFFS2" replace="selected" />
+<PARSE file="../menu1.xml" />
 
-	<INCLUDE file="../inc/content.tmpl" />
+<INCLUDE file="../inc/content.tmpl" />
 
-<h2>JFFS2 specific</h2>
 
-<h3>JFFS2 generates messages, is there a problem ?</h3>
-<p>JFFS2 adopts the philosophy of keeping the user completely appraised of what is going on. This can
-catch out the unwary novice. The following messages can be moved to a higher log level once you are sure
-that they are benign.</p>
+<H2>Table of contents</H2>
+<OL>
+	<LI><A HREF="jffs2.html#L_magicnfound">I canot mount JFFS2 and see "Magic bitmask 0x1985 not found" messages</A></LI>
+	<LI><A HREF="jffs2.html#L_messages">JFFS2 generates messages, is there a problem</A></LI>
+	<LI><A HREF="jffs2.html#L_loopback">I cannot loop mount a JFFS2 image</A></LI>
+	<LI><A HREF="jffs2.html#L_mtdblock">Do I need to use mtdblock to mount my JFFS2 filesystem?</A></LI>
+	<LI><A HREF="jffs2.html#L_rootfs">How do I get the 2.6 kernel to recognize JFFS2 as my rootfs?</A></LI>
+	<LI><A HREF="jffs2.html#L_writewell">How is ensured, that data is written to flash?</A></LI>
+	<LI><A HREF="jffs2.html#L_putimage">Howto program an image to FLASH?</A></LI>
+	<LI><A HREF="jffs2.html#L_bbhandle">How does JFFS2 handle a block going bad in NAND flash?</A></LI>
+	<LI><A HREF="jffs2.html#L_clmarker">What is cleanmarker and what it is used for?</A></LI>
+</OL>
 
-<code>Empty flash at 0xXXXXXXXX ends at 0xXXXXXXXX</code>
-<p>This message is generated if a block of data is partially written. It is generally not a sign of any
-problem.</p>
 
-<code>jffs2: Erase block size too small (XXKiB). Using virtual blocks size(XXKiB) instead</code>
-<p>Output for larger NAND devices to reduce memory allocation.</p>
 
-<code>jffs2: No clean, dirty _or_ erasable blocks to GC from! Where are they all?</code><br />
-<code>jffs2: Couldn't find erase block to garbage collect!</code>
-<p>These two messages are generally output together. They are usually output on dismount and simply
-indicate that the garbage collector has nothing to do. This is more likely to be seen for filesystems which
-have few files or no activity.</p>
+<A NAME="L_magicnfound">
+<H2>I canot mount JFFS2 and see "Magic bitmask 0x1985 not found" messages</H2>
+</A>
 
-<code>Name CRC failed on node at 0x00b620c8: Read 0x640c8ca3, calculated 0x795111fe </code><br />
+<P>
+If you cannot mount your JFFS2 file system and you see many messages like
+</P>
+
+<CODE>
+jffs2_scan_eraseblock(): Magic bitmask 0x1985 not found at 0x00000024: 0x2b10 instead
+<BR/>
+...
+<BR/>
+Further such events for this erase block will not be printed
+</CODE>
+
+<P>
+this means that the data on your flash device is not a valid JFFS2 file
+system. There is no single soluthion for this problem, but we will try to
+provide you some ideas how to fix this.
+</P>
+
+<P>
+The first question you should try to answer is "why the data on my flash
+device is incorrect so that JFFS2 rejects to deal with it?". There are may be a
+plenty of reasons, e.g.:
+</P>
+
+<OL>
+	<LI>you flash driver is severly buggy so it reads trash instead of valid data;</LI>
+	<LI>you flashed some trash instead of a valid JFFS2 image;</LI>
+	<LI>you did not manage to flash JFFS2 image incorrectly so that you ended up with
+	garbage on your flash, although the original image was perfectly fine;</LI>
+	<LI>you forgot to erase your flash before flashing it, etc.</LI>
+</OL>
+
+<P>Anyways, JFFS2 wouldn't complain if you it was able to find correct data.</P>
+
+<P>
+One common mistake is to use <CODE>/dev/mtdX</CODE> or
+<CODE>/dev/mtdblockX</CODE> devices to flash JFFS2 images on NAND flashes. E.g.
+</P>
+
+<CODE>cp jffs2_fs.img /dev/mtd2</CODE>
+
+<P>
+This is incorrect because when dealing with NAND flashess one has to skip bad
+eraseblocks and write only in NAND page size chunks. Please, use the
+<CODE>nandwrite</CODE> utility instead.
+</P>
+
+<P>
+Also please, do not forget to erase your flash before flashing the image. You
+may use the <CODE>flash_eraseall</CODE> utility for this.
+</P>
+
+<P>
+You may try to check if your flash driver works correctly and if you flashed
+the file system image correctly by means of reading the flash back after you
+have flashed your image, and compare the read image with the original one.
+Please, use the <CODE>nandread</CODE> utility to read from NAND flashes.
+</P>
+
+<P>
+You can also do the following experiment to make sure JFFS2 works well. Erase
+your MTD device and mount it to JFFS2. You will end up with an empty file
+system. Copy some files to the JFFS2 file system and unmount it. Then mount it
+again and see if it mounts without problems. If it does, this is most probably
+not a JFFS2 bug.
+</P>
+
+
+
+<A NAME="L_messages">
+<H2>JFFS2 generates messages, is there a problem?</H2>
+</A>
+
+<P>
+JFFS2 adopts the philosophy of keeping the user completely appraised of what is
+going on. This can catch out the unwary novice. The following messages can be
+moved to a higher log level once you are sure that they are benign.
+</P>
+
+<CODE>Empty flash at 0xXXXXXXXX ends at 0xXXXXXXXX</CODE>
+
+<P>
+This message is generated if a block of data is partially written. It is
+generally not a sign of any problem.
+</P>
+
+<CODE>
+jffs2: Erase block size too small (XXKiB). Using virtual blocks size(XXKiB)
+instead
+</CODE>
+
+<P>Output for larger NAND devices to reduce memory allocation.</P>
+
+<CODE>
+jffs2: No clean, dirty _or_ erasable blocks to GC from! Where are they all?
+</CODE>
+
+<CODE>jffs2: Couldn't find erase block to garbage collect!</CODE>
+
+<P>
+These two messages are generally output together. They are usually output on
+dismount and simply indicate that the garbage collector has nothing to do. This
+is more likely to be seen for filesystems which have few files or no activity.
+</P>
+
+<CODE>
+Name CRC failed on node at 0x00b620c8: Read 0x640c8ca3, calculated 0x795111fe
+</CODE>
+
+<P>
 or similar message about CRC failures. If you have ever done unclean reboots -
 this is harmless. This just means that the unclean reboot happened (1) during
-data write or write buffer sync or (2) while GC was working or (3) while
-the writebuffer contained some data and was not yet synced before the unclean
-reboot happened. In them first and the third cases, you just loose the very last
-data you have written, in the second case you loose nothing. The wrong nodes
-will eventually be recycled by Garbage Collector and the massages will go
+data write or write buffer sync or (2) while GC was working or (3) while the
+writebuffer contained some data and was not yet synced before the unclean
+reboot happened. In them first and the third cases, you just loose the very
+last data you have written, in the second case you loose nothing. The wrong
+nodes will eventually be recycled by Garbage Collector and the massages will go
 (but they may leave quite long).
-
-<h3>I cannot loop mount a JFFS2 image</h3>
-<p>JFFS2 images can not be loop mounted. The only way to manipulate them is by copying them into
-a mtdram device and mounting the device with JFFS2<br />
-If you are desperate, then fix jffs2_dump to recreate the filesystem from the image. It's not hard. All the
-basics are done already.</p>
-
-<h3>Do I need to use mtdblock to mount my JFFS2 filesystem?</h3>
-<p>In general, mtdblock is not required to mount JFFS2 filesystems.  One can use the MTD device name or minor number to specify the MTD device that contains the JFFS2 filesystem.  For example, both:</p>
-<code>mount -t jffs2 mtd2 /foo</code><br />
-<code>mount -t jffs2 mtd:name_of_device /foo</code>
-<p>should both work assuming the device specified actually contains a valid JFFS2 filesystem.</p>
-<p>There are two cases where this does not work.  The first is when JFFS2 is used as a root filesystem.  For now, this requires the mtdblock device to be specified for <code>root=</code> on the kernel commandline.  The second case is when the mount binary that is being used does not play nicely with the above format.  The busybox version of mount is known to not work without the mtdblock device.</p>
-
-<h3>How do I get the 2.6 kernel to recognize JFFS2 as my rootfs?</h3>
-<p>With the 2.6 kernel, you will need to specify: <code>rootfstype=jffs2</code> on the kernel command line to use it as a root filesystem</p>
-
-<h3>How is ensured, that data is written to flash ?</h3>
-<p>On <b>NOR FLASH</b> each write goes directly into the FLASH</p>
-<p>On <b>NAND FLASH and NOR ECC FLASH</b> we have a writebuffer for writing only full pages to the chips. 
-There could be a loss of data, when the writebuffer is not flushed before power down. There are some 
-mechanisms to ensure, that the writebuffer is flushed. You can force the flush of the writebuffer by 
-using fsync() or sync() in your application. 
-JFFS2 has a timed flush of the write buffer, which forces the flush of the buffer to flash, if there are no 
-writes to the filesystem for more than about 5 seconds. The time depends on the cycletime of kupdated, which 
-can be adjusted via <b>/proc/sys/vm/dirty_expire_centisecs</b>. <br />
-When you unmount the filesystem the buffer is flushed too.</p>
-<p>If the partition is being used as a root filesystem, which obviously cannot be dismounted, the filesystem
-should be remounted read only on shutdown. In the case of JFFS2 this will cause the garbage collector to flush
-its write buffers. Failure to do this may cause the filesystem to generate warnings regarding bad CRC.
-These are partially collected garbage blocks which will be rescheduled for garbage collection some time later.
-This kind of behaviour may also be observed after a system crash.</p>
-
-<h3>Howto program an image to FLASH</h3>
-<p>There are several possibilities to do so</p>
-<div>
-<ul>
-<li>From Linux</li>
-<li>From bootloader</li>
-<li>Via JTAG</li>
-<li>At production time</li>
-</ul>
-</div>
-<p>For <b>NOR FLASH</b> there are no restrictions. For <b>NAND FLASH</b> 
-please read the <a href="nand.html">NAND FAQ</a> section.</p>
-
-<h3>How does JFFS2 handle a block going bad in NAND flash ?</h3>
-<p>If an error occurs when writing to a page, JFFS2 will attempt recovery of the
-data.  If the block contains nodes that have already been written to flash, the
-block is refiled onto the list of blocks that are bad but still in use
-(the bad_used_list).  Then the write buffer itself is recovered.  This takes
-into account any data that has been partially written to flash.  Once the write
-buffer has been recovered, normal operation continues.  Garbage collection is
-responsible for moving the valid nodes from the block that was refiled.</p>
-<p>Once garbage collection has written all of the valid nodes to a different
-eraseblock, the block is moved to the erase pending list.  From there JFFS2 will
-erase the eraseblock.  If the erase failed, it is put on the erase pending list
-again for a retry.  If the erase fails at the device level a total of three
-times, it is marked as bad in the OOB area and filed onto the bad_block_list.
-If the erase succeeds, a clean marker is written to the OOB area and the block
-is filed onto the free list.  This is done because NAND flash can have
-non-permanent failures due to over-programing or write-disturb errors.  A block
-erase clears these conditions.</p>
-
-<h3>What is cleanmarker and what it is used for ?</h3>
-<p>Cleanmarker is a special JFFS2 node which is written to the beginning of a block
-just after the block has been erased. On NOR flashes it is a special small JFFS2 node
-at the beginning of the block. On NAND flashes it is placed to the spare area of
-the first page.</p>
-<p>The main reason why cleanmarkers are used is the need to be sure that the block erase
-operation was correctly completed. All 0xFF bytes in the block are not
-necessarily mean the block is ready to be utilized. For example, if
-an unclean reboot happened just at the end of the block erase cycle, the block
-might have unstable bits, which are read as "1" one time and might be read as
-"0" next time.</p>
-<p>When preparing a flash partition for JFFS2, it is recommended to put
-cleanmarkers to the erased blocks. This might be done my means of "-j" option of
-the "flash_eraseall" MTD utility. Otherwise, JFFS2 will
-re-erase the blocks which contain all 0xFF and have no cleanmarker. This is an
-unneeded wasting of time.</p>
+</P>
 
 
-	<INCLUDE file="../inc/footer.tmpl" />
+<A NAME="L_loopback">
+<H2>I cannot loop mount a JFFS2 image</H2>
+</A>
+
+<P>
+JFFS2 images can not be loop mounted. The only way to manipulate them is by
+copying them into a mtdram device and mounting the device with JFFS2.
+</P>
+
+<P>
+If you are desperate, then fix jffs2_dump to recreate the filesystem from the
+image. It's not hard. All the basics are done already.
+</P>
+
+
+
+<A NAME="L_mtdblock">
+<H2>Do I need to use mtdblock to mount my JFFS2 filesystem?</H2>
+</A>
+
+<P>
+In general, mtdblock is not required to mount JFFS2 filesystems. One can use
+the MTD device name or minor number to specify the MTD device that contains the
+JFFS2 filesystem. For example, both:
+</P>
+
+<CODE>mount -t jffs2 mtd2 /foo</CODE>
+<BR/>
+<CODE>mount -t jffs2 mtd:name_of_device /foo</CODE>
+
+<P>
+should both work assuming the device specified actually contains a valid JFFS2
+filesystem.
+</P>
+
+<P>
+There are two cases where this does not work. The first is when JFFS2 is used
+as a root filesystem. For now, this requires the mtdblock device to be
+specified for <CODE>root=</CODE> on the kernel commandline. The second case is
+when the mount binary that is being used does not play nicely with the above
+format. The busybox version of mount is known to not work without the mtdblock
+device.
+</P>
+
+
+
+<A NAME="L_rootfs">
+<H2>How do I get the 2.6 kernel to recognize JFFS2 as my rootfs?</H2>
+</A>
+
+<P>
+With the 2.6 kernel, you will need to specify: <CODE>rootfstype=jffs2</CODE> on
+the kernel command line to use it as a root filesystem
+</P>
+
+
+
+<A NAME="L_writewell">
+<H2>How is ensured, that data is written to flash?</H2>
+</A>
+
+<P>On <B>NOR FLASH</B> each write goes directly into the FLASH.</P>
+
+<P>
+On <B>NAND FLASH and NOR ECC FLASH</B> we have a writebuffer for writing only
+full pages to the chips. There could be a loss of data, when the writebuffer
+is not flushed before power down. There are some mechanisms to ensure, that the
+writebuffer is flushed. You can force the flush of the writebuffer by using
+fsync() or sync() in your application. JFFS2 has a timed flush of the write
+buffer, which forces the flush of the buffer to flash, if there are no writes
+to the filesystem for more than about 5 seconds. The time depends on the
+cycletime of kupdated, which can be adjusted via
+<B>/proc/sys/vm/dirty_expire_centisecs</B>.
+</P>
+
+<P>When you unmount the filesystem the buffer is flushed too.</P>
+
+<P>
+If the partition is being used as a root filesystem, which obviously cannot be
+dismounted, the filesystem should be remounted read only on shutdown. In the
+case of JFFS2 this will cause the garbage collector to flush its write buffers.
+Failure to do this may cause the filesystem to generate warnings regarding bad
+CRC. These are partially collected garbage blocks which will be rescheduled
+for garbage collection some time later. This kind of behaviour may also be
+observed after a system crash.
+</P>
+
+
+
+<A NAME="L_putimage">
+<H2>Howto program an image to FLASH?</H2>
+</A>
+
+<P>There are several possibilities to do so:</P>
+
+<DIV>
+<UL>
+<LI>From Linux</LI>
+<LI>From bootloader</LI>
+<LI>Via JTAG</LI>
+<LI>At production time</LI>
+</UL>
+</DIV>
+
+<P>
+For <B>NOR FLASH</B> there are no restrictions. For <B>NAND FLASH</B> please
+read the <A href="nand.html">NAND FAQ</A> section.
+</P>
+
+
+
+<A NAME="L_bbhandle">
+<H2>How does JFFS2 handle a block going bad in NAND flash?</H2>
+</A>
+
+<P>
+If an error occurs when writing to a page, JFFS2 will attempt recovery of the
+data. If the block contains nodes that have already been written to flash, the
+block is refiled onto the list of blocks that are bad but still in use (the
+bad_used_list).  Then the write buffer itself is recovered. This takes into
+account any data that has been partially written to flash. Once the write
+buffer has been recovered, normal operation continues. Garbage collection is
+responsible for moving the valid nodes from the block that was refiled.
+</P>
+
+<P>
+Once garbage collection has written all of the valid nodes to a different
+eraseblock, the block is moved to the erase pending list.  From there JFFS2
+will erase the eraseblock. If the erase failed, it is put on the erase pending
+list again for a retry. If the erase fails at the device level a total of
+three times, it is marked as bad in the OOB area and filed onto the
+bad_block_list. If the erase succeeds, a clean marker is written to the OOB
+area and the block is filed onto the free list. This is done because NAND
+flash can have non-permanent failures due to over-programing or write-disturb
+errors. A block erase clears these conditions.
+</P>
+
+
+
+<A NAME="L_clmarker">
+<H2>What is cleanmarker and what it is used for?</H2>
+</A>
+
+<P>
+Cleanmarker is a special JFFS2 node which is written to the beginning of a
+block just after the block has been erased. On NOR flashes it is a special
+small JFFS2 node at the beginning of the block. On NAND flashes it is placed to
+the spare area of the first page.
+</P>
+
+<P>
+The main reason why cleanmarkers are used is the need to be sure that the block
+erase operation was correctly completed. All 0xFF bytes in the block are not
+necessarily mean the block is ready to be utilized. For example, if an unclean
+reboot happened just at the end of the block erase cycle, the block might have
+unstable bits, which are read as "1" one time and might be read as "0" next
+time.
+</P>
+
+<P>
+When preparing a flash partition for JFFS2, it is recommended to put
+cleanmarkers to the erased blocks. This might be done my means of "-j" option
+of the "flash_eraseall" MTD utility. Otherwise, JFFS2 will re-erase the blocks
+which contain all 0xFF and have no cleanmarker. This is an unneeded wasting of
+time.
+</P>
+
+
+<INCLUDE file="../inc/footer.tmpl"/>
 </PAGE>
