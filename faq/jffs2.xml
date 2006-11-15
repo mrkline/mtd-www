@@ -61,7 +61,7 @@ plenty of reasons, e.g.:
 	<LI>you forgot to erase your flash before flashing it, etc.</LI>
 </OL>
 
-<P>Anyways, JFFS2 wouldn't complain if you it was able to find correct data.</P>
+<P>Anyways, JFFS2 wouldn't complain if it was able to find correct data.</P>
 
 <P>
 One common mistake is to use <CODE>/dev/mtdX</CODE> or
