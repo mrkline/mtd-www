@@ -1,79 +1,172 @@
 <PAGE>
-	<VAR match="VAR_ORIGIN" replace="../" />
-	<VAR match="VAR_CVSID" replace="$Id: general.xml,v 1.2 2006/03/31 14:57:32 jwboyer Exp $"/>
-	<INCLUDE file="../inc/header.tmpl" />
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="$Id: general.xml,v 1.2 2006/03/31 14:57:32 jwboyer Exp $"/>
+<INCLUDE file="../inc/header.tmpl" />
 
-	<VAR match="VAR_SEL_FAQ" replace="selected" />
-	<VAR match="VAR_SEL_GENERAL" replace="selected" />
-	<PARSE file="../menu1.xml" />
+<VAR match="VAR_SEL_FAQ" replace="selected" />
+<VAR match="VAR_SEL_GENERAL" replace="selected" />
+<PARSE file="../menu1.xml" />
 
-	<INCLUDE file="../inc/content.tmpl" />
-
-
-	<h2>General MTD FAQ</h2>
+<INCLUDE file="../inc/content.tmpl" />
 
 
-	<h3>Is a mtd device a block device or a char device ?</h3>
 
-	<p>First off, an mtd is a "memory technology device", so it's just "mtd.  
-	An "mtd device" is a pleonasm.</p>
-
-	<p>Unix traditionally only knew block devices and character devices.  
-	Character devices were things like keyboards or mice, that you could 
-	read current data from, but couldn't be seeked and didn't have a size. 
-	Block devices had a fixed size and could be seeked.  They also happened 
-	to be organized in blocks of multiple bytes, usually 512.</p>
-
-	<p>Flash doesn't match the description of either block or character devices.
-	 They behave similar to block device, but have differences.  For example, 
-	 block devices don't destinguish between write and erase operations.  
-	 Therefore, a special device type to match flash characteristics was created: mtd.</p>
-
-	<p>So mtd is neither a block nor a char device.  There are translations to 
-	use them, as if they were.  But those translations are nowhere near the original, 
-	just like translated chinese poems.</p>
+<H2>Table of contents</H2>
+<OL>
+	<LI><A HREF="general.html#L_mtd_what">Is an MTD device a block device or a char device?</A></LI>
+	<LI><A HREF="general.html#L_mtd_vs_hdd">What are the differences between flash devices and hard drives?</A></LI>
+	<LI><A HREF="general.html#L_point">What are the point() and unpoint() functions used for?</A></LI>
+	<LI><A HREF="general.html#L_unlock">I keep getting errors whenever I try to write or erase to my MTD device</A></LI>
+</OL>
 
 
-	<h3>What are the point() and unpoint() functions used for ?</h3>
 
-	<p>Mainly for NOR flash.  As long as the flash is only read, it
-	behaves just like normal memory.  The read() function for NOR chips is
-	essentially a memcpy().  For some purposes the extra memcpy() is a
-	waste of time, so things can be optimized.</p>
+<A NAME="L_mtd_what">
+<H2>Is an MTD device a block device or a char device?</H2>
+</A>
 
-	<p>So the point() function does just that, it returns a pointer to the
-	raw flash, so callers can operate directly on the flash.</p>
+<P>
+First off, an MTD is a "Memory Technology Device", so it's just "MTD". An "MTD
+device" is a pleonasm.
+</P>
 
-	<p>But of course, things are a little more complicated than that.  NOR
-	flash chips can be in several different modes and only when in read
-	mode will the above work.  Therefore point() also locks the flash chip
-	in addition to returning a pointer.  And while locked, writes to the
-	same flash chips have to wait.  So callers have to call unpoint() soon
-	after to release the chip again.</p>
+<P>
+Unix traditionally only knew block devices and character devices.
+Character devices were things like keyboards or mice, that you could
+read current data from, but couldn't be seeked and didn't have a size.
+Block devices had a fixed size and could be seeked. They also happened
+to be organized in blocks of multiple bytes, usually 512.
+</P>
 
-	<h3>I keep getting errors whenever I try to write or erase to my MTD device</h3>
-	<p>Some NOR chips power on with all of the eraseblocks in a locked state.
-	The MTD layer doesn't unlock these devices by default.  If you are 
-	accessing these devices from userspace, you can use the flash_unlock tool
-	to unlock the MTD device(s).  If you are using the MTD device as a
-	write-able root filesystem you will either need to have the boot loader
-	unlock the eraseblocks before booting the kernel, or add code to the MTD
-	map driver for your board to unlock them.</p>
+<P>
+Flash doesn't match the description of either block or character devices.
+They behave similar to block device, but have differences. For example,
+block devices don't destinguish between write and erase operations.
+Therefore, a special device type to match flash characteristics was created:
+MTD.
+</P>
 
-	<p>Some chips that are known to have this behavior:</p>
-	<table cellpadding="5" cellspacing="0" border="1">
-	<tr><td>Manufacturer</td>
-	<td>Part Number</td>
-	</tr>
+<P>
+So MTD is neither a block nor a char device. There are translations to
+use them, as if they were. But those translations are nowhere near the
+original, just like translated chinese poems.
+</P>
 
-	<tr><td>Intel</td>
-	<td>28FxxxP30</td>
-	</tr>
-	<tr><td></td>
-	<td>GE28F256L30T</td>
-	</tr>
-	</table>
 
-	<INCLUDE file="../inc/footer.tmpl" />
+
+<A NAME="L_mtd_vs_hdd">
+<H2>What are the differences between flash devices and hard drives?</H2>
+</A>
+
+<P>The following table describes the differences between hard drives and
+flashes.</P>
+
+<TABLE cellpadding="5" cellspacing="0" border="1">
+	<TR>
+		<TD><B>HARD drives</B></TD>
+		<TD><B>MTD device</B></TD>
+	</TR>
+	<TR>
+		<TD>Consists of sectors</TD>
+		<TD>Consists of eraseblocks</TD>
+	</TR>
+	<TR>
+		<TD>Sectors are small (512, 1024 bytes)</TD>
+		<TD>Eraseblocks are larger (32KiB, 128KiB)</TD>
+	</TR>
+	<TR>
+		<TD>
+			Maintains 2 main operations: <B>read sector</B> and
+			<B>write sector</B>
+		</TD>
+		<TD>
+			Maintains 3 main operations: <B>read from eraseblock</B>,
+			<B>write to eraseblock</B>, and <B>erase eraseblock</B>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			Bad sectors are re-mapedd and hidden by hardware, at
+			least at modern LBA hard drives
+		</TD>
+		<TD>
+			Bad eraseblocks are not hidden and should be dealt with
+			in software
+		</TD>
+	</TR>
+	<TR>
+		<TD>HDD sectors are devoid of the wear-out property</TD>
+		<TD>
+			Eraseblocks get worn-out (i.e., bad and unusable) after
+			about 10<SUP>4</SUP>-10<SUP>5</SUP> erase cycles.
+		</TD>
+	</TR>
+</TABLE>
+
+<P>
+So as one sees flashes (MTD devices) are somewhat more difficult to work
+with.
+</P>
+
+
+
+<A NAME="L_point">
+<H2>What are the point() and unpoint() functions used for?</H2>
+</A>
+
+<P>
+Mainly for NOR flash. As long as the flash is only read, it
+behaves just like normal memory. The <CODE>read()</CODE> function for NOR chips
+is essentially a <CODE>memcpy()</CODE>. For some purposes the extra
+<CODE>memcpy()</CODE> is a waste of time, so things can be optimized.
+</P>
+
+<P>
+So the <CODE>point()</CODE> function does just that, it returns a pointer to
+the raw flash, so callers can operate directly on the flash.
+</P>
+
+<P>
+But of course, things are a little more complicated than that. NOR
+flash chips can be in several different modes and only when in read
+mode will the above work. Therefore <CODE>point()</CODE> also locks the flash
+chip in addition to returning a pointer. And while locked, writes to the same
+flash chips have to wait. So callers have to call unpoint() soon after to
+release the chip again.
+</P>
+
+
+
+<A NAME="L_unlock">
+<H2>I keep getting errors whenever I try to write or erase to my MTD device</H2>
+</A>
+
+<P>
+Some NOR chips power on with all of the eraseblocks in a locked state.
+The MTD layer doesn't unlock these devices by default. If you are accessing
+these devices from userspace, you can use the <CODE>flash_unlock</CODE> tool to
+unlock the MTD device(s). If you are using the MTD device as aw rite-able root
+filesystem you will either need to have the boot loader unlock the eraseblocks
+before booting the kernel, or add code to the MTD map driver for your board to
+unlock them.
+</P>
+
+<P>Some chips that are known to have this behavior:</P>
+
+<TABLE cellpadding="5" cellspacing="0" border="1">
+	<TR>
+		<TD>Manufacturer</TD>
+		<TD>Part Number</TD>
+	</TR>
+	<TR>
+		<TD>Intel</TD>
+		<TD>28FxxxP30</TD>
+	</TR>
+	<TR>
+		<TD></TD>
+		<TD>GE28F256L30T</TD>
+	</TR>
+</TABLE>
+
+<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
-
