@@ -108,8 +108,8 @@ not a JFFS2 bug.
 <P>
 First off, JFFS2 was designed for MTD devices, not for block devices like hard
 drives. These are two very different types of devices. Please, read
-<A href="nand.html">this</A>, and <A href="nand.html">this</A> and realize this
-difference.
+<A href="general.html#L_mtd_what">this</A>, and
+<A href="general.html#L_mtd_vs_hdd">this</A> and realize this difference.
 </P>
 
 <P>
