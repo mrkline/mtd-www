@@ -78,7 +78,9 @@ eraseblocks and write only in NAND page size chunks. Please, use the
 
 <P>
 Also please, do not forget to erase your flash before flashing the image. You
-may use the <CODE>flash_eraseall</CODE> utility for this.
+may use the <CODE>flash_eraseall</CODE> utility for this. And it makes sense to
+make sure the erase functionality actually works my reading the erase MTD
+device back and checking that only 0xFF bytes were read.
 </P>
 
 <P>
@@ -149,6 +151,13 @@ nodes will eventually be recycled by Garbage Collector and the massages will go
 (but they may leave quite long).
 </P>
 
+<CODE>
+You cannot use older JFFS2 filesystems with newer kernels
+</CODE>
+
+<P>
+Please, update your MTD utilities and use newer mkfs.jffs2.
+</P>
 
 <A NAME="L_loopback">
 <H2>I cannot loop mount a JFFS2 image</H2>
