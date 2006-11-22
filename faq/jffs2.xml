@@ -14,6 +14,7 @@
 <OL>
 	<LI><A HREF="jffs2.html#L_magicnfound">I cannot mount JFFS2 and see "Magic bitmask 0x1985 not found" messages</A></LI>
 	<LI><A HREF="jffs2.html#L_hdd_jffs2">I am going to use JFFS2 on top of my hard drive, is it OK?</A></LI>
+	<LI><A HREF="jffs2.html#L_stick_jffs2">I am going to use JFFS2 on top of my USB stick/CF card/etc, is it OK?</A></LI>
 	<LI><A HREF="jffs2.html#L_messages">JFFS2 generates messages, is there a problem</A></LI>
 	<LI><A HREF="jffs2.html#L_loopback">I cannot loop mount a JFFS2 image</A></LI>
 	<LI><A HREF="jffs2.html#L_mtdblock">Do I need to use mtdblock to mount my JFFS2 filesystem?</A></LI>
@@ -57,12 +58,15 @@ plenty of reasons, e.g.:
 <OL>
 	<LI>you flash driver is severely buggy so it reads trash instead of valid data;</LI>
 	<LI>you flashed some trash instead of a valid JFFS2 image;</LI>
-	<LI>you did not manage to flash JFFS2 image incorrectly so that you ended up with
+	<LI>you did not manage to flash JFFS2 image correctly so that you ended up with
 	garbage on your flash, although the original image was perfectly fine;</LI>
 	<LI>you forgot to erase your flash before flashing it, etc.</LI>
 </OL>
 
-<P>Anyways, JFFS2 wouldn't complain if it was able to find correct data.</P>
+<P>
+Anyways, JFFS2 wouldn't complain if it was able to find correct data. As it
+does complain, there is something wrong with the data it reads.
+</P>
 
 <P>
 One common mistake is to use <CODE>/dev/mtdX</CODE> or
@@ -140,6 +144,39 @@ So, beware of this and think twice. Also, nobody guarantees
 when it is easier to utilize emulated mtd device on the host development
 machine rather then debug on the target board. But of course, if you tested it
 and everything is OK with you - go ahead.
+</P>
+
+
+
+<A NAME="L_stick_jffs2">
+<H2>I am going to use JFFS2 on top of my USB stick/CF card/etc, is it OK?</H2>
+</A>
+
+<P>
+USB sticks, CompactFlash cards and other removable flash media are <B>not</B> MTD
+devices. They are <B>block</B> devices. They do contain flash chip inside, but
+they also contain some translation layer above which emulates block device.
+This translation layer is implemented in hardware. So for outside world these
+devices look exactly as hard drives, not like MTD devices.
+</P>
+
+<P>
+Please, read <A href="jffs2.html#L_hdd_jffs2">this</A> FAQ entry about using
+JFFS2 on top of hard drives.
+</P>
+
+<P>
+So, the answer is probably yes, you technically can, but be sure you realize
+why you do this. In general it is bad idea. It is much better to use any
+conventional file system like ext2.
+</P>
+
+<P>
+Also note, these devices are "black boxes". The way they implement this
+flash-to-block device translation layer is not usually published. And in many
+cases the algorithms used at this layer are far from brilliant. For example,
+many USB sticks and other cards loose data in case of unclean reboots/power
+cuts. So, be very careful.
 </P>
 
 
