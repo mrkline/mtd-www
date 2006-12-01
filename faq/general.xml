@@ -15,6 +15,7 @@
 <OL>
 	<LI><A HREF="general.html#L_mtd_what">Is an MTD device a block device or a char device?</A></LI>
 	<LI><A HREF="general.html#L_mtd_vs_hdd">What are the differences between flash devices and hard drives?</A></LI>
+	<LI><A HREF="general.html#L_ext2_mtd">Can I mount ext2 over an MTD device?</A></LI>
 	<LI><A HREF="general.html#L_point">What are the point() and unpoint() functions used for?</A></LI>
 	<LI><A HREF="general.html#L_unlock">I keep getting errors whenever I try to write or erase to my MTD device</A></LI>
 </OL>
@@ -33,15 +34,15 @@ device" is a pleonasm.
 <P>
 Unix traditionally only knew block devices and character devices.
 Character devices were things like keyboards or mice, that you could
-read current data from, but couldn't be seeked and didn't have a size.
-Block devices had a fixed size and could be seeked. They also happened
+read current data from, but couldn't be seek-ed and didn't have a size.
+Block devices had a fixed size and could be seek-ed. They also happened
 to be organized in blocks of multiple bytes, usually 512.
 </P>
 
 <P>
 Flash doesn't match the description of either block or character devices.
 They behave similar to block device, but have differences. For example,
-block devices don't destinguish between write and erase operations.
+block devices don't distinguish between write and erase operations.
 Therefore, a special device type to match flash characteristics was created:
 MTD.
 </P>
@@ -49,7 +50,7 @@ MTD.
 <P>
 So MTD is neither a block nor a char device. There are translations to
 use them, as if they were. But those translations are nowhere near the
-original, just like translated chinese poems.
+original, just like translated Chinese poems.
 </P>
 
 
@@ -86,7 +87,7 @@ flashes.</P>
 	</TR>
 	<TR>
 		<TD>
-			Bad sectors are re-mapedd and hidden by hardware, at
+			Bad sectors are re-mapped and hidden by hardware, at
 			least at modern LBA hard drives
 		</TD>
 		<TD>
@@ -106,6 +107,67 @@ flashes.</P>
 <P>
 So as one sees flashes (MTD devices) are somewhat more difficult to work
 with.
+</P>
+
+
+
+<A NAME="L_ext2_mtd">
+<H2>Can I mount ext2 over an MTD device?</H2>
+</A>
+
+<P>
+Ext2, ext3, XFS, JFS, FAT and other "conventional" file systems work with block
+devices. They are designed this way. Flashes are not block devices, they are
+very different beasts. Please, read <A HREF="general.html#L_mtd_what">this</A>,
+and <A HREF="general.html#L_mtd_vs_hdd">this</A> FAQ entries.
+</P>
+
+<P>
+Please, do not be confused by USB sticks, MMCs and other popular removable
+devices. Although they are also called "flash", they are not MTD devices. They
+are out of MTD subsystem's scope. Please, read
+<A HREF="jffs2.html#L_hdd_jffs2">this</A> FAQ entry.
+</P>
+
+<P>
+In order to use one of conventional file systems over an MTD device, you need a
+software layer which emulates a block device over the MTD device. These layers
+are often called <I>Flash Translation Layers</I> (<I>FTLs</I>).
+</P>
+
+<P>
+There is an <U>extremely</U> simple FTL layer in Linux MTD subsystem -
+<CODE>mtdblock</CODE>. It emulates block devices over MTD devices. There is
+also an <CODE>mtdblock_ro</CODE> module which emulates read-only block devices.
+When you load this module, it creates a block device for each MTD device in the
+system. The block devices are then accessible via <CODE>/dev/mtdblockX</CODE>
+device nodes.
+</P>
+
+<P>
+But in many cases using <CODE>mtdblock</CODE> is a very bad idea because what
+it basically does if you change any sector of you mtdblockX device, it reads
+the whole corresponding eraseblock into the memory, erases the eraseblock,
+changes the sector in RAM, and writes the whole eraseblock back. This is very
+straightforward. If you have a power failure when the eraseblock is being
+erased, you loose all the block device sectors in it. The flash will likely
+decay soon because you will wear few eraseblocks out - most probably those ones
+which contain FAT/bitmap/inode table/etc.
+</P>
+
+<P>
+Unfortunately it is a rather difficult task to create a good FTL layer and
+nobody still managed to implement one for Linux. But now when we have UBI
+(see <A HREF="../doc/ubi.html">here</A>) it is much easier to do it on top of
+UBI.
+</P>
+
+<P>
+It makes sense to use <CODE>mtdblock_ro</CODE> for read-only file systems or
+read-only mounts. For example, one may use SquashFS as it compresses data quite
+well. But think twice before using <CODE>mtdblock</CODE> in read-write more.
+And don't try to use it on NAND flash as it is does not handle bad
+eraseblocks.
 </P>
 
 
@@ -144,9 +206,9 @@ release the chip again.
 <P>
 Some NOR chips power on with all of the eraseblocks in a locked state.
 The MTD layer doesn't unlock these devices by default. If you are accessing
-these devices from userspace, you can use the <CODE>flash_unlock</CODE> tool to
+these devices from user-space, you can use the <CODE>flash_unlock</CODE> tool to
 unlock the MTD device(s). If you are using the MTD device as aw rite-able root
-filesystem you will either need to have the boot loader unlock the eraseblocks
+file-system you will either need to have the boot loader unlock the eraseblocks
 before booting the kernel, or add code to the MTD map driver for your board to
 unlock them.
 </P>
