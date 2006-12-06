@@ -20,6 +20,7 @@
 	<LI><A HREF="nand.html#L_nand_srw">Can I use seek/read/write on /dev/mtdX?</A></LI>
 	<LI><A HREF="nand.html#L_nand_bootloader">Must my boot-loader be aware of NAND flash?</A></LI>
 	<LI><A HREF="nand.html#L_nand_jtag">Can I program NAND via JTAG?</A></LI>
+	<LI><A HREF="nand.html#L_nand_nandsim">How to use NAND simulator?</A></LI>
 </OL>
 
 
@@ -174,6 +175,63 @@ JFFS2 and other NAND flash aware file-systems handle this gap.
 Yes, you can. The requirements are the same as for boot-loaders
 (see <A HREF="nand.html#L_nand_bootloader">here</A>).
 </P>
+
+
+
+<A NAME="L_nand_nandsim">
+<H2>How to use NAND simulator?</H2>
+</A>
+
+<P>
+NAND simulator (<CODE>nandsim</CODE>) is an extremely useful debugging and
+development tool which simulates NAND flashes in RAM. To select the simulated
+flash type you should specify ID bytes of your flashe - the onese which are
+returned by the "Read ID" command (<CODE>0x90</CODE>). Please, consult your
+flash manual. The following are examples of input parameters:
+</P>
+
+<OL>
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x33</CODE>
+	- 16MiB, 512 bytes page;
+</LI>
+
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x35</CODE>
+	- 32MiB, 512 bytes page;
+</LI>
+
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x36</CODE>
+	- 64MiB, 512 bytes page;
+</LI>
+
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x78</CODE>
+	- 128MiB, 512 bytes page;
+</LI>
+
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x71</CODE>
+	- 256MiB, 512 bytes page;
+</LI>
+
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0xa2 third_id_byte=0x00 fourth_id_byte=0x15</CODE>
+	- 64MiB, 2048 bytes page;
+</LI>
+
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0xec second_id_byte=0xa1 third_id_byte=0 fourth_id_byte=0x15</CODE>
+	- 128MiB, 2048 bytes page;
+</LI>
+
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0xec second_id_byte=0xD3 third_id_byte=0x51 fourth_id_byte=0x95</CODE>
+	- 1GiB, 2048 bytes page;
+</LI>
+</OL>
+
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
