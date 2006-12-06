@@ -222,12 +222,12 @@ flash manual. The following are examples of input parameters:
 </LI>
 
 <LI>
-	<CODE>modprobe nandsim first_id_byte=0xec second_id_byte=0xa1 third_id_byte=0 fourth_id_byte=0x15</CODE>
+	<CODE>modprobe nandsim first_id_byte=0xec second_id_byte=0xa1 third_id_byte=0x00 fourth_id_byte=0x15</CODE>
 	- 128MiB, 2048 bytes page;
 </LI>
 
 <LI>
-	<CODE>modprobe nandsim first_id_byte=0xec second_id_byte=0xD3 third_id_byte=0x51 fourth_id_byte=0x95</CODE>
+	<CODE>modprobe nandsim first_id_byte=0xec second_id_byte=0xd3 third_id_byte=0x51 fourth_id_byte=0x95</CODE>
 	- 1GiB, 2048 bytes page;
 </LI>
 </OL>
