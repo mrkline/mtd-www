@@ -1,90 +1,180 @@
 <PAGE>
-	<VAR match="VAR_ORIGIN" replace="../" />
-	<VAR match="VAR_CVSID" replace="$Id: nand.xml,v 1.1 2005/03/12 13:48:22 gleixner Exp $"/>
-	<INCLUDE file="../inc/header.tmpl" />
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="$Id: nand.xml,v 1.1 2005/03/12 13:48:22 gleixner Exp $"/>
+<INCLUDE file="../inc/header.tmpl" />
 
-	<VAR match="VAR_SEL_FAQ" replace="selected" />
-	<VAR match="VAR_SEL_NAND" replace="selected" />
-	<PARSE file="../menu1.xml" />
+<VAR match="VAR_SEL_FAQ" replace="selected" />
+<VAR match="VAR_SEL_NAND" replace="selected" />
+<PARSE file="../menu1.xml" />
 
-	<INCLUDE file="../inc/content.tmpl" />
+<INCLUDE file="../inc/content.tmpl" />
 
-<h2>NAND specific</h2>
-<h3>Can I boot from NAND Flash?</h3>
-<p>Not from a bare NAND chip. You need a glue logic around, which gives you memory access to the
-chip on bootup, like the DiskOnChip devices do. This will be a quite complex CPLD. An alternative
-is to use a small e.g. 1MB NOR Flash, which contains the boot code and maybe a compressed kernel
-image. Then you can use JFFS2 on NAND as your root filesystem</p>
-<p>Some newer chips make the first page available for reading after power up. This could be
-helpful for starting a small 256/512/2048 byte bootcode. At the time of this writing there is no
-tested implementation of this.</p>
-<p>Samsungs S3C2410 ARM based SOC-CPU provides a mechanism to boot from NAND flash.</p>
 
-<h3>Is there support for 32bit wide NAND Flash ?</h3>
-<p>No. The generic NAND driver supports 8/16 bit wide NAND Flash only. 32 bit NAND Flash can
-be built by using 2 or 4 chips and connect them to D0-7, D8-D15, D16-D23 and D24-D31 on the data bus.
-You can tie all corresponding control signals together. But you have to build a new nand16 or nand32 driver,
-which can be derived from the existing nand.c. Be aware, that the writebuffer size is 2 or 4 times as big as
-on 8 bit NAND. This mean's, if you flush the buffer to ensure, that your data are on disk, you may waste much
-more memory space than on 8 bit NAND. Another point is bad block handling. When a block on 1 chip is bad, the
-corresponding blocks on the other chips are lost too, as you present them as one big block to the filesystem
-driver. The JFFS2 code, which handles the writebuffer and the out of band (spare) area of NAND doesn't support
-32 bit neither.</p>
 
-<h3>Can I use mtdutils erase / eraseall</h3>
-<p>Yes, the latest nand driver code forces the protection of bad block information. It's safe to erase a 
-NAND flash with erase(all) /dev/mtdX.
-It's recommended to use eraseall with -j or --jffs2 option set. This will write the cleanmarker to the 
-out of band area. So you can mount the filesystem and no further formatting is needed. This formatting
-is also neccecary before you copy a fs-image to the chip.
-</p>
+<H2>Table of contents</H2>
+<OL>
+	<LI><A HREF="nand.html#L_nand_boot">Can I boot from NAND flash?</A></LI>
+	<LI><A HREF="nand.html#L_nand_32bit">Is there support for 32-bit wide NAND flash ?</A></LI>
+	<LI><A HREF="nand.html#L_nand_erase">How to erase my MTD partition on NAND flash?</A></LI>
+	<LI><A HREF="nand.html#L_nand_copyimg">Can I copy a JFFS2 image to NAND via /dev/mtdX?</A></LI>
+	<LI><A HREF="nand.html#L_nand_srw">Can I use seek/read/write on /dev/mtdX?</A></LI>
+	<LI><A HREF="nand.html#L_nand_bootloader">Must my boot-loader be aware of NAND flash?</A></LI>
+	<LI><A HREF="nand.html#L_nand_jtag">Can I program NAND via JTAG?</A></LI>
+</OL>
 
-<h3>Can I copy a JFFS2 Image to NAND via /dev/mtdX ?</h3>
-<p>Yes, as long as your chip does not contain bad blocks. Make sure, that the erasesize you set to mkfs.jffs2 
-is the same as the erasesize of your chip. Data will only be written with ECC, if your default settings for
-oob-layout selection are set for JFFS2. For bad block aware copying, use nandwrite from mtd-utils.<br />
-nandwrite /dev/mtdX image
-</p>
 
-<h3>Can I use seek/read/write on /dev/mtdX ?</h3>
-<p>Yes, as long as your program is aware of bad blocks. Make sure to set the desired ECC layout by
-ioctl (MEMSETOOBSEL). A example for bad block handling and usage of ioctl (MEMOOBSEL) can be found in
-util/nandwrite.c
-</p>
-<p>Recent changes to the NAND layer now make it possible to read/write across a block boundary.</p>
 
-<h3>Must my bootloader be aware of NAND FLASH ?</h3>
-<p>Yes, if you use your bootloader to erase the FLASH chip and copy a filesystem image to it. 
-For erase make sure, that you don't erase factory-marked bad blocks. They are marked in the 6th
- byte (offset 0x5) in the out of band area of the first page of a block. The block is bad, if any bit in 
- this byte is zero. If you erase such a block, the bad block information is erased too and lost. Further 
- use of this block will lead to erroneous results</p>
-<p>For JFFS2 filesystems it's recommended to programm the JFFS2 erased marker into the out of band area of the 
-first page in each erased block after erasing the block. Do not program it into the data area of the page !</p>
+<A NAME="L_nand_boot">
+<H2>Can I boot from NAND flash?</H2>
+</A>
 
-<p>For 256 byte pagesize devices program the following data into the out of band area:</p>
-		
-<table border="1" cellpadding="5" cellspacing="0">
-<tr><td>Offset</td><td>0x06</td><td>0x07</td></tr>
-<tr><td>Data</td><td>0x85</td><td>0x19</td></tr>
-</table>
+<P>
+Not from a bare NAND chip. You need a glue logic around, which gives you memory
+access to the chip on boot-up, like the DiskOnChip devices do. This will be a
+quite complex CPLD. An alternative is to use a small e.g. 1MB NOR flash, which
+contains the boot code and maybe a compressed kernel image. Then you can use
+JFFS2 on NAND as your root file-system.
+</P>
 
-<p>For 512 byte pagesize devices program the following data into the out of band area:</p>
-		
-<table border="1" cellpadding="5" cellspacing="0">
-<tr><td>Offset</td><td>0x08</td><td>0x09</td><td>0x0a</td><td>0x0b</td><td>0x0c</td><td>0x0d</td>
-<td>0x0e</td><td>0x0f</td></tr>
-<tr><td>Data</td><td>0x85</td><td>0x19</td><td>0x03</td><td>0x20</td><td>0x08</td><td>0x00</td>
-<td>0x00</td><td>0x00</td></tr>
-</table>
-		
-<p>If you copy a filesystem image to the chip, it's recommended to write it with ECC. You can use 
-the ECC code in the nand driver to do this.  If you have a bad block on your chip, just skip this 
-block and copy the data to the next block. JFFS2 and other NAND flash aware filesystems handle this gap.</p>
+<P>
+Some newer chips make the first page available for reading after power up. This
+could be helpful for starting a small 256/512/2048 byte boot-code. At the time
+of this writing there is no tested implementation of this.
+</P>
 
-<h3>Can I program NAND via JTAG ?</h3>
-<p>Yes, you can. The requirements are the same as for bootloaders</p>
+<P>
+Samson's S3C2410 ARM based SOC-CPU provides a mechanism to boot from NAND flash.
+</P>
 
-	<INCLUDE file="../inc/footer.tmpl" />
+
+
+<A NAME="L_nand_32bit">
+<H2>Is there support for 32-bit wide NAND flash?</H2>
+</A>
+
+<P>
+No. The generic NAND driver supports 8/16 bit wide NAND flash only. 32 bit NAND
+flash can be built by using 2 or 4 chips and connect them to D0-7, D8-D15,
+D16-D23 and D24-D31 on the data bus. You can tie all corresponding control
+signals together. But you have to build a new nand16 or nand32 driver, which
+can be derived from the existing nand.c. Be aware, that the write-buffer size is
+2 or 4 times as big as on 8 bit NAND. This means, if you flush the buffer to
+ensure, that your data are on disk, you may waste much more memory space than
+on 8 bit NAND. Another point is bad block handling. When a block on 1 chip is
+bad, the corresponding blocks on the other chips are lost too, as you present
+them as one big block to the file-system driver. The JFFS2 code, which handles
+the write-buffer and the out of band (spare) area of NAND doesn't support 32 bit
+neither.
+</P>
+
+
+
+<A NAME="L_nand_erase">
+<H2>How to erase my MTD partition on NAND flash?</H2>
+</A>
+
+<P>
+<CODE>flash_erase</CODE> (erase one eraseblock) or <CODE>flash_eraseall</CODE>
+utilities may be used. If you are going to use this partition with JFFS2, then
+it is recommended to use <CODE>-j</CODE> or <CODE>--jffs2</CODE> options. This
+will write the so called "clean-marker" to the out of band area, so you can
+mount the file-system and no further formatting is needed. This is also
+necessary before you copy a FS-image to the chip.
+</P>
+
+
+
+<A NAME="L_nand_copyimg">
+<H2>Can I copy a JFFS2 image to NAND via /dev/mtdX?</H2>
+</A>
+
+<P>
+Technically yes, as long as this MTD partition does not contain bad blocks. But
+it is generally a bad idea. For bad block aware copying, batter use nandwrite
+from the <CODE>mtd-utils</CODE> package.
+</P>
+
+<P>
+Also, make sure, that the erasesize you set to mkfs.jffs2 is the same as the
+erasesize of your chip. Data will only be written with ECC, if your default
+settings for OOB-layout selection are set for JFFS2.
+</P>
+
+
+
+<A NAME="L_nand_srw">
+<H2>Can I use seek/read/write on /dev/mtdX?</H2>
+</A>
+
+<P>
+Yes, as long as your program is aware of bad blocks. Make sure to set the
+desired ECC layout by ioctl (<CODE>MEMSETOOBSEL</CODE>). A example for bad
+block handling and usage of ioctl (<CODE>MEMOOBSEL</CODE>) can be found in
+the <CODE>nandwrite</CODE> utility.
+</P>
+
+
+
+<A NAME="L_nand_bootloader">
+<H2>Must my bootloader be aware of NAND flash?</H2>
+</A>
+
+<P>
+Yes, if you use your bootloader to erase the flash chip and copy a file-system
+image to it. For erase make sure, that you don't erase factory-marked bad
+blocks. They are marked in the 6th byte (offset <CODE>0x5</CODE>) in the out of
+band area of the first page of a block. The block is bad, if any bit in this
+byte is zero. If you erase such a block, the bad block information is erased
+too and lost. Further use of this block will lead to erroneous results.
+</P>
+
+<P>
+For JFFS2 file-systems it's recommended to program the JFFS2 erased marker into
+the out of band area of the first page in each erased block after erasing the
+block. Do not program it into the data area of the page!
+</P>
+
+
+<P>
+For (obsolete) 256 byte page size devices program the following data into the
+out of band area:
+</P>
+
+<TABLE border="1" cellpadding="5" cellspacing="0">
+<TR><TD>Offset</TD><TD>0x06</TD><TD>0x07</TD></TR>
+<TR><TD>Data</TD><TD>0x85</TD><TD>0x19</TD></TR>
+</TABLE>
+
+<P>
+For 512 byte page size devices program the following data into the out of band
+area:
+</P>
+
+<TABLE border="1" cellpadding="5" cellspacing="0">
+<TR><TD>Offset</TD><TD>0x08</TD><TD>0x09</TD><TD>0x0a</TD><TD>0x0b</TD><TD>0x0c</TD><TD>0x0d</TD>
+<TD>0x0e</TD><TD>0x0f</TD></TR>
+<TR><TD>Data</TD><TD>0x85</TD><TD>0x19</TD><TD>0x03</TD><TD>0x20</TD><TD>0x08</TD><TD>0x00</TD>
+<TD>0x00</TD><TD>0x00</TD></TR>
+</TABLE>
+
+<P>
+If you copy a file-system image to the chip, it's recommended to write it with
+ECC. You can use the ECC code in the nand driver to do this. If you have a bad
+block on your chip, just skip this block and copy the data to the next block.
+JFFS2 and other NAND flash aware file-systems handle this gap.
+</P>
+
+
+
+<A NAME="L_nand_jtag">
+<H2>Can I program NAND via JTAG?</H2>
+</A>
+
+<P>
+Yes, you can. The requirements are the same as for boot-loaders
+(see <A HREF="nand.html#L_nand_bootloader">here</A>).
+</P>
+
+<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
 
