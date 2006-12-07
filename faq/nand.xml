@@ -195,43 +195,48 @@ flash manual. The following are examples of input parameters:
 	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x33</CODE>
 	- 16MiB, 512 bytes page;
 </LI>
-
 <LI>
 	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x35</CODE>
 	- 32MiB, 512 bytes page;
 </LI>
-
 <LI>
 	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x36</CODE>
 	- 64MiB, 512 bytes page;
 </LI>
-
 <LI>
 	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x78</CODE>
 	- 128MiB, 512 bytes page;
 </LI>
-
 <LI>
 	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0x71</CODE>
 	- 256MiB, 512 bytes page;
 </LI>
-
 <LI>
 	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0xa2 third_id_byte=0x00 fourth_id_byte=0x15</CODE>
 	- 64MiB, 2048 bytes page;
 </LI>
-
 <LI>
 	<CODE>modprobe nandsim first_id_byte=0xec second_id_byte=0xa1 third_id_byte=0x00 fourth_id_byte=0x15</CODE>
 	- 128MiB, 2048 bytes page;
 </LI>
-
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0xaa third_id_byte=0x00 fourth_id_byte=0x15</CODE>
+	- 256MiB, 2048 bytes page;
+</LI>
+<LI>
+	<CODE>modprobe nandsim first_id_byte=0x20 second_id_byte=0xac third_id_byte=0x00 fourth_id_byte=0x15</CODE>
+	- 512MiB, 2048 bytes page;
+</LI>
 <LI>
 	<CODE>modprobe nandsim first_id_byte=0xec second_id_byte=0xd3 third_id_byte=0x51 fourth_id_byte=0x95</CODE>
 	- 1GiB, 2048 bytes page;
 </LI>
 </OL>
 
+<P>
+Note, nandsim theoretically can emulate 16-bit bus witdth devices, but it this
+may not work. Fell free to try and send your feedback.
+</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

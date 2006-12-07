@@ -582,11 +582,8 @@ emulated MTD device.</P>
 or if you need a 64MiB fake NAND flash, run
 "<CODE>modprobe nandsim second_id_byte=0x36</CODE>".</P>
 
-<P>Note, nandsim's module parameters are rather obfuscated. They mean NAND ID
-bytes, which identify the flash geometry. Basically, you have to look at
-<CODE>nand_ids.c</CODE>
-and pick needed NAND IDs. Somebody definitely should make nandsim more
-user-friendly.</P>
+<P>See <A HREF="nand.html#L_nand_nandsim">here</A> for more information about
+NAND simulator.</P>
 
 <P>To ensure that you have fake MTD devices, run "<CODE>cat /prof/mtd</CODE>".
 You have to see something like</P>
