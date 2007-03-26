@@ -18,16 +18,16 @@
 	<LI><A HREF="ubi.html#L_enable_ubi">How to enable UBI?</A></LI>
 	<LI><A HREF="ubi.html#L_run_ubi">How to run UBI on top of my MTD device?</A></LI>
 	<LI><A HREF="ubi.html#L_run_jffs2">Can I run JFFS2 on top of UBI volumes?</A></LI>
+	<LI><A HREF="ubi.html#L_bootloader">Should my boot-loader know UBI format?</A></LI>
 	<LI><A HREF="ubi.html#L_ext2_over_ubi">Can I run file systems like ext2 on top of UBI?</A></LI>
 	<LI><A HREF="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</A></LI>
 	<LI><A HREF="ubi.html#L_leb_and_peb">What is "physical eraseblock" and "logical eraseblock"?</A></LI>
-	<LI><A HREF="ubi.html#L_ubi_adv">What are the main advantages of UBI?</A></LI>
-	<LI><A HREF="ubi.html#L_restrict">Are there some restrictions in UBI?</A></LI>
+	<LI><A HREF="ubi.html#L_restrict">Can I randomly write to logical eraseblocks?</A></LI>
 	<LI><A HREF="ubi.html#L_volume_update">What is volume update?</A></LI>
 	<LI><A HREF="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</A></LI>
 	<LI><A HREF="ubi.html#L_why_2_hdrs">Why does UBI need two headers, not just one?</A></LI>
+	<LI><A HREF="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</A></LI>
 	<LI><A HREF="ubi.html#L_hdrsize">How much flash space do UBI headers consume?</A></LI>
-	<LI><A HREF="ubi.html#L_how_wl">How does UBI ensure wear-leveling?</A></LI>
 	<LI><A HREF="ubi.html#L_volume_table">What is volume table?</A></LI>
 	<LI><A HREF="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</A></LI>
 	<LI><A HREF="ubi.html#L_how_debug">How to debug UBI?</A></LI>
@@ -46,7 +46,6 @@
 	<LI><I>LEB</I> - logical eraseblock (see <A HREF="ubi.html#L_leb_and_peb">here</A>);</LI>
 	<LI><I>PEB</I> - physical eraseblock (see <A HREF="ubi.html#L_leb_and_peb">here</A>);</LI>
 	<LI><I>VID header</I> - volume identifier header (see <A HREF="ubi.html#L_why_headers">here</A>);</LI>
-	<LI><I>WL unit</I> - wear-leveling unit (see <A HREF="ubi.html#L_how_wl">here</A>).</LI>
 </UL>
 
 
@@ -55,9 +54,9 @@
 <H2>How can I find UBI source?</H2>
 </A>
 
-<P>UBI is not yet in the mainline kernel, and it is currently accessible via
-git. Please, read the <A HREF="../doc/git.html">MTD git page</A> for more
-information about how to fetch MTD GIT trees. The UBI GIT tree is
+<P>UBI is not yet in the mainline kernel, and it has its own git repository.
+Please, read the <A HREF="../doc/git.html">MTD git page</A> for more
+information about how to fetch MTD git trees. The UBI git tree is
 available at <A HREF="git://git.infradead.org/ubi-2.6.git">
 git://git.infradead.org/ubi-2.6.git</A>, so the command to fetch it is:</P>
 
@@ -65,8 +64,18 @@ git://git.infradead.org/ubi-2.6.git</A>, so the command to fetch it is:</P>
 $ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
 </PRE>
 
-<P>The UBI git-tree mostly corresponds to the mtd-2.6.git tree
-(<A HREF="git://git.infradead.org/mtd-2.6.git">git://git.infradead.org/mtd-2.6.git</A>).</P>
+<P>The UBI git tree is basically linux-2.6.20 release plus UBI patches.</P>
+
+<P>There is also an UBI development tree available at
+<A HREF="git://git.infradead.org/home/dedekind/dedekind-ubi-2.6.git">
+git://git.infradead.org/home/dedekind/dedekind-ubi-2.6.git.</A></P>
+
+
+<P>User-space UBI utilities are available at the "<I>ubi</I>" branch of the
+<CODE>mtd-utils</CODE> git repository
+(<A HREF="git://git.infradead.org/mtd-utils.git">
+git://git.infradead.org/mtd-utils.git</A>). There is also a bunch of UBI tests
+in this repository.</P>
 
 
 
@@ -85,7 +94,7 @@ kernel or built as a kernel module.</P>
 <H2>How to run UBI on top of my MTD device?</H2>
 </A>
 
-<H3>UBI is a kernel module</H3>
+<H3>A kernel module</H3>
 
 <P>Suppose you have an <CODE>mtd3</CODE> device and want to run UBI on top of
 it. The following command loads the UBI kernel module and attaches
@@ -96,7 +105,8 @@ $ modprobe ubi mtd=3
 </PRE>
 
 <P>If, say, you have two MTD devices, <CODE>mtd2</CODE> and <CODE>mtd5</CODE>,
-and want to have two UBI devices on top of them, use the following command:</P>
+and you want to have two UBI devices on top of them, use the following
+command:</P>
 
 <PRE>
 $ modprobe ubi mtd=2 mtd=5
@@ -104,16 +114,15 @@ $ modprobe ubi mtd=2 mtd=5
 
 <P>and so on.</P>
 
-<P>If the default position of UBI headers and data is not appropriate for you,
-for example because you can optimize headers overhead, VID and data positions
-may also be specified, e.g.:</P>
+<P>If the default positions of UBI headers and data are not appropriate for
+you, for example because you can optimize UBI headers overhead, VID and data
+positions may also be specified (advanced users only), e.g.:</P>
 
 <PRE>
 $ modprobe ubi mtd=2,256,512 mtd=5,1024,2048
 </PRE>
 
-<P>But this is needed for advanced users only. To read more about the module
-parameters, try</P>
+<P>To read more about the module parameters, try</P>
 
 <PRE>
 $ modinfo ubi
@@ -123,16 +132,16 @@ $ modinfo ubi
 independent UBI devices will be created, not one UBI device on top
 of a concatenation of <CODE>mtd2</CODE> and <CODE>mtd5</CODE>. If you wish to
 have a single UBI device, you should first use the MTD concatenation
-(<CODE>mtdconcat</CODE>) feature to create a single "concatenated" MTD device,
+(<CODE>mtdconcat</CODE>) layer to create a single "concatenated" MTD device,
 and then feed it to UBI.</P>
 
-<H3>UBI is compiled into the kernel</H3>
+<H3>Compiled into the kernel</H3>
 
 <P>This case is very similar to the above one but an "<CODE>ubi.mtd=</CODE>"
 option should be used instead of the "<CODE>mtd=</CODE>" option and it should
 be passed via the kernel boot command line instead of the module parameters.</P>
 
-<P>Note, to make sure that UBI was successfully initialized and accepted your
+<P>Note, to make sure that UBI was successfully initialized and attached your
 MTD device(s), check that UBI-related files are present in the
 <CODE>/sys/class/ubi</CODE> sysfs directory, or UBI character devices are
 mentioned in the <CODE>/proc/devices</CODE> procfs file.</P>
@@ -149,28 +158,42 @@ mounted on these emulated MTD devices. You just have to enable the
 
 
 
+<A NAME="L_bootloader">
+<H2>Should my boot-loader know UBI format?</H2>
+</A>
+
+<P>It may, but do not have to. You may put your kernel image at a fixed MTD
+partition at the beginning of the flash chip and feed the rest of the flash to
+UBI. The point is that you do not have to give UBI whole flash chip, you just
+give it some MTD partition.</P>
+
+
+
 <A NAME="L_ext2_over_ubi">
 <H2>Can I run file systems like ext2 on top of UBI?</H2>
 </A>
 
-<P>UBI is not a block device emulation layer, so the answer is - no.</P>
+<P>UBI is not a block device emulation layer, it is not an FTL, so the answer
+is - no.</P>
 
-<P>Ext2 and other "conventional" file systems are designed for block devices.
-Roughly, block devices have 2 operations: <I>read block</I> and
-<I>write block</I>. UBI devices, similarly to MTD devices, have 3 operations:
-<I>read eraseblock</I>, <I>write eraseblock</I>, and <I>erase eraseblock</I>.
-And eraseblocks are usually much larger then disk blocks
-(e.g., 128K vs 512bytes).</P>
+<P>UBI pretty much looks like raw flash: it consists of (logical)
+eraseblocks, it has <I>read eraseblock</I>, <I>write eraseblock</I>, and
+<I>erase eraseblock</I> commands. UBI just hides the eraseblock wear and
+bad eraseblock problems and adds some "advanced" capabilities like dynamic
+volumes, etc. But still, UBI has nothing to do with block devices, while
+ext2 and other "conventional" file systems are designed for block devices.</P>
 
 <P>It is fairly easy to create a block device emulation layer with block size
-equivalent to the eraseblock size albeit this barely makes sense. But it is not
-so trivial to implement a decent block emulation layer.</P>
+equivalent to the eraseblock size albeit this barely makes sense (imagine
+performance and space overhead when you have a block device with 128KiB block
+size). But it is not so trivial to implement a decent block emulation (aka FTL).
+</P>
 
-<P>The merit of UBI is that it hides many complexities of flash chips, like
-wearing and bad blocks. This makes it much easier to implement further
-layers like block device emulation layers and file systems by means of stacking
-them on top of UBI. Thus, one may consider UBI as one step further to a good
-block device emulation layer.</P>
+<P>The merit of UBI is that it makes it much easier to implement further layers
+like FTL or a file systems by means of stacking them on top of UBI. Indeed, UBI
+takes care about many flash chip complexities and makes it possible to
+concentrate on, say, good garbage collection algorithm, rather then, say, on
+wear-leveling issues.</P>
 
 
 
@@ -184,7 +207,7 @@ The resulting MTD device will have all the internal data in place and no
 user volumes.</P>
 
 <P>Note, "empty flash" means that it has to contain only <CODE>0xFF</CODE>
-bytes, i.e., be fully erased. You may use the <CODE>flash_eraseall</CODE>
+bytes, i.e., to be fully erased. You may use the <CODE>flash_eraseall</CODE>
 MTD utility to wipe out MTD devices.</P>
 
 
@@ -198,86 +221,35 @@ MTD utility to wipe out MTD devices.</P>
 consists of <B>physical eraseblocks</B> (<B>PEB</B>).</P>
 <UL>
 	<LI><B>Physical eraseblocks</B> are eraseblocks of the MTD device which
-	is used by UBI as the back-end storage (i.e., PEBs are basically
-	sectors of the flash device.</LI>
+	is used by UBI as the back-end storage.</LI>
 
-	<LI><B>Logical eraseblocks</B> are eraseblocks the UBI volume. LEBs
-	are smaller in size then PEBs because UBI stores its own headers at the
-	beginning of each PEB. For example, in case of NOR flash, LEB is 128
-	bytes smaller then PEB (note, UBI headers size depends on the MTD
+	<LI><B>Logical eraseblocks</B> are eraseblocks the UBI volumes. LEBs
+	are a bit smaller in size then PEBs because UBI stores its own headers
+	at the beginning of each PEB. For example, in case of NOR flash, LEB is
+	128 bytes smaller then PEB (note, UBI headers size depends on the MTD
 	device type, see <A HREF="ubi.html#L_hdrsize">here</A>).</LI>
 </UL>
 
 
 
-<A NAME="L_ubi_adv">
-<H2>What are the main advantages of UBI?</H2>
+<A NAME="L_restrict">
+<H2>Can I randomly write to logical eraseblocks?</H2>
 </A>
 
-<P>The following are the key advantages of utilizing flash via the UBI->MTD
-stack, instead of utilizing it directly via MTD.</P>
+<P>Not really, there are some restrictions.</P>
 
 <OL>
-	<LI><I>Wear</I>. When you work with MTD devices, you have to bear in
-	mind that PEBs have limited life-time, and you have to utilize them
-	evenly, i.e., wear-leveling have to be done in some way. In opposite,
-	UBI volumes are devoid of this unpleasant property. Programmers do not
-	have to think about wear leveling because UBI automatically
-	distributes the load over the entire flash device.
-	For example, this means that you may erase one LEB of your volume
-	hundred times more often then the other, and the wear will still be
-	evenly distributed.<BR/><BR/>
+	<LI>Many flashes have minimal input-output unit size, so write offsets
+	and lengths have to be aligned.</LI>
 
-	This also means that system designers have much freedom in
-	partitioning their flash devices. They can create as many partitions
-	(UBI volumes in this context) as they want - UBI will anyway maintain
-	good wear-leveling across the whole flash chip.
-	</LI><BR/>
+	<LI>Logical eraseblocks have to be written sequentially from the
+	beginning to the end. This is needed because UBI calculates data CRC
+	when moving logical eraseblocks to other physical eraseblocks. So a
+	write operation to before the furthest data offset causes a CRC error.</LI>
 
-	<LI><I>Bad PEBs</I>. Some flash chips may admit of bad PEBs. For
-	example, NAND flash chips may be shipped with few bad PEBs. Bad PEBs may
-	also dynamically appear during NAND flash utilization. Software that
-	works with those flash chips via the MTD interface has to take this
-	into account and gracefully handle bad PEBs. Very often this is a
-	really difficult task. But the UBI layer completely hides bad PEBs from
-	users and handles them automatically. The outside users don't even
-	notice that, say, some PEBs became bad and UBI moved their data to good
-	PEBs.</LI><BR/>
-
-	<LI><I>Dynamic partitioning</I>. UBI volumes may be dynamically created,
-	removed and re-sized. MTD partitions are static.</LI><BR/>
-
-	<LI><I>Bit-flips handling</I>. In case of some flash chips, like NAND,
-	individual bits may randomly flip. In case of NAND this problem is
-	solved by per-NAND page ECC codes. But once one or few bits start
-	flipping, the situation may worsen over time and more bits may become
-	unstable at this PEB. And this may cause uncorrectable errors and data
-	loss. UBI gracefully fights with this phenomena - it moves data from
-	such PEBs to other PEBs and thus, gets rid of bit-flips and prevents
-	potential data losses.</LI><BR/>
-
-	<LI><I>Volume update</I>. UBI provides a robust way to update the
-	contents of volumes by means of special "update" operation. For
-	example, this may greatly help to detect power failures while
-	flashing newer software and to automatically re-start the update. For more
-	information, see <A HREF="ubi.html#L_volume_update">here</A>.</LI><BR/>
-
-	<LI><I>Static volumes</I>. Static volumes provide a good way to store
-	read-only data. UBI automatically protects these volumes by CRC-32
-	checksums and guarantees data integrity.</LI>
+	<LI>Many NAND flashes require NAND pages to be written consecutively from
+	the beginning to the end.</LI>
 </OL>
-
-
-
-<A NAME="L_restrict">
-<H2>Are there some restrictions in UBI?</H2>
-</A>
-
-<P>There is one important restriction UBI programmers have to be aware of: LEBs
-of UBI volumes have to be written strictly from the beginning to the end. This
-means, that the LEB offset has to only increase when writing data. For
-example, it is forbidden to write at offset, say, <CODE>0x800</CODE>, then at
-offset <CODE>0x0</CODE>.</P>
 
 
 
@@ -285,41 +257,21 @@ offset <CODE>0x0</CODE>.</P>
 <H2>What is volume update?</H2>
 </A>
 
-<P>The <B>volume update</B> operation is a way to update the contents of UBI
+<P>The <B>volume update</B> operation is a way to change the contents of UBI
 volumes. UBI does not allow to directly write and erase eraseblocks of
 UBI volumes from user-space (even for dynamic volumes). Instead, only entire
 volume contents may be changed at one go, by means of the volume update
-operation. Note, both dynamic and static volumes may be updated.</P>
+operation. Both dynamic and static volumes may be updated.</P>
 
 <P>The volume update operation is "atomic", which means that the volume update
 operation has to finish. If the operation was not finished, the volume will
 not be usable - any further read operation will fail with <CODE>EUCLEAN</CODE>
 error.</P>
 
-<P>The volume update operation is not a true transaction because it does not
-preserve previous volume contents. Instead, it wipes-out the whole volume
-as soon as an update operation starts. What the volume update operation
-guarantees that the update either successfully finishes or the volume goes
-into "corrupted" state.</P>
-
-<P>The update operation is implemented very simply - by means of so-called
-<B>update marker</B>. Before the update operation, UBI writes the update
-marker to the flash media. The update marker contains ID of the volume
-which is being updated. When all the data is successfully written to the
-flash media, the update marker is removed. If the update operation is
-interrupted by power failure, the update marker will be found and the
-volume will stay in the "corrupted" state. Only a new update operation
-may remove this update marker.</P>
-
-<P>Note, the update marker is global and is common for all volumes on
-this UBI device. This means, that only one volume may be updated at a time.
-This also means, that if there is an update marker because of an
-interrupted volume update, the only way to get rid of this marker is to
-re-start and finish update if the corrupted volume. Other volumes cannot
-be updated while the update marker exists on the flash media.</P>
-
-<P>The volume update operation may be issued via an IOCTL command of UBI
-volume character devices. See <CODE>mtd/ubi-user.h</CODE> for more details.</P>
+<P>The volume update operation does not preserve previous volume contents.
+Instead, it wipes-out the whole volume as soon as an update operation
+starts. But it guarantees that the update either successfully finishes or the
+volume goes into the "damaged" state.</P>
 
 
 
@@ -332,7 +284,7 @@ physical-to-logical eraseblock associations. There are two UBI headers stored
 in each PEB:</P>
 <UL>
 	<LI><B>erase counter header</B> (or <B>EC header</B>) which is mostly
-	needed to store erase counter of the PEB;</LI>
+	needed to store the erase counter of the PEB;</LI>
 
 	<LI><B>volume identifier header</B> (or <B>VID header</B>) which stores
 	volume ID and LEB number this PEB belongs to.</LI>
@@ -340,11 +292,6 @@ in each PEB:</P>
 
 <P>Note, there are also some other data stored in EC and VID headers, see
 <CODE>mtd/ubi-header.h</CODE> for more details.</P>
-
-<P>The EC header is written to PEB as soon as it is erased, so each PEB in
-UBI has the EC header. The VID header is written to the PEB only when UBI
-associates it with a LEB, so each PEB which belongs to a LEB in UBI has both
-EC and VID headers.</P>
 
 
 
@@ -355,8 +302,9 @@ EC and VID headers.</P>
 <P>UBI maintains two per-eraseblock headers because it needs to write different
 information on flash at different moments of time:</P>
 <UL>
-	<LI>after a PEB is erased, the EC header is written, which minimizes
-	the probability of loosing the erase counter due to an unclean reboot;</LI>
+	<LI>after a PEB is erased, the EC header is written straight away,
+	which minimizes the probability of loosing the erase counter due to an
+	unclean reboot;</LI>
 
 	<LI>when UBI associates a PEB with to a LEB, the VID header is written
 	to the PEB.</LI>
@@ -365,6 +313,16 @@ information on flash at different moments of time:</P>
 <P>When the EC header is written to a PEB, UBI does not yet know the volume ID
 and LEB number this PEB will be associated with. This is why UBI needs to do
 two write operations and to have two headers.</P>
+
+
+
+<A NAME="L_why_no_oob">
+<H2>Why UBI does not use OOB area of NAND flashes?</H2>
+</A>
+
+<P>Because many flashes (e.g., NOR) do not have OOB and UBI was designed to be
+a <I>generic</I> wear-leveling layer. Also, modern MLC NAND flashes use whole
+OOB area for ECC checksum, so there is no room for application data.</P>
 
 
 
@@ -405,91 +363,15 @@ reasons.</P>
 
 
 
-<A NAME="L_how_wl">
-<H2>How does UBI ensure wear-leveling?</H2>
-</A>
-
-<P>UBI keeps the EC header (see <A HREF="ubi.html#L_why_headers">here</A>)
-at each PEB. After each PEB erasure, the erase counter is incremented.</P>
-
-<P>Wear-leveling is ensured by the following two basic mechanisms.</P>
-<UL>
-	<LI><B>Data movement</B>: UBI moves data from less worn-out PEBs
-	(low erase counter) to more worn-out PEBs (high erase counter) from
-	time to time. This ensures that static data is not stored in the same
-	set of PEBs too long, and wear is evenly distributed over all PEBs.</LI>
-
-	<LI><B>Picking appropriate PEBs</B>: when a free physical PEB is needed,
-	UBI picks either a more worn-out PEB, or a less worn-out PEB, depending
-	on the data which is going to be stored in this PEB. If this is long-term,
-	static data - UBI picks a less worn-out PEB. If this is short-term,
-	temporary data - UBI picks a more worn-out one, or, if data type
-	is unknown, UBI picks a "middle" one. It's up to users to inform
-	UBI whether the data they are writing to the volume is
-	short-term, long-term or unknown.</LI>
-</UL>
-
-<P>The wear-leveling in UBI is ensured by the so-called <B>WL unit</B>. The idea
-of the wear-leveling algorithm is fairly simple: there are two trees in the WL
-unit - <I>free</I> and <I>used</I>. Both trees are Red-Black trees and are
-indexed by the erase counter. Each PEB in UBI has a corresponding small in-RAM
-data structure, and these data structures are the elements of these Red-Black
-trees.</P>
-
-<P>The <I>free</I> tree contains free PEBs (to be more precise, the
-corresponding above mentioned small data structures), the <I>used</I> tree
-contains used PEBs. When the WL unit is asked for a free PEB, it picks it from
-the <I>free</I> tree (taking into account the data type hint), moves it to the
-<I>used</I> tree, and returns its PEB number to the caller. When user returns a
-PEB back to the WL unit, it is removed from the <I>used</I> tree, scheduled for
-erasure, and inserted back to the <I>free</I> tree. Note, the PEB erasure is
-done in background, not synchronously, so it mostly does not block user
-tasks.</P>
-
-<P>The WL unit constantly looks at the difference between the lowest erase
-counter in the <I>free</I> tree and the highest erase counter in the <I>used</I>
-tree. If this difference exceeds certain threshold, the WL unit moves data from
-the least worn-out used PEB to a highly worn-out free one. The movement is done
-in background, in context of the UBI background thread, so it is completely
-transparent to UBI users and consumes CPU and flash I/O bandwidth on competitive
-basis.</P>
-
-<P>Of course, as always, the implementation is more complex because of
-different corner cases and optimizations. See <CODE>wl.c</CODE> and
-<CODE>wl.h</CODE> files for more details.</P>
-
-<P>Note, in this (first) implementation the UBI WL unit memory consumption
-linearly depends on the total number of PEBs on the underlying MTD device -
-there is a 32-byte in-RAM structure for each non-bad PEB. In other words, the
-scalability is is not ideal. But as UBI is highly modular inside (there is quite
-narrow interface between the WL unit and the rest of UBI exists), one can
-implement the WL unit other way and improve scalability, or change the
-algorithm.</P>
-
-
-
 <A NAME="L_volume_table">
 <H2>What is volume table?</H2>
 </A>
 
-<P><B>Volume table</B> is a data structure containing information about each
-user volume on this UBI device (e.g., volume size, name, type, etc.). Each time
-a volume is created, removed or re-sized, the volume table is altered. Note,
-the volume table is absolutely <I>internal entity</I> and UBI users do not have
-to know anything about it. It is used by UBI itself to store per-volume
-information.</P>
-
-<P>There is no fixed place or dedicated PEBs where the volume table is stored.
-Instead, it is stored in a special internal volume (so-called <B>layout
-volume</B>) which isn't seen by UBI users. Although the layout volume is not
-seen outside, it is still an UBI volume and it similar semantics. For example,
-this means that its LEBs may be mapped to any PEBs and PEBs may be moved around
-for wear-leveling purposes.</P>
-
-<P>In fact, UBI maintains two copies of the volume table for better
-reliability. This basically means that the layout volume contains two LEBs
-and each LEB stores on volume table copy. If one volume table copy gets
-corrupted, UBI restores it from the other copy.</P>
+<P><B>Volume table</B> is an on-flash data structure containing information
+about each user volume on this UBI device (e.g., volume size, name,
+type, etc.). Each time a volume is created, removed or re-sized, or
+updated, the volume table is altered. UBI maintains two copies of the volume
+table for better reliability.</P>
 
 
 
@@ -497,66 +379,8 @@ corrupted, UBI restores it from the other copy.</P>
 <H2>Is UBI tolerant of power failures?</H2>
 </A>
 
-<P>Yes, UBI is designed to be tolerant of power failures and unclean reboots.
-Lets consider situations when unclean reboots may happen.</P>
-<OL>
-	<LI><I>Physical eraseblocks erasure</I>. If an unclean reboot happens
-	when UBI is erasing a PEB, the erase counter may be lost. In this case,
-	UBI restores the erase counter when it is running next time using the
-	average erase counter value.</LI><BR/>
-
-	<LI><I>Physical eraseblock movement</I>. Suppose that UBI is moving
-	the contents of PEB <I>A</I> to PEB <I>B</I> in order to ensure
-	wear-leveling, and an unclean reboot happens. In this case, UBI ends up
-	with PEB <I>B</I> not fully written (i.e., corrupted).<BR/><BR/>
-
-	When UBI moves a PEB, it calculates its CRC-32 checksum and stores it
-	in the VID header of the copy. Also, UBI maintains <B>version</B> of
-	each LEB and increments it each time the contents of the LEB is moved
-	from one PEB to another. Thus, in our case, VID header of PEB <I>B</I>
-	will have CRC checksum of its contents. Also, version number at the
-	VID header of PEB <I>B</I> will be greater then at PEB <I>A</I>.
-	<BR/><BR/>
-
-	So, when UBI is running next time, it will detect that there are two
-	PEBs belonging to the same LEB present. It will fist look at the newer
-	one (i.e., PEB <I>B</I> as it has greater version) and check its CRC
-	checksum. In our case, checksum mismatch will be detected and UBI will
-	pick PEB <I>A</I>. PEB <I>B</I> will be scheduled for erasure.</LI><BR/>
-
-	<LI><I>Pending erase operations</I>. Suppose UBI has successfully moved
-	the contents of PEB <I>A</I> to PEB <I>B</I> and has scheduled
-	PEB <I>A</I> for erasure (PEB <I>A</I> is scheduled for erasure only
-	after it has been successfully copied to PEB <I>B</I>). If an unclean
-	reboot happens before PEB <I>A</I> erasure actually starts, UBI will
-	end up with two non-corrupted copies of the same LEB at PEBs <I>A</I>
-	and <I>B</I>. In this case, when UBI is running next time, it will find
-	both PEBs and simply select the newer one (PEB <I>B</I> as it will have
-	greater version). PEB <I>A</I> will be scheduled for erasure.<BR/><BR/>
-
-	Note, the situation when user erases a LEB, then writes some data
-	there, then an unclean reboot happens is very similar. Suppose the
-	LEB was first mapped to PEB <I>A</I>. After the LEB was erased and
-	data were written to it, it was re-mapped to PEB <I>B</I>. After this
-	PEB <I>A</I> was scheduled for erasure. And the unclean reboot happens
-	before PEB <I>A</I> has been erased. The result is two copies of the
-	same LEB. In this case UBI also just picks the newer PEB (PEB <I>B</I>)
-	when it is running next time.</LI><BR/>
-
-	<LI><I>Volume table update</I>. There are two volume table copies
-	and they are kept in two separate eraseblocks. When UBI updates
-	the volume table, it first updates the first copy, then the second. So,
-	there is always at least one volume table copy present and this
-	guarantees that it cannot be lost/corrupted due to power failures.
-	For more information about the volume table, see
-	<A HREF="ubi.html#L_volume_table">here</A>.</LI>
-
-	<LI><I>Volume update</I>. If an unclean reboot happens during volume
-	update, UBI will detect this when running next time and will prohibit
-	any further access to this volume. Only new update operation will be
-	allowed. See <A HREF="ubi.html#L_volume_update">here</A> for more
-	information about volume update.</LI>
-</OL>
+<P>Yes, UBI is designed to be tolerant of power failures and unclean
+reboots.</P>
 
 
 
@@ -583,7 +407,7 @@ or if you need a 64MiB fake NAND flash, run
 "<CODE>modprobe nandsim second_id_byte=0x36</CODE>".</P>
 
 <P>See <A HREF="nand.html#L_nand_nandsim">here</A> for more information about
-NAND simulator.</P>
+the NAND simulator.</P>
 
 <P>To ensure that you have fake MTD devices, run "<CODE>cat /prof/mtd</CODE>".
 You have to see something like</P>
@@ -604,107 +428,19 @@ sysfs:</P>
 ubi0  ubi1  version
 </PRE>
 
-<P>Now you may start hacking/debugging UBI even without an embedded platform
-and without a real flash device.</P>
-
 <H3>Enable debugging</H3>
 
 <P>Enable UBI debugging support in the configuration menu
-(the "<B>UBI debugging</B>" check-box).</P>
+(the "<B>UBI debugging</B>" check-box). When UBI debugging is enabled, UBI
+prints more information about errors, and adds extra assertions in the code
+which may help to catch bugs. You may also enable debugging prints and extra
+self-checks (makes UBI much slower but very helpful).</P>
 
-<P>When debugging is enabled, UBI uses debugfs to communicate with user-space.
-To mount debugfs, use the following command:</P>
-<PRE>
-# mount -t debugfs none /mnt/debugfs
-</PRE>
-
-<P>or any other mount point may be specified. In debugfs, you should see an
-"<CODE>ubi</CODE>" directory, which contains different UBI debugging-related
-files:</P>
-<PRE>
-# ls /mnt/debugfs/ubi/
-acc_prints    cdev_prints      gluebi_prints  uif_prints     vtbl_prints
-alloc_prints  console_logging  io_prints      upd_prints     wl_prints
-bgt_prints    dtbl_prints      log            vb_err_prints
-bld_prints    eba_prints       scan_prints    vmt_prints
-</PRE>
-
-<P>The <CODE>*_prints</CODE> files switch on/off debugging messages from the
-corresponding UBI unit. For example, to enable messages from the scanning and
-wear-leveling units, the following commands may be used:</P>
-<PRE>
-# echo 1 > /mnt/debugfs/ubi/scan_prints
-# echo 1 > /mnt/debugfs/ubi/wl_prints
-</PRE>
-
-<P>The following are UBI unit names:</P>
-<UL>
-	<LI><I>acc</I> - accounting unit - responsible for flash space
-	accounting;</LI>
-	<LI><I>bld</I> - build unit - responsible for building all the internal
-	data structures during UBI initialization;</LI>
-	<LI><I>eba</I> - eraseblock association unit - responsible for the
-	logical-to-physical eraseblock association;</LI>
-	<LI><I>scan</I> - scanning unit - responsible for scanning the flash
-	device during UBI initialization;</LI>
-	<LI>vmt<I></I> - volume management unit - responsible for managing UBI
-	volumes;</LI>
-	<LI><I>alloc</I> - memory allocation unit - responsible for UBI memory
-	allocations;</LI>
-	<LI><I>cdev</I> - character device sub-unit - responsible for character
-	devices support (part of the user interfaces unit);</LI>
-	<LI><I>io</I> - input/output unit - responsible for UBI flash
-	input/output;</LI>
-	<LI><I>uif</I> - user interfaces unit - responsible for UBI user
-	interfaces support;</LI>
-	<LI><I>gluebi</I> - MTD emulation unit - responsible for MTD interfaces
-	emulation;</LI>
-	<LI><I>vtbl</I> - volume table unit - responsible for maintaining the
-	volume table;</LI>
-	<LI><I>bgt</I> - background thread unit - responsible for the UBI
-	background thread;</LI>
-	<LI><I>dtbl</I> - data table unit - responsible for the UBI data table
-	(an internal in-ram table);</LI>
-	<LI><I>upd</I> - update unit - responsible for volume updates and update
-	marker maintenance;</LI>
-	<LI><I>wl</I> - unit - responsible for UBI wear-leveling support.</LI>
-</UL>
-
-<P>The "<CODE>log</CODE>" file contains the debugging log. If you write anything
-to this file, the log is cleaned.</P>
-
-<P>The "<CODE>console_logging</CODE>" file switches output from
-"<CODE>log</CODE>" to the console and vice versa.</P>
-
-<A NAME="L_dbg_messages">
-<H3>Enable debugging messages</H3>
-</A>
-
-<P>Enable debugging messages from a UBI unit you are interested in. This may be
-done via the debugfs switches or via the configuration menu
-(<B>UBI debugging messages</B>).</P>
-
-<P>By default, UBI stores the debugging messages in the "ubi/log" debugfs file.
-But if you want the messages to go to the console, enable the
-"<B>Logging to console</B>" option in the configuration menu.</P>
-<PRE>
-# echo 1 > /mnt/debugfs/ubi/console_logging
-</PRE>
-
-<A NAME="L_paranoid_checks">
-<H3>Enable paranoid checks</H3>
-</A>
-
-<P>UBI code includes so-called "paranoid checks" which add additional UBI
-self-checking code. You may consider to enable them to catch problems on
-earlier stages.</P>
-
-<P>The paranoid checks may be enabled under the <B>"UBI paranoid checks"</B>
-Linux configuration menu option (re-compilation is required). Paranoid checks
-may be enabled/disabled separately for different UBI units.</P>
-
-<P>Note, some paranoid checks make UBI considerably slower, especially the
-"I/O unit paranoid check".</P>
+<P>Note, when UBI debugging messages are enabled, UBI will print really a lot
+of them. You may use serial console to capture all of them, but it is quite
+slow. Also you may just enlarge the kernel printk buffer size - for example,
+make it 64MiB (a small hack in <CODE>lib/Kconfig.debug</CODE> is needed, or
+boot with <CODE>log_buf_len=64M</CODE> kernel option).</P>
 
 
 
@@ -717,40 +453,20 @@ may be enabled/disabled separately for different UBI units.</P>
 	<LI>make sure you have compiled kernel symbols in
 	(<CODE>CONFIG_KALLSYMS_ALL=y</CODE> in <CODE>.config</CODE>);</LI>
 
-	<LI>enable UBI debugging (the "<B>UBI debugging</B>" check-box);</LI>
+	<LI>enable UBI debugging;</LI>
+
+	<LI>enable UBI debugging messages;</LI>
 
 	<LI>try to enable UBI paranoid checks
 	(see <A HREF="ubi.html#L_paranoid_checks">here</A>); but if it makes
-	the bug not reproducable or makes UBI drammatically slower, do not
+	the bug not reproducible or makes UBI dramatically slower, do not
 	enable them or try to disable I/O unit's paranoid checks, or may be
 	have an idea of the bug's nature and may enable paranoid checks in the
 	related UBI unit;</LI>
-
-<LI>enable at least <B>"User interface unit messages"</B>
-	(see <A HREF="ubi.html#L_dbg_messages">here</A>); of course, if you have
-	an idea of which UBI unit has a bug, feel free to enable its messages
-	as well.</LI>
 </UL>
 
-<P>When sending the bugreport, please include the bug-related messages from the
-kernel (e.g., use <CODE>dmesg</CODE>) and the UBI log message. The
-UBI messages may be obtained using the following method:</P>
-
-<PRE>
-$ mount -t debugfs debugfs /mnt/debugfs
-$ cat /mnt/debugfs/ubi/log > ubi_log
-</PRE>
-
-<P>If for some reasons it is impossible to obtain the UBI log from debugfs, then
-enable the <B>"Logging to console"</B> UBI option. In this case the UBI
-debugging output will go to the standard kernel printk buffer. But the drawback
-of this method is that you may loose messages due to the kernel ring buffer
-overflow as UBI may produce quite a lot of them. To avoid loosing messages, you
-may try to configure a serial console and capture the kernel output using
-minicom. But this assumes that UBI will be very slow because the kernel
-messages are printed synchronously. And in some cases it may interfere with the
-bug reproduction or require too much time. I hope you won't face a situation
-like this. But if you did, feel free to send a bugreport anyway!</P>
+<P>When sending the bugreport, please include the bug-related messages and
+UBI debugging output.</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

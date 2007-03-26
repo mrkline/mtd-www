@@ -25,6 +25,7 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>UBI mainline submission process started</li>
 	<li>UBI <a href="faq/ubi.html#UBI_src">sources</a> are available</li>
 	<li><a href="doc/ubi.html">UBI</a> design paper available </li>
 	<li>New release of MTD <a href="ftp://ftp.infradead.org/pub/mtd-utils/mtd-utils-1.0.0.tar.gz">utils</a></li>
