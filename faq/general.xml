@@ -150,7 +150,7 @@ it basically does if you change any sector of you mtdblockX device, it reads
 the whole corresponding eraseblock into the memory, erases the eraseblock,
 changes the sector in RAM, and writes the whole eraseblock back. This is very
 straightforward. If you have a power failure when the eraseblock is being
-erased, you loose all the block device sectors in it. The flash will likely
+erased, you lose all the block device sectors in it. The flash will likely
 decay soon because you will wear few eraseblocks out - most probably those ones
 which contain FAT/bitmap/inode table/etc.
 </P>

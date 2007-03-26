@@ -303,7 +303,7 @@ in each PEB:</P>
 information on flash at different moments of time:</P>
 <UL>
 	<LI>after a PEB is erased, the EC header is written straight away,
-	which minimizes the probability of loosing the erase counter due to an
+	which minimizes the probability of losing the erase counter due to an
 	unclean reboot;</LI>
 
 	<LI>when UBI associates a PEB with to a LEB, the VID header is written

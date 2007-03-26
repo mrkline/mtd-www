@@ -175,7 +175,7 @@ conventional file system like ext2.
 Also note, these devices are "black boxes". The way they implement this
 flash-to-block device translation layer is not usually published. And in many
 cases the algorithms used at this layer are far from brilliant. For example,
-many USB sticks and other cards loose data in case of unclean reboots/power
+many USB sticks and other cards lose data in case of unclean reboots/power
 cuts. So, be very careful.
 </P>
 
@@ -206,8 +206,8 @@ or similar message about CRC failures. If you have ever done unclean reboots -
 this is harmless. This just means that the unclean reboot happened (1) during
 data write or write buffer sync or (2) while GC was working or (3) while the
 write-buffer contained some data and was not yet synced before the unclean
-reboot happened. In them first and the third cases, you just loose the very
-last data you have written, in the second case you loose nothing. The wrong
+reboot happened. In them first and the third cases, you just lose the very
+last data you have written, in the second case you lose nothing. The wrong
 nodes will eventually be recycled by Garbage Collector and the massages will go
 (but they may leave quite long).
 </P>
