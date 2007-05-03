@@ -25,6 +25,7 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>UBI is in mainline (27.04.2007)</li>
 	<li>UBI mainline submission process started</li>
 	<li>UBI <a href="faq/ubi.html#UBI_src">sources</a> are available</li>
 	<li><a href="doc/ubi.html">UBI</a> design paper available </li>
