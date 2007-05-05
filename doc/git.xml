@@ -18,7 +18,7 @@ trees are available and can be browsed through the gitweb interface
 at <A HREF="http://git.infradead.org/">http://git.infradead.org/</A>.
 </P>
 
-<P>Users with accounts on git.infradead.org (aka pentafluge.infradead.org)
+<P>Users with accounts on git.infradead.org (aka bombadil.infradead.org)
 can create their own git trees which are publicly accessible. A cron
 job runs every five minutes, indexing the available trees in users' 
 <TT>~/public_git/</TT> directories and making them available in
@@ -29,7 +29,7 @@ Anything you commit should be on top of the latest mtd-2.6 git tree,
 rather than against a clean tree from Linus. Avoid doing any merges of
 your own, unless absolutely necessary.</P>
 
-<P>Please try to avoid cloning directly from git.infradead.org --
+<P>Please try to avoid cloning a full tree directly from git.infradead.org --
 you'll be downloading many thousands of objects which are already
 present in the official upstream source tree. Save your disk space and
 our network bandwidth by using 'alternates' instead. This is what the
@@ -60,18 +60,19 @@ the 'reference' or 'alternate' tree, rather than duplicating them.</P>
 Creating your own tree is simple. You create a <TT>public_git</TT>
 directory within your home directory, and ensure that it is world-readable:
 <PRE>
-$ ssh pentafluge.infradead.org
+$ ssh bombadil.infradead.org
 $ mkdir ~/public_git
 $ chmod og+rx ~ ~/public_git
 </PRE>
 
 Once you've done that, you can create trees in your <TT>public_git</TT>
-directory by cloning from the existing trees which are in <TT>/home/git</TT>
+directory by cloning from the existing trees which are in <TT>/srv/git</TT>
 (or indeed from other users' trees):
 
 <PRE>
 $ cd ~/public_git
-$ git clone -l -n -s --bare /home/git/mtd-2.6.git foo-2.6.git
+$ git clone -l -n -s --bare /srv/git/mtd-2.6.git foo-2.6.git
+$ echo 'this is my tree for playing with foobar' &amp;gt; foo-2.6.git/description
 </PRE>
 
 <P>Your new tree will be immediately accessible to the public through the
@@ -80,17 +81,20 @@ URL <TT>git://git.infradead.org/~&lt;I&gt;user&lt;/I&gt;/foo-2.6.git</TT>.
 <P>Within five minutes of its creation, your tree should be visible 
 through the <A HREF="http://git.infradead.org/">gitweb</A> interface
   too.</P>
-<P>You can then make a local clone of your public tree, make commits
-  to it and push them back using the URL
+<P>You can then make a local clone of your public tree (as shown below),
+make commits to it and push them back. For this, use the URL
 <TT>ssh://git.infradead.org/~/public_git/foo-2.6.git</TT>.</P>
 
-<P>Note, when working with <TT>git://</TT> URLs, ~ (tilde) may be used
-   to specify home directory, but you should use full path in case of
-   <TT>ssh://</TT> URLs (i.e., <TT>/home/user</TT>).</P>
+<P><I>Note: The git d&amp;aelig;mon exports each user's <TT>public_git</TT> directory as 
+   <TT>git://git.infradead.org/~<I>user</I></TT> &amp;mdash; just as httpd would
+   export their <TT>public_html</TT> directory as
+   <TT>http://bar.infradead.org/~<I>user</I></TT>. So be aware that 
+   when using <TT>ssh://</TT> URLs, you must specify the <TT>public_git</TT>
+   part of the path, as shown in the example above.</I></P>
 
 <hr size="2" />
 
-<H3>Working with your MTD GIT tree (requires git 1.3.0 or newer)</H3>
+<H3>Working with your GIT tree</H3>
 
 <H4>Clone Linus' tree</H4>
 If you don't already have a copy of Linus' tree locally, get one:
@@ -102,18 +106,58 @@ Using Linus' tree as a reference for existing objects, clone the MTD
 <PRE>$ git clone --reference linux-2.6 git://git.infradead.org/mtd-2.6.git mtd-2.6</PRE>
 
 <H4>Clone your own tree</H4>
-Again uUsing Linus' tree as a reference for existing objects, clone your
+Now using the MTD tree as a reference for existing objects, clone your
 own tree from your <TT>public_git</TT> directory:
-<PRE>$ git clone --reference linux-2.6 ssh://git.infradead.org/~/public_git/foo-2.6.git myfoo-2.6</PRE>
+<PRE>$ git clone --reference mtd-2.6 ssh://git.infradead.org/~/public_git/foo-2.6.git myfoo-2.6</PRE>
 
-<P><I>(Note that you <b>must</b> specify the linux-2.6 tree as a
-  reference rather than the mtd-2.6 tree if you cloned them as shown
-  above, because git 'alternates' are not transitive -- it wouldn't
-  find objects in the linux-2.6 tree if you were to refer it to the
-  mtd-2.6 tree, and it would break.)</I>
-</P>
 Having cloned your tree, you can now commit to it using git-commit
 and push the results back with git-push.
+<H4>Keeping branches in your own tree</H4>
+<P>
+In general, I would advise that you avoid branches; especially on the server
+&amp;mdash; it's easy enough just to create new trees instead, and
+much less complicated to deal with.</P>
+<P>However, it <em>is</em> useful to
+keep a 'branch' in your tree for each upstream repository that you
+pull from. The <TT>mtd-2.6.git</TT> tree has such a branch called
+'linus' which shows the last merge from Linus' master kernel tree,
+thus allowing operations like <TT>git-diff linus..</TT> to work
+easily, and helping the the script which feeds the commits list to
+exclude commits which came from upstream repositories.
+</P>
+<P>You may find it useful to keep similar '<TT>linus</TT>' and
+'<TT>mtd</TT>' branches in your own tree. This can be achieved by
+setting up the <TT>.git/config</TT> file in your local clone(s)
+something like the following:</P>
 
+<PRE>
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+[remote "origin"]
+        url = ssh://git.infradead.org/~/public_git/foo-2.6.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+	fetch = +refs/heads/mtd:refs/heads/mtd
+	fetch = +refs/heads/linus:refs/heads/linus
+        push = refs/heads/master:refs/heads/master
+        push = refs/heads/mtd:refs/heads/mtd
+        push = refs/heads/linus:refs/heads/linus
+[branch "master"]
+        remote = origin
+        merge = refs/heads/master
+[remote "mtd"]
+        url = git://git.infradead.org/mtd-2.6.git
+        fetch = refs/heads/master:refs/heads/mtd
+        fetch = +refs/heads/linus:refs/heads/linus
+[remote "linus"]
+        url = git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.$
+        fetch = refs/heads/master:refs/heads/linus
+</PRE>
+
+<P>Now, each time you pull from the MTD tree or from Linus directly, your
+<TT>mtd</TT> and/or <TT>linus</TT> branches will be updated. And when you push
+to your repository on the server, the same branches there will be updated to match.</P>
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
