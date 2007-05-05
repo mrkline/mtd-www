@@ -37,11 +37,6 @@ our network bandwidth by using 'alternates' instead. This is what the
 that you keep only one copy of all the git objects which exist in
 the 'reference' or 'alternate' tree, rather than duplicating them.</P>
 
-<P>There are two suggested methods of working with your own local tree
-  -- the first is the simple method which uses a git tree with just
-  one 'master' branch, while the other deals with multiple branches in
-  the same directory.</P>
-
 <hr size="2" />
 
 <H3>General GIT reference documentation</H3>
