@@ -54,26 +54,15 @@
 <H2>How can I find UBI source?</H2>
 </A>
 
-<P>UBI is not yet in the mainline kernel, and it has its own git repository.
-Please, read the <A HREF="../doc/git.html">MTD git page</A> for more
-information about how to fetch MTD git trees. The UBI git tree is
-available at <A HREF="git://git.infradead.org/ubi-2.6.git">
-git://git.infradead.org/ubi-2.6.git</A>, so the command to fetch it is:</P>
-
-<PRE>
-$ git-clone --reference linux-2.6 git://git.infradead.org/ubi-2.6.git
-</PRE>
-
-<P>The UBI git tree is basically linux-2.6.20 release plus UBI patches.</P>
+<P>UBI is now in mainline kernel - it was pulled by Linus after 2.6.21 was
+	released, so one can find it in later kernels.</P>
 
 <P>There is also an UBI development tree available at
-<A HREF="git://git.infradead.org/home/dedekind/dedekind-ubi-2.6.git">
-git://git.infradead.org/home/dedekind/dedekind-ubi-2.6.git.</A></P>
+<A HREF="git://git.infradead.org/home/dedekind/ubi-2.6.git">
+git://git.infradead.org/home/dedekind/ubi-2.6.git.</A></P>
 
-
-<P>User-space UBI utilities are available at the "<I>ubi</I>" branch of the
-<CODE>mtd-utils</CODE> git repository
-(<A HREF="git://git.infradead.org/mtd-utils.git">
+<P>User-space UBI utilities are available at the <CODE>mtd-utils</CODE> git
+repository (<A HREF="git://git.infradead.org/mtd-utils.git">
 git://git.infradead.org/mtd-utils.git</A>). There is also a bunch of UBI tests
 in this repository.</P>
 
