@@ -1,0 +1,73 @@
+<PAGE>
+	<VAR match="VAR_ORIGIN" replace="../" />
+	<VAR match="VAR_CVSID" replace="$Id: ubifs.xml,v 1.3 2005/11/02 12:27:23 dedekind Exp $"/>
+	<INCLUDE file="../inc/header.tmpl" />
+
+	<VAR match="VAR_SEL_DOC" replace="selected" />
+	<VAR match="VAR_SEL_UBIFS" replace="selected" />
+	<PARSE file="../menu1.xml" />
+
+	<INCLUDE file="../inc/content.tmpl" />
+
+	<H2>UBIFS - new flash file system</H2>
+
+	<P>UBIFS is a new flash file system which is designed to work on top
+	of UBI. At the moment the file system is developed by Nokia engineers
+	and the <A href="http://www.inf.u-szeged.hu/tanszekek/szoftverfejlesztes/starten.xml">
+	University of Szeged</A>.</P>
+
+	<P>UBIFS is ths new name for the old JFFS3 project. We do not have
+	ready-to-use code yet, but the current code base may be found at
+	<CODE>git://git.infradead.org/~dedekind/new-ubifs-2.6.git</CODE>.</P>
+
+	<P>We also do not have any decent documentation so far, but some documentation
+	may be found at
+	<A href="http://osl.sed.hu/wiki/ubifs">Szeged Wiki page</A>. Better
+	documentation will be written over time when we have more or less
+	ready-to-use code.</P>
+
+	<P>Using UBI was our design decision. The following is an explanation of
+	why.</P>
+
+	<P>First off, we have realized that creating a scalable flash file
+	system on top of bare flash is a difficult task, just because the
+	flash media is so problematic (wear-leveling, bad eraseblocks). We
+	have tried this way, and it turned out to be that we solved media problems,
+	instead of concentrating on file system issues. So we decided to split
+	one big and complex tasks into 2 sub-tasks: UBI solves the media problems,
+	like bad eraseblocks and wear-leveling, and UBIFS implements the file
+	system on top. And now finally, we may concentrate on file-system
+	issues: implementing write-back caching, multi-headed journal, garbage
+	collector, indexing information management and so on. There are <B>a
+	lot</B> of FS problems to solve - orphaned files, deletions,
+	recoverability after unclean reboots and so on.</P>
+
+	<P>So UBI provides us UBI volumes, which largely look like bare flash
+	devices - they have (logical) eraseblocks and read/write/erase
+	operations. But they are devoid of wear-leveling issues and bad
+	eraseblock issues. It is the duty of UBI to handle that. UBIFS just does
+	not need to care about these problems. Also, UBI provides us one more very
+	important operation, which does not exist when working with bare MTD
+	devices - atomic logical eraseblock change. This means, that you can ask
+	UBI to change the contents of an logical eraseblock atomically, so if the
+	operation is interrupted, the old contents of the logical eraseblock is
+	preserved. UBIFS will utilize this call to implement in-place Garbage
+	Collection, per-eraseblock information table support (so-called lprops
+	table), and cleaning-up the file system after unclean reboots.</P>
+
+	<P>Of course, the main objective of UBIFS is to provide better
+	scalability then JFFS2 has. But UBI itself is not scalable at the
+	moment, because it needs to scan the flash when attached. But our argument
+	is that UBI is <I>reasonably</I> scalable at the moment because it needs
+	to read only the first few bytes of each eraseblock. So it has to be fairly
+	fast for even 32GiB flashes. We also argue that UBI may be improved in
+	the future and be made more scalable. After all, it is even possible to
+	implement a scalable UBI2 in the future. UBIFS itself will not contain
+	any linearly scalable component and will scale logarithmically.</P>
+
+	<P><A href="../tech/JFFS3design.pdf">Here</A> is the old JFFS3 design
+	document which is largely outdated, but still contains descriptions of
+	the basic ideas used in UBIFS.</P>
+
+	<INCLUDE file="../inc/footer.tmpl" />
+</PAGE>
