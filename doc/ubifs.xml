@@ -16,13 +16,13 @@
 	and the <A href="http://www.inf.u-szeged.hu/tanszekek/szoftverfejlesztes/starten.xml">
 	University of Szeged</A>.</P>
 
-	<P>UBIFS is ths new name for the old JFFS3 project. We do not have
+	<P>UBIFS is the new name for the old JFFS3 project. We do not have
 	ready-to-use code yet, but the current code base may be found at
 	<CODE>git://git.infradead.org/~dedekind/new-ubifs-2.6.git</CODE>.</P>
 
 	<P>We also do not have any decent documentation so far, but some documentation
 	may be found at
-	<A href="http://osl.sed.hu/wiki/ubifs">Szeged Wiki page</A>. Better
+	<A href="http://osl.sed.hu/wiki/ubifs">UBIFS Wiki page</A>. Better
 	documentation will be written over time when we have more or less
 	ready-to-use code.</P>
 
