@@ -36,9 +36,9 @@
 	<h3>Jarkko Lavinen</h3>
 	<p>Jarkko is the performance janitor of JFFS2<br clear="all" /></p></div>
 
-	<div><img src="images/artem.jpg" align="right" alt="Image of Artem B. Bityutskiy" style="padding-left:10px"  />
-	<h3>Artem B. Bityutskiy</h3>
-	<p>Artem is involved in JFFS2 and started the development of JFFS3 recently. He implemented the UBI layer.<br clear="all" /></p></div>
+	<div><img src="images/artem.jpg" align="right" alt="Image of Artem Bityutskiy" style="padding-left:10px"  />
+	<h3>Artem Bityutskiy</h3>
+	<p>Artem is involved in JFFS2, implemented UBI and is working on UBIFS.<br clear="all" /></p></div>
 
 	<div><img src="images/havasi.jpg" align="right" alt="Image of Ferenc Havasi" style="padding-left:10px"  />
 	<h3>Ferenc Havasi</h3>
