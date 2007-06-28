@@ -120,39 +120,5 @@ thus allowing operations like <TT>git-diff linus..</TT> to work
 easily, and helping the the script which feeds the commits list to
 exclude commits which came from upstream repositories.
 </P>
-<P>You may find it useful to keep similar '<TT>linus</TT>' and
-'<TT>mtd</TT>' branches in your own tree. This can be achieved by
-setting up the <TT>.git/config</TT> file in your local clone(s)
-something like the following:</P>
-
-<PRE>
-[core]
-        repositoryformatversion = 0
-        filemode = true
-        bare = false
-        logallrefupdates = true
-[remote "origin"]
-        url = ssh://git.infradead.org/~/public_git/foo-2.6.git
-        fetch = +refs/heads/*:refs/remotes/origin/*
-	fetch = +refs/heads/mtd:refs/heads/mtd
-	fetch = +refs/heads/linus:refs/heads/linus
-        push = refs/heads/master:refs/heads/master
-        push = refs/heads/mtd:refs/heads/mtd
-        push = refs/heads/linus:refs/heads/linus
-[branch "master"]
-        remote = origin
-        merge = refs/heads/master
-[remote "mtd"]
-        url = git://git.infradead.org/mtd-2.6.git
-        fetch = refs/heads/master:refs/heads/mtd
-        fetch = +refs/heads/linus:refs/heads/linus
-[remote "linus"]
-        url = git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.$
-        fetch = refs/heads/master:refs/heads/linus
-</PRE>
-
-<P>Now, each time you pull from the MTD tree or from Linus directly, your
-<TT>mtd</TT> and/or <TT>linus</TT> branches will be updated. And when you push
-to your repository on the server, the same branches there will be updated to match.</P>
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
