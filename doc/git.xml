@@ -120,5 +120,9 @@ thus allowing operations like <TT>git-diff linus..</TT> to work
 easily, and helping the the script which feeds the commits list to
 exclude commits which came from upstream repositories.
 </P>
+<P>You may find it useful to keep similar '<TT>linus</TT>' and
+'<TT>mtd</TT>' branches in your own tree. This used to be relatively
+simple, but I don't actually know how to set up current versions of
+git to do it so I won't attempt to explain it here.</P>
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
