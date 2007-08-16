@@ -18,7 +18,7 @@
 
 	<P>UBIFS is the new name for the old JFFS3 project. We do not have
 	ready-to-use code yet, but the current code base may be found at
-	<CODE>git://git.infradead.org/~dedekind/new-ubifs-2.6.git</CODE>.</P>
+	<CODE>git://git.infradead.org/~dedekind/ubifs-2.6.git</CODE>.</P>
 
 	<P>We also do not have any decent documentation so far, but some documentation
 	may be found at
