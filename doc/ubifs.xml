@@ -16,11 +16,33 @@
 	and the <A href="http://www.inf.u-szeged.hu/tanszekek/szoftverfejlesztes/starten.xml">
 	University of Szeged</A>.</P>
 
-	<P>UBIFS is the new name for the old JFFS3 project. We do not have
-	ready-to-use code yet, but the current code base may be found at
-	<CODE>git://git.infradead.org/~dedekind/ubifs-2.6.git</CODE>.</P>
+	<P>UBIFS is the new name for the old JFFS3 project. We already have
+	working code which may be found at
+	<CODE>git://git.infradead.org/~dedekind/ubifs-2.6.git</CODE>. The
+	file-system works more or less stably, although it needs clean-ups
+	and some features to be added. Nevertheless, major things are already
+	implemented and work:</P>
+	<UL>
+		<LI>write-back (JFFS2 is write-through for example);</LI>
+		<LI>on-flash LPT - per-logical eraseblock information which is
+		needed when looking for an empty LEB or a target LEB to do
+		garbage-collection is stored on flash in form of LPT
+		(LEB Properties Tree);</LI>
+		<LI>garbage collection of data nodes an indexing nodes;</LI>
+		<LI>multi-headed journal (GC has its own write head, nodes
+		which are expected to be changed soon have their own write
+		head;</LI>
+		<LI>srinker - TNC (Tree Node Cache) which caches indexing nodes
+		may be shrink if Linux VM needs more memory;</LI>
+		<LI>compression - for now we only support LZO, although other
+		compressors will be added later;</LI>
+		<LI>orphan files are supported and handled;</LI>
+	</UL>
 
-	<P>We also do not have any decent documentation so far, but some documentation
+	<P>There are many less crucial features to add though, e.g., xattr
+	support.</P>
+
+	<P>We do not have any decent documentation so far, but some documentation
 	may be found at
 	<A href="http://osl.sed.hu/wiki/ubifs">UBIFS Wiki page</A>. Better
 	documentation will be written over time when we have more or less
@@ -42,20 +64,7 @@
 	lot</B> of FS problems to solve - orphaned files, deletions,
 	recoverability after unclean reboots and so on.</P>
 
-	<P>So UBI provides us UBI volumes, which largely look like bare flash
-	devices - they have (logical) eraseblocks and read/write/erase
-	operations. But they are devoid of wear-leveling issues and bad
-	eraseblock issues. It is the duty of UBI to handle that. UBIFS just does
-	not need to care about these problems. Also, UBI provides us one more very
-	important operation, which does not exist when working with bare MTD
-	devices - atomic logical eraseblock change. This means, that you can ask
-	UBI to change the contents of an logical eraseblock atomically, so if the
-	operation is interrupted, the old contents of the logical eraseblock is
-	preserved. UBIFS will utilize this call to implement in-place Garbage
-	Collection, per-eraseblock information table support (so-called lprops
-	table), and cleaning-up the file system after unclean reboots.</P>
-
-	<P>Of course, the main objective of UBIFS is to provide better
+	<P>Of course, one of the main objectives of UBIFS is to provide better
 	scalability then JFFS2 has. But UBI itself is not scalable at the
 	moment, because it needs to scan the flash when attached. But our argument
 	is that UBI is <I>reasonably</I> scalable at the moment because it needs
@@ -66,7 +75,7 @@
 	any linearly scalable component and will scale logarithmically.</P>
 
 	<P><A href="../tech/JFFS3design.pdf">Here</A> is the old JFFS3 design
-	document which is largely outdated, but still contains descriptions of
+	document which is totally outdated, but still contains descriptions of
 	the basic ideas used in UBIFS.</P>
 
 	<INCLUDE file="../inc/footer.tmpl" />
