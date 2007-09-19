@@ -50,7 +50,7 @@
 	</div>
     	<hr size="2" />
     	<h2>IRC</h2>
-    	<p>The IRC channel is <tt>#mtd</tt> on <tt>irc.ipv6.oftc.net</tt> (which includes Legacy IP addresses despite its name)</tt></p>
+    	<p>The IRC channel is <tt>#mtd</tt> on <tt>irc.ipv6.oftc.net</tt> (which includes Legacy IP addresses despite its name)</p>
 
 	<INCLUDE file="inc/footer.tmpl" />
 </PAGE>
