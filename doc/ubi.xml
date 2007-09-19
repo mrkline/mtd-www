@@ -80,12 +80,12 @@
     <ul>
         <li>both consist of eraseblocks (logical eraseblocks in case of UBI
 	volumes, and physical eraseblocks in case of static partitions;</li>
-	<li>both support three basic operations - read, write, erase.</li>	    
+	<li>both support three basic operations - read, write, erase.</li>
     </ul>
 
     <p>But UBI volumes have the following advantages over traditional
     static MTD partitions:</p>
-    
+
     <ul>
         <li>there are no eraseblock wear-leveling constraints in case
         of UBI volumes, so the user should not care about this;</li>
