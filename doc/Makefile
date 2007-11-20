@@ -2,7 +2,7 @@
 CONV 	= "../html.py"
 
 TARGETS	= general.html jffs2.html ubifs.html nand.html logfs.html \
-	ubi.html git.html
+	ubi.html git.html onenand.html
 
 all: $(TARGETS)
 

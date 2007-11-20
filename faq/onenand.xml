@@ -1,0 +1,39 @@
+<PAGE>
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="$Id: onenand.xml,v 1.1 2007/11/20 13:48:22 kmpark Exp $"/>
+<INCLUDE file="../inc/header.tmpl" />
+
+<VAR match="VAR_SEL_FAQ" replace="selected" />
+<VAR match="VAR_SEL_ONENAND" replace="selected" />
+<PARSE file="../menu1.xml" />
+
+<INCLUDE file="../inc/content.tmpl" />
+
+
+
+<H2>Table of contents</H2>
+<OL>
+	<LI><A HREF="nand.html#L_onenand_boot">Can I boot from OneNAND flash?</A></LI>
+</OL>
+
+
+
+<A NAME="L_onenand_boot">
+<H2>Can I boot from OneNAND flash?</H2>
+</A>
+
+<P>
+One of the best features OneNAND has is that it can be a booting device itself since it contains an internally built-in boot loader despite the fact that its core architecture is based on NAND Flash. Thus, OneNAND does not make any additional booting device necessary for a system, which imposes extra cost or area overhead on the overall system.
+</P>
+
+<P>
+As the system power is turned on, the boot code originally stored in NAND Flash Array is moved to BootRAM automatically and then fetched by CPU through the same interface as SRAM's or NOR Flash's <B>if the size of the boot code is less than 1KB</B>. If its size is larger than 1KB and less than or equal to 3KB, only 1KB of it can be moved to BootRAM automatically and fetched by CPU, and the rest of it can be loaded into one of the DataRAMs whose size is 2KB by Load Command and CPU can take it from the DataRAM after finishing the code-fetching job for BootRAM. If its size is larger than 3KB, the 1KB portion of it can be moved to BootRAM automatically and fetched by CPU, and its remaining part can be moved to DRAM through two DataRAMs using dual buffering and taken by CPU to reduce CPU fetch time.</P>
+
+<P>
+For more information, see the "Boot Sequence" at OneNAND Spec.<BR />
+Or visit <a href="http://source.mvista.com/git/gitweb.cgi?p=xloader.git;a=summary">X-Loader (example 1KB OneNAND bootloader)</a> page.
+</P>
+
+<INCLUDE file="../inc/footer.tmpl" />
+</PAGE>
+

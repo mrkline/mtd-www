@@ -19,6 +19,7 @@
     <li>General information on this page</li>
     <li><a href="nand.html">NAND Flash</a>technical paper</li>
     <li><a href="../tech/mtdnand/index.html">NAND Flash API</a> documentation</li>
+    <li><a href="onenand.html">OneNAND Flash</a>technical paper</li>
     <li><a href="jffs2.html">JFFS2</a>documentation section</li>
     <li><a href="ubi.html">UBI</a>documentation section</li>
     <li><a href="ubifs.html">UBIFS</a>documentation section</li>

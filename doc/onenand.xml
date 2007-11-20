@@ -1,0 +1,233 @@
+<PAGE>
+	<VAR match="VAR_ORIGIN" replace="../" />
+	<VAR match="VAR_CVSID" replace="$Id: onenand.xml,v 1.1 2007/11/20 13:48:22 kmpark Exp $"/>
+	<INCLUDE file="../inc/header.tmpl" />
+
+	<VAR match="VAR_SEL_DOC" replace="selected" />
+	<VAR match="VAR_SEL_ONENAND" replace="selected" />
+	<PARSE file="../menu1.xml" />
+
+	<INCLUDE file="../inc/content.tmpl" />
+
+<h2>OneNAND</h2>
+<div>
+<p>
+The OneNAND is a highly reliable embedded memory targeted for both consumer electronic, and next generation mobile phone market. With accumulated NAND flash technologies over the last decade, the company designs an ideal single memory chip based on NAND architecture integrating SRAM buffers and logic interface.
+The OneNAND takes both advantages from high-speed data read function of NOR flash and the advanced data storage function of NAND flash.</p>
+		
+<table border="1" cellpadding="2" cellspacing="0">
+<tr align="center"><td>Application Requires</td><td><b>NAND </b></td><td><b>OneNAND </b></td><td><b>NOR </b></td></tr>
+<tr align="center"><td>Fast Random Read </td><td> </td><td> </td><td>o </td></tr>
+<tr align="center"><td>Fast Sequential Read </td><td>o </td><td>o </td><td>o </td></tr>
+<tr align="center"><td>Fast Write/Program </td><td>o </td><td>o </td><td> </td></tr>
+<tr align="center"><td>Multi Block Erase</td><td> </td><td>o (Max 64 blocks) </td><td>o </td></tr>
+<tr align="center"><td>Erase Suspend/Resume</td><td> </td><td>o </td><td>o</td></tr>
+<tr align="center"><td>Copyback</td><td>o (EDC) </td><td>o (ECC) </td><td> </td></tr>
+<tr align="center"><td>Lock/Unlock/Lock-Tight</td><td> </td><td>o </td><td>o </td></tr>
+<tr align="center"><td>ECC </td><td>External (Hardware/Software) </td><td>Internal </td><td>X </td></tr>
+<tr align="center"><td>Scalablity </td><td>o </td><td>o </td><td> </td></tr>
+</table>
+
+</div>
+
+<hr size="2" />
+		
+<h2>JFFS2 on OneNAND</h2>
+<div>
+<p>It has the same behavior of bare NAND</p>
+</div>
+		
+<hr size="2" />
+		
+<h2>JFFS2 specific information</h2>
+<h3>JFFS2 Out of Band usage</h3>
+<div>
+<p>JFFS2 uses the default autoplacement scheme. The only JFFS2 specific usage of the oob area is the storage of the cleanmarker</p>
+
+<h4>Nand chips with 1048 byte pagesize and 32 byte OOB size<br />
+Nand chips with 2048 byte pagesize and 64 byte OOB size</h4>
+
+<table border="1" cellpadding="2" cellspacing="0">
+<tr><td><b>Offset</b></td><td><b>Content</b></td><td><b>Comment</b></td></tr>
+<tr><td>0x02</td><td>Clean marker byte 0</td><td>This byte indicates that a 
+block was erased under JFFS2 control. If the page was succesfully erased 
+this byte in the first page of a block is programmed to 0x85. In the remaining 
+pages this byte is reserved</td></tr>
+<tr><td>0x03</td><td>Clean marker byte 1</td><td>This byte indicates that a 
+block was erased under JFFS2 control. If the page was succesfully erased 
+this byte in the first page of a block is programmed to 0x19. In the remaining 
+pages this byte is reserved</td></tr>
+<tr><td>0x04</td><td>Clean marker byte 2</td><td>This byte indicates that a 
+block was erased under JFFS2 control. If the page was succesfully erased 
+this byte in the first page of a block is programmed to 0x03. In the remaining 
+pages this byte is reserved</td></tr>
+<tr><td>0x0e</td><td>Clean marker byte 3</td><td>This byte indicates that a 
+block was erased under JFFS2 control. If the page was succesfully erased 
+this byte in the first page of a block is programmed to 0x20. In the remaining 
+pages this byte is reserved</td></tr>
+<tr><td>0x0f</td><td>Clean marker byte 4</td><td>This byte indicates that a 
+block was erased under JFFS2 control. If the page was succesfully erased 
+this byte in the first page of a block is programmed to 0x08. In the remaining 
+pages this byte is reserved</td></tr>
+<tr><td>0x12</td><td>Clean marker byte 5</td><td>This byte indicates that a 
+block was erased under JFFS2 control. If the page was succesfully erased 
+this byte in the first page of a block is programmed to 0x00. In the remaining 
+pages this byte is reserved</td></tr>
+<tr><td>0x13</td><td>Clean marker byte 6</td><td>This byte indicates that a 
+block was erased under JFFS2 control. If the page was succesfully erased 
+this byte in the first page of a block is programmed to 0x00. In the remaining 
+pages this byte is reserved</td></tr>
+<tr><td>0x14</td><td>Clean marker byte 7</td><td>This byte indicates that a 
+block was erased under JFFS2 control. If the page was succesfully erased 
+this byte in the first page of a block is programmed to 0x00. In the remaining 
+pages this byte is reserved</td></tr>
+</table>
+</div>
+
+<hr size="2" />
+
+<h2>UBI on OneNAND</h2>
+<p>You can use the UBI on OneNAND</p>
+
+Here's full sequences of UBI on OneNAND.
+
+<h3>onenand partitions</h3>
+<p>
+Muxed OneNAND 128MB 1.8V 16-bit (0x30)<br />
+Scanning device for bad blocks<br />
+Bad eraseblock 4 at 0x00080000<br />
+Bad eraseblock 32 at 0x00400000<br />
+Bad eraseblock 1008 at 0x07e00000<br />
+Creating 6 MTD partitions on "onenand":<br />
+0x00000000-0x00020000 : "X-Loader + U-Boot"<br />
+0x00020000-0x00040000 : "params"<br />
+0x00040000-0x00240000 : "kernel"<br />
+0x00240000-0x01240000 : "rootfs"<br />
+0x01240000-0x03240000 : "filesystem00"<br />
+0x03240000-0x08000000 : "filesystem01"<br />
+<br />
+/ # /mtd-utils/eraseall /dev/mtd3<br />
+Erasing onenand_erase: attempt to erase a bad block at addr 0x00400000<br />
+Erasing 128 Kibyte @ 1c0000 -- 10 % complete.<br />
+MTD Erase failure: Input/output error<br />
+Erasing 128 Kibyte @ fe0000 -- 99 % complete.<br />
+<br />
+There's one initial bad block, so we can't use this partition as block device such as cramfs</p>
+
+<h3>Load ubi module</h3>
+<p>
+/ # insmod /mtd-utils/ubi.ko mtd=3 <br />
+Using /mtd-utils/ubi.ko <br />
+UBI: background thread "ubi_bgt0d" started, PID 192 <br />
+UBI: empty MTD device detected<br />
+UBI: create volume table (copy #1)<br />
+UBI: create volume table (copy #2)<br />
+UBI: mean erase counter:         0<br />
+UBI: attached mtd3 to ubi0<br />
+UBI: MTD device name:            "rootfs"<br />
+UBI: MTD device size:            16 MB<br />
+UBI: physical eraseblock size:   131072 bytes (128 KB)<br />
+UBI: logical eraseblock size:    126976 bytes<br />
+UBI: number of good PEBs:        127<br />
+UBI: number of bad PEBs:         1<br />
+UBI: smallest flash I/O unit:    2048<br />
+UBI: VID header offset:          2048 (aligned 2048)<br />
+UBI: data offset:                4096<br />
+UBI: max. allowed volumes:       124<br />
+UBI: wear-levelling threshold:   4096<br />
+UBI: number of internal volumes: 2<br />
+UBI: number of user volumes:     0<br />
+UBI: available PEBs:             122<br />
+UBI: total number of reserved PEBs: 5<br />
+UBI: number of PEBs reserved for bad PEB handling: 1</p>
+
+<h3>Create ubi volume</h3>
+<p>
+/ # /mtd-utils/ubimkvol -s 10485760 -N rootfs-cramfs -d 0<br />
+/ # cat /proc/mtd<br />
+dev:    size   erasesize  name<br />
+mtd0: 00020000 00020000 "X-Loader + U-Boot"<br />
+mtd1: 00020000 00020000 "params"<br />
+mtd2: 00200000 00020000 "kernel"<br />
+mtd3: 01000000 00020000 "rootfs"<br />
+mtd4: 02000000 00020000 "filesystem00"<br />
+mtd5: 04dc0000 00020000 "filesystem01"<br />
+mtd6: 00a0d000 0001f000 "rootfs-cramfs" &lt;- ubi partition<br />
+<br />
+ubi parition, mtd6 is created.</p>
+
+<h3>copy cramfs image to ubi partition</h3>
+<p>/ # cp cramfs.img /dev/mtdblock6 </p>
+
+<h3>mount cramfs and test</h3>
+<p>
+/ # mount -t cramfs /dev/mtdblock6 /tmp<br />
+/ # cd /tmp<br />
+/tmp # ls<br />
+bin     dev     lib     proc    tmp     var<br />
+cramfs  etc     mnt     sbin    usr<br />
+/tmp # mount<br />
+/dev/mtdblock6 on /tmp type cramfs (ro)</p>
+
+<h3>create jffs2 ubi partition</h3>
+<p>
+/ # /mtd-utils/ubimkvol -s 4194304 -N rootfs-jffs2 -d 0<br />
+/ # cat /proc/mtd<br />
+dev:    size   erasesize  name<br />
+mtd0: 00020000 00020000 "X-Loader + U-Boot"<br />
+mtd1: 00020000 00020000 "params"<br />
+mtd2: 00200000 00020000 "kernel"<br />
+mtd3: 01000000 00020000 "rootfs"<br />
+mtd4: 02000000 00020000 "filesystem00"<br />
+mtd5: 04dc0000 00020000 "filesystem01"<br />
+mtd6: 00a0d000 0001f000 "rootfs-cramfs"<br />
+mtd7: 0041e000 0001f000 "rootfs-jffs2"<br />
+<br />
+ubi partition, mtd7 is created.</p>
+
+<h3>mount jffs2 and test</h3>
+<p>
+/ # mount -t jffs2 /dev/mtdblock7 /mnt<br />
+JFFS2 write-buffering enabled buffer (2048) erasesize (126976)<br />
+/ # mount<br />
+/dev/mtdblock6 on /tmp type cramfs (ro)<br />
+/dev/mtdblock7 on /mnt type jffs2 (rw)<br />
+<br />
+/ # cd /mnt<br />
+/mnt # cat /proc/filesystems > filesystem <br />
+/mnt # cat filesystem<br />
+<i> the contents of filesystem... </i><br />
+/mnt # cd ..<br />
+/ # umount /mnt<br />
+/ # mount -t jffs2 /dev/mtdblock7 /mnt<br />
+JFFS2 write-buffering enabled buffer (2048) erasesize (126976)<br />
+/ # cd /mnt<br />
+/mnt # cat filesystem<br />
+<i> the same contents of filesystem... </i><br />
+</p>
+
+<hr size="2" />
+		
+<h2>Yaffs2</h2>
+
+<p>The yaffs2 can run on OneNAND</p>
+<p>If your yaffs2 dosen't work, please check this <a href="http://git.infradead.org/?p=users/vwool/mtd-2.6.git;a=commitdiff;h=ee5b82bdacf2a69d247eca93271da2c72acdc950">patch</a></p>
+
+<hr size="2" />
+		
+<h2>FAQ</h2>
+<p>Please see the OneNAND section in <a href="../faq/onenand.html">MTD FAQ's</a></p>
+
+<hr size="2" />
+		
+<h2>References:</h2>
+<h3>Experimental patches</h3>
+<p><a href="http://lists.infradead.org/pipermail/linux-mtd/2007-July/019058.html">Cache Read support</a></p>
+<p><a href="http://lists.infradead.org/pipermail/linux-mtd/2007-January/017178.html">Sync. Burst Block Read support</a></p>
+<h3>Open Source</h3>
+<p><a href="http://www.yaffs.net/">Yaffs</a></p>
+<h3>Hardware</h3>
+<p><a href="http://www.samsung.com/global/business/semiconductor/products/fusionmemory/Products_OneNAND.html">Samsung</a></p>
+		
+	<INCLUDE file="../inc/footer.tmpl" />
+</PAGE>
