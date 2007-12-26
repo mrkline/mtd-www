@@ -1,101 +1,128 @@
 <PAGE>
-	<VAR match="VAR_ORIGIN" replace="../" />
-	<VAR match="VAR_CVSID" replace="$Id:$"/>
-	<INCLUDE file="../inc/header.tmpl" />
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="$Id:$"/>
+<INCLUDE file="../inc/header.tmpl" />
 
-	<VAR match="VAR_SEL_DOC" replace="selected" />
-	<VAR match="VAR_SEL_UBI" replace="selected" />
-	<PARSE file="../menu1.xml" />
+<VAR match="VAR_SEL_DOC" replace="selected" />
+<VAR match="VAR_SEL_UBI" replace="selected" />
+<PARSE file="../menu1.xml" />
 
-	<INCLUDE file="../inc/content.tmpl" />
+<INCLUDE file="../inc/content.tmpl" />
 
-    <h2>UBI - Unsorted Block Images</h2>
 
-    <p>UBI (Latin: "where?") manages multiple logical volumes on a single
-    flash device, specifically supporting NAND flash devices. UBI provides
-    a flexible partitioning concept which still allows for wear-levelling
-    across the <strong>whole</strong> flash device.</p> 
-    
-    <p>In a sense, UBI may be compared to the Logical Volume Manager (LVM).
-    Whereas LVM maps logical sector numbers to physical HDD sector numbers, UBI
-    maps logical eraseblocks to physical eraseblocks.</p>
+<H2>Table of contents</H2>
+<OL>
+	<LI><A HREF="ubi.html#L_overview">UBI overview</A></LI>
+	<LI><A HREF="ubi.html#L_ubidoc">UBI documentation</A></LI>
+</OL>
 
-    <p>More information may be found in the UBI design documentation:
-    <a href="../doc/ubidesign/ubidesign.pdf">ubidesign.pdf</a>.</p>
 
-    <h3>Partitioning/Re-partitioning</h3>
 
-    <p>An UBI volume occupies a certain number of erase blocks. This is limited
-    by a configured maximum volume size, which could also be viewed as the
-    partition size. Each individual UBI volume's size can be changed
-    independently of the other UBI volumes, provided that the sum of all
-    volume sizes doesn't exceed a certain limit.</p>
+<A NAME="L_overview">
+<H3>UBI overview</H3>
+</A>
 
-    <p>UBI supports <strong>dynamic</strong> volumes and
-    <strong>static</strong> volumes. Static volumes are read-only and their
-    contents are protected by CRC check sums.</p>
+<P>UBI (Latin: "where?") stands for "Unsorted Block Images". It is a
+volume management system for flash devices which manages multiple logical
+volumes on a single physical flash device and spreads the I/O load (i.e,
+wear-leveling) across the whole flash chip.</P>
 
-    <h3>Bad eraseblocks handling</h3>
+<P>In a sense, UBI may be compared to the Logical Volume Manager
+(<A HREF="http://sources.redhat.com/lvm2/">LVM</A>).
+Whereas LVM maps logical sectors to physical sectors, UBI maps logical
+eraseblocks to physical eraseblocks. But besides the mapping, UBI implements
+global wear-leveling and I/O errors handling.</P>
 
-    <p>UBI transparently handles bad eraseblocks. When a physical eraseblock
-    becomes bad, it is substituted by a good physical eraseblock, and the user
-    does not even notice this.</p>
-    
-    <h3>Scrubbing</h3>
+<P>An UBI volume is a set of consecutive <I>logical eraseblocks</I>. Each
+logical eraseblock may be mapped to any physical eraseblock. This mapping is
+managed by UBI, it is hidden from users and it is the base mechanism to provide
+global wear-leveling (along with per-physical eraseblock erase counters and
+the ability to transparently move data from less worn-out physical eraseblocks
+to more worn-out ones).</P>
 
-    <p>On a NAND flash bit flips can occur on any write operation, sometimes
-    also on read. If bit flips persist on the device, at first they can still
-    be corrected by ECC, but once they accumulate, correction will become
-    impossible. Thus it is best to actively <strong>scrub</strong> the
-    affected eraseblock, by first copying it to a free eraseblock and then
-    erasing the original. The UBI layer performs this type of scrubbing under
-    the covers, transparently to the UBI volume users.</p>
+<P>UBI volume size is specified when the volume is created a may later be
+changed (volumes are dynamically re-sizable). UBI supports <I>dynamic</I>
+volumes and <I>static</I> volumes. Static volumes are read-only and their
+contents are protected by CRC check sums, while dynamic volumes are read-write
+and the upper layer (e.g., a file-system) is responsible for data integrity.</P>
 
-    <h3>Erase Counts</h3>
+<P>UBI is aware of bad eraseblocks (e.g., NAND flash may have them) and
+frees the upper layer from any bad block handling. UBI has a pool of reserved
+physical eraseblocks, and when a physical eraseblock becomes bad, it
+transparently substitutes it by a good physical eraseblock. UBI moves good data
+from the newly appeared bad physical eraseblock to the good one as well. The
+result is that users of UBI volumes do not notice I/O errors as UBI takes care
+of them.</P>
 
-    <p>UBI maintains an erase count header per eraseblock. This frees
-    higher-level layers (like file systems) from doing this and allows for
-    centralized erase count management instead. The erase counts are used by
-    the wear-levelling algorithm in the UBI layer. The algorithm itself is
-    exchangeable.</p>
+<P>NAND flashes may have bit-flips which occur on read and write operations.
+Bit-flips are corrected by ECC checksums, but they may accumulate over
+time and cause data loss. UBI handles this by moving data from physical
+eraseblocks with bit-flips to other physical eraseblocks, thus doing active
+scrubbing. This is done transparently in background and is hidden from upper
+layers.</P>
 
-    <h3>Booting from NAND</h3>
+<P>Here is a short list of the main UBI features:</P>
+<UL>
+	<LI>provides volumes which may be dynamically created, removed, or
+	re-sized;</LI>
+	<LI>implements wear-leveling across whole flash device (i.e., one may
+	continuously write/erase only the first logical eraseblock of an UBI
+	volume, but UBI will spread this to all physical eraseblocks of the
+	flash chip);</LI>
+	<LI>transparently handles bad physical eraseblocks;</LI>
+	<LI>minimizes chances to loose data by means of "scrubbing".</LI>
+</UL>
 
-    <p>For booting directly from NAND flash the hardware must at least be
-    capable of fetching and executing a small portion of the NAND flash. Some
-    NAND flash controllers have this kind of support. They usually limit the
-    window to a few kilobytes in erase block 0. This "initial program loader"
-    (IPL) must then contain sufficient logic to load and execute the next boot
-    phase.</p>
+<P>Here is a comparison of MTD partitions and UBI volumes. UBI volumes are
+rather similar to MTD partitions because:</P>
+<UL>
+	<LI>both consist of eraseblocks - logical eraseblocks in case of UBI
+	volumes, and physical eraseblocks in case of static partitions;</LI>
+	<LI>both support three basic operations - read, write, erase, although
+	UBI have a better "unmap" operation which implements background
+	erasure, instead of synchronous.</LI>
+</UL>
 
-    <p>Due to bad eraseblocks, which may be randomly scattered over the flash
-    device, it is problematic to store the  "secondary program loader" (SPL)
-    statically. Also, due to bit-flips it may become corrupted over time. UBI
-    allows to solve this problem gracefully by storing the SPL in a
-    small static UBI volume.</p>
+<P>But UBI volumes have the following advantages over traditional MTD
+partitions:</P>
+<UL>
+	<LI>there are no eraseblock wear-leveling constraints in case of UBI
+	volumes, so the user should not care about this at all, which means
+	upper-level software may be simpler;</LI>
+	<LI>there are bad eraseblocks in case of UBI volumes, which also leads
+	to simpler upper-level software;</LI>
+	<LI>UBI handles bit-flips;</LI>
+	<LI>UBI also provides an "atomic logical eraseblock change" operation
+	which allows to change the contents of a logical eraseblock and do not
+	loose data if an unclean reboot happens during the operation; this is
+	might be very useful for upper-level software (e.g., for a
+	file-system);</LI>
+	<LI>UBI has an "unmap" operation, which just un-maps a logical
+	eraseblock from the physical eraseblock, schedules the physical
+	eraseblock for erasure and returns; this is very quick and frees upper
+	level software from implementing their own mechanisms to defer erasure
+	(e.g., JFFS2 implements such mechanisms).</LI>
+</UL>
 
-    <h2>UBI volumes vs. static partitions</h2>
+<P>So, existing software may still work on top of UBI volumes, while new
+software may benefit from the UBI features and let UBI solve many issues
+which the flash technology imposes.</P>
 
-    <p>UBI volumes are still very similar to static MTD partitions:</p>
-    <ul>
-        <li>both consist of eraseblocks (logical eraseblocks in case of UBI
-	volumes, and physical eraseblocks in case of static partitions;</li>
-	<li>both support three basic operations - read, write, erase.</li>
-    </ul>
 
-    <p>But UBI volumes have the following advantages over traditional
-    static MTD partitions:</p>
 
-    <ul>
-        <li>there are no eraseblock wear-leveling constraints in case
-        of UBI volumes, so the user should not care about this;</li>
+<A NAME="L_ubidoc">
+<H3>UBI documentation</H3>
+</A>
 
-        <li>there are no bit-flips and bad eraseblocks in case of UBI
-	volumes.</li>
-    </ul>
+<P>Unfortunatelly, there is no nice and shiny UBI documents. But there is an
+old UBI design document which was not finished and has some out-of-date
+information, but it might be useful to grasp UBI conscepts: <A
+HREF="../doc/ubidesign/ubidesign.pdf">ubidesign.pdf</A>.</P>
 
-    <p>So, UBI volumes may be considered as flash devices with relaxed
-    restrictions.</p>
+<P>There is also a PowerPoint UBI presentation availabe:
+<A HREF="../doc/ubi.ppt">ubi.ppt</A>. But this document has to be looked at
+in Windows, because it contains a lot of animation and OpenOffice cannot
+properly show it.</P>
 
-	<INCLUDE file="../inc/footer.tmpl" />
+<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
