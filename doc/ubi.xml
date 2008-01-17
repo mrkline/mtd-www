@@ -12,15 +12,26 @@
 
 <H2>Table of contents</H2>
 <OL>
+	<LI><A HREF="ubi.html#L_rednote">Big red note</A></LI>
 	<LI><A HREF="ubi.html#L_overview">UBI overview</A></LI>
 	<LI><A HREF="ubi.html#L_ubidoc">UBI documentation</A></LI>
+	<LI><A HREF="ubi.html#L_definitions">Definitions</A></LI>
 </OL>
 
 
 
-<A NAME="L_overview">
-<H3>UBI overview</H3>
+<A NAME="L_rednote">
+<H2><FONT COLOR="RED">Big red note</FONT></H2>
 </A>
+
+<P>People are often confused and treat UBI as a block device emulation layer
+(also known as FTL - flash translation layer). But this is not true - <B>UBI
+is not an FTL.</B> Read the following documentation or see
+<A HREF="../faq/ubi.html#L_ext2_over_ubi">this</A> FAQ entry.</P>
+
+
+
+<A NAME="L_overview"> <H3>UBI overview</H3> </A>
 
 <P>UBI (Latin: "where?") stands for "Unsorted Block Images". It is a
 volume management system for flash devices which manages multiple logical
@@ -110,19 +121,19 @@ which the flash technology imposes.</P>
 
 
 
-<A NAME="L_ubidoc">
-<H3>UBI documentation</H3>
-</A>
+<A NAME="L_ubidoc"> <H3>UBI documentation</H3> </A>
 
 <P>Unfortunatelly, there is no nice and shiny UBI documents. But there is an
-old UBI design document which was not finished and has some out-of-date
-information, but it might be useful to grasp UBI conscepts: <A
-HREF="../doc/ubidesign/ubidesign.pdf">ubidesign.pdf</A>.</P>
+old UBI design document which has some out-of-date information:
+<A HREF="ubidesign/ubidesign.pdf">ubidesign.pdf</A>.</P>
 
 <P>There is also a PowerPoint UBI presentation availabe:
-<A HREF="../doc/ubi.ppt">ubi.ppt</A>. But this document has to be looked at
+<A HREF="ubi.ppt">ubi.ppt</A>. Note, this document has to be looked at
 in Windows, because it contains a lot of animation and OpenOffice cannot
-properly show it.</P>
+properly show it. Use slide show (<CODE>F5</CODE> key) when you look at it.</P>
+
+<P>Many useful information may be found at the
+<A HREF="../faq/ubi.html">FAQ</A> section.</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
