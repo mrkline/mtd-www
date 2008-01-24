@@ -100,7 +100,7 @@ partitions:</P>
 	<LI>there are no eraseblock wear-leveling constraints in case of UBI
 	volumes, so the user should not care about this at all, which means
 	upper-level software may be simpler;</LI>
-	<LI>there are bad eraseblocks in case of UBI volumes, which also leads
+	<LI>there are no bad eraseblocks in case of UBI volumes, which also leads
 	to simpler upper-level software;</LI>
 	<LI>UBI handles bit-flips;</LI>
 	<LI>UBI also provides an "atomic logical eraseblock change" operation
@@ -172,7 +172,9 @@ old UBI design document which has some out-of-date information:
 <P>There is also a PowerPoint UBI presentation available:
 <A HREF="ubi.ppt">ubi.ppt</A>. Note, this document has to be looked at
 in Windows, because it contains a lot of animation and Open Office cannot
-properly show it. Use slide show (<CODE>F5</CODE> key) when you look at it.</P>
+properly show it. Use slide show (<CODE>F5</CODE> key) when you look, because
+otherwise the animation is not shown. The same slide may change to demonstrate
+UBI work once a key is pressed.</P>
 
 <P>Many useful information may be found at the
 <A HREF="../faq/ubi.html">FAQ</A> section.</P>
