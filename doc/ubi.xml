@@ -124,12 +124,12 @@ which the flash technology imposes.</P>
 <A NAME="L_ubiutils"><H3>UBI utilities</H3></A>
 
 <P>UBI utilities are available from the the
-<CODE>git://git.infradead.org/mtd-unitl.git</CODE>
+<CODE>git://git.infradead.org/mtd-utils.git</CODE>
 repository (<CODE>ubi-utils</CODE> sub-directory). One should download the
 source codes and compile them. Please, download the latest version of the
 utilities as they were recently changed quite a lot:</P>
 
-<CODE>git-clone git://git.infradead.org/mtd-unitl.git</CODE>
+<CODE>git-clone git://git.infradead.org/mtd-utils.git</CODE>
 
 <P>The repository contains the following UBI utilities:</P>
 <UL>
@@ -157,7 +157,7 @@ utilities as they were recently changed quite a lot:</P>
 
 <P>All UBI utilities support "-h" option and print sufficient usage
 information.</P>
-<P>Also note, there is an <CODE>old-tools</CODE> sub-directory which contain
+<P>Also note, there is an <CODE>old-tools</CODE> sub-directory which contains
 some old UBI tools which might be useful (e.g., <B>unubi</B>). But they need
 some fixes/clean-ups/documentation etc.</P>
 
