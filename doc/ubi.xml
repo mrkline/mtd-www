@@ -14,8 +14,8 @@
 <OL>
 	<LI><A HREF="ubi.html#L_rednote">Big red note</A></LI>
 	<LI><A HREF="ubi.html#L_overview">UBI overview</A></LI>
+	<LI><A HREF="ubi.html#L_ubiutils">UBI utilities</A></LI>
 	<LI><A HREF="ubi.html#L_ubidoc">UBI documentation</A></LI>
-	<LI><A HREF="ubi.html#L_definitions">Definitions</A></LI>
 </OL>
 
 
@@ -31,7 +31,7 @@ is not an FTL.</B> Read the following documentation or see
 
 
 
-<A NAME="L_overview"> <H3>UBI overview</H3> </A>
+<A NAME="L_overview"><H3>UBI overview</H3></A>
 
 <P>UBI (Latin: "where?") stands for "Unsorted Block Images". It is a
 volume management system for flash devices which manages multiple logical
@@ -121,15 +121,57 @@ which the flash technology imposes.</P>
 
 
 
-<A NAME="L_ubidoc"> <H3>UBI documentation</H3> </A>
+<A NAME="L_ubiutils"><H3>UBI utilities</H3></A>
 
-<P>Unfortunatelly, there is no nice and shiny UBI documents. But there is an
+<P>UBI utilities are available from the the
+<CODE>git://git.infradead.org/mtd-unitl.git</CODE>
+repository (<CODE>ubi-utils</CODE> sub-directory). One should download the
+source codes and compile them. Please, download the latest version of the
+utilities as they were recently changed quite a lot:</P>
+
+<CODE>git-clone git://git.infradead.org/mtd-unitl.git</CODE>
+
+<P>The repository contains the following UBI utilities:</P>
+<UL>
+	<LI><B>ubinfo</B> - provides information about UBI installed in the
+	system, about all UBI devices and volumes;</LI>
+	<LI><B>ubiattach</B> - an utility to attach MTD devices (which describe
+	raw flash) to UBI, which creates an UBI device sitting on top of the
+	MTD device; this is an alternative method to specifying MTD devices on
+	module load or in kernel boot command line;</LI>
+	<LI><B>ubidetach</B> - an utility to detach MTD devices from UBI
+	devices, which deletes the UBI device; in other words, this utility
+	does the opposite to what <B>ubiattach</B> does;</LI>
+	<LI><B>ubimkvol</B> - an utility to create UBI volumes on UBI
+	devices;</LI>
+	<LI><B>ubirmvol</B> - an utility to remove UBI volumes on UBI
+	devices;</LI>
+	<LI><B>ubiupdate</B> - an utility to update UBI volumes, which means to
+	write new volume contents; this utility uses the UBI volume update
+	feature which leaves the volume in "corrupted" state if interrupted;
+	additionally, this utility may be used to wipe out UBI volumes;</LI>
+	<LI><B>ubicrc32</B> - calculate CRC32 checksum of a file with the same
+	initial seed as UBI would use;</LI>
+	<LI><B>ubinize</B> - an utility to generate UBI images.</LI>
+</UL>
+
+<P>All UBI utilities support "-h" option and print sufficient usage
+information.</P>
+<P>Also note, there is an <CODE>old-tools</CODE> sub-directory which contain
+some old UBI tools which might be useful (e.g., <B>unubi</B>). But they need
+some fixes/clean-ups/documentation etc.</P>
+
+
+
+<A NAME="L_ubidoc"><H3>UBI documentation</H3></A>
+
+<P>Unfortunately, there is no nice and shiny UBI documents. But there is an
 old UBI design document which has some out-of-date information:
 <A HREF="ubidesign/ubidesign.pdf">ubidesign.pdf</A>.</P>
 
-<P>There is also a PowerPoint UBI presentation availabe:
+<P>There is also a PowerPoint UBI presentation available:
 <A HREF="ubi.ppt">ubi.ppt</A>. Note, this document has to be looked at
-in Windows, because it contains a lot of animation and OpenOffice cannot
+in Windows, because it contains a lot of animation and Open Office cannot
 properly show it. Use slide show (<CODE>F5</CODE> key) when you look at it.</P>
 
 <P>Many useful information may be found at the
