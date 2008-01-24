@@ -590,7 +590,7 @@ reasonable to mark it as auto-resize.</P>
 as auto-resized, it will be enlarged by 0-2% on the first UBI boot, but 1% of
 PEBs will anyway be reserved for bad PEB handling.</P>
 
-<P>Note, the auto-resize feature was added very recently and it it not in the
+<P>Note, the auto-resize feature was added very recently and it is not in the
 main-line kernel yet, but it should appear in version 2.6.25. Use
 <A HREF="ubi.html#L_source">UBI git tree</A> to find the implementation of the
 feature.</P>

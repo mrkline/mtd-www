@@ -30,7 +30,7 @@ the same NAND page, which is quite typical for SLC flashes). The resulting
 image will have one UBI volume storing UBIFS file-system.</P>
 
 <PRE>
-# mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o out.ubifs
+# mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o ubifs.img
 # ubinize -o ubi.img -m 2048 -p 128KiB -s 512 ubinize.cfg
 </PRE>
 
@@ -76,11 +76,11 @@ vol_flags=autoresize
 	<LI><CODE>-s 512</CODE>: tells <CODE>ubinize</CODE> that the flash
 	supports sub-pages and sub-page size is 512 bytes; <CODE>ubinize</CODE>
 	will take this into account and put the VID header to the same NAND
-	page as the EC header;</LI>
+	page as the EC header.</LI>
 </UL>
 
 <P>The <CODE>ubinize</CODE> utility requires volumes description file which has
-standard <CODE>.ini</CODE> files syntax. One UBI image may contain many UBI
+standard <CODE>.ini</CODE> file syntax. One UBI image may contain many UBI
 volumes with different characteristics and it is difficult to invent a nice
 command-line interface for specifying those characteristics, this is why the
 utility requires the volumes description file.</P>
@@ -91,7 +91,7 @@ alignment 1. The configuration file also sets the "autoresize" volume flag,
 which means that the volume will be automatically enlarged by UBIFS to have
 the maximum possible size when it runs for the first time. See
 <A HREF="../doc/ubi.html#L_autoresize">here</A> for more information about what
-the auto-resize trick.</P>
+is the auto-resize trick.</P>
 
 <P>Run <CODE>ubinize -h</CODE> and <CODE>mkfs.ubifs -h</CODE> for more
 information and for more possibilities to tweak images.</P>
