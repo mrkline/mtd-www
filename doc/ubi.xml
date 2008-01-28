@@ -468,6 +468,13 @@ is preserved.</P>
 <CODE>write()</CODE> is called and how much data it passes to the UBI volume
 each time. The operation is finished once the last byte arrives.</P>
 
+<P>The atomic LEB change operation might be very useful for file-systems, for
+example UBIFS uses this operation as a last resort thing when it commits the
+FS index. This operation may also be exploited to create an FTL layer on top of
+UBI (see <A
+HREF="http://lists.infradead.org/pipermail/linux-mtd/2008-January/020381.html">
+here</A> for the description of the idea).</P>
+
 <P>Keep in mind that the atomic LEB change operation calculates CRC32 checksum
 of the new data, so it has some overhead comparing to a LEB erase plus LEB
 write sequence. The volume update operation does not calculate data CRC, so it
