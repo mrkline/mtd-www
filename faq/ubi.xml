@@ -55,7 +55,7 @@
 </A>
 
 <P>UBI is now in mainline kernel - it was pulled by Linus after 2.6.21 was
-	released, so one can find it in later kernels.</P>
+released, so one can find it in later kernels.</P>
 
 <P>There is also an UBI development tree available at
 <A HREF="git://git.infradead.org/home/dedekind/ubi-2.6.git">
