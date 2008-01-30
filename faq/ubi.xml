@@ -14,7 +14,6 @@
 <H2>Table of contents</H2>
 <OL>
 	<LI><A HREF="ubi.html#L_abbrev">Abbreviations</A></LI>
-	<LI><A HREF="ubi.html#L_find_ubi_src">How can I find UBI source?</A></LI>
 	<LI><A HREF="ubi.html#L_enable_ubi">How to enable UBI?</A></LI>
 	<LI><A HREF="ubi.html#L_run_ubi">How to run UBI on top of my MTD device?</A></LI>
 	<LI><A HREF="ubi.html#L_run_jffs2">Can I run JFFS2 on top of UBI volumes?</A></LI>
@@ -47,24 +46,6 @@
 	<LI><I>PEB</I> - physical eraseblock (see <A HREF="ubi.html#L_leb_and_peb">here</A>);</LI>
 	<LI><I>VID header</I> - volume identifier header (see <A HREF="ubi.html#L_why_headers">here</A>);</LI>
 </UL>
-
-
-
-<A NAME="L_find_ubi_src">
-<H2>How can I find UBI source?</H2>
-</A>
-
-<P>UBI is now in mainline kernel - it was pulled by Linus after 2.6.21 was
-released, so one can find it in later kernels.</P>
-
-<P>There is also an UBI development tree available at
-<A HREF="git://git.infradead.org/home/dedekind/ubi-2.6.git">
-git://git.infradead.org/home/dedekind/ubi-2.6.git.</A></P>
-
-<P>User-space UBI utilities are available at the <CODE>mtd-utils</CODE> git
-repository (<A HREF="git://git.infradead.org/mtd-utils.git">
-git://git.infradead.org/mtd-utils.git</A>). There is also a bunch of UBI tests
-in this repository.</P>
 
 
 

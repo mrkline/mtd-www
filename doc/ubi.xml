@@ -9,11 +9,14 @@
 
 <INCLUDE file="../inc/content.tmpl" />
 
+<H1>UBI - Unsorted Block Images</H1>
 
 <H2>Table of contents</H2>
 <OL>
 	<LI><A HREF="ubi.html#L_rednote">Big red note</A></LI>
 	<LI><A HREF="ubi.html#L_overview">UBI overview</A></LI>
+	<LI><A HREF="ubi.html#L_source">UBI source code</A></LI>
+	<LI><A HREF="ubi.html#L_ml">Mailing list</A></LI>
 	<LI><A HREF="ubi.html#L_ubiutils">UBI utilities</A></LI>
 	<LI><A HREF="ubi.html#L_scalability">UBI scalability</A></LI>
 	<OL><LI><A HREF="ubi.html#L_scalability_det">Implementation details</A></LI></OL>
@@ -131,6 +134,26 @@ which the flash technology imposes.</P>
 
 
 
+<A NAME="L_source"><H3>UBI source code</H3></A>
+
+<P>UBI is in the main-line Linux kernel starting from version 2.6.22. But it is
+recommended to use the latest UBI which can be found in the UBI git tree:</P>
+
+<CODE>git://git.infradead.org/home/dedekind/ubi-2.6.git</CODE>
+
+<P>The UBI git tree is usually based on top of the lates release of the linux
+kernel and it should not be too difficult to fetch all UBI patches from the UBI
+git tree and to apply them to your tree.</P>
+
+
+
+<A NAME="L_ml"><H3>Mailing list</H3></A>
+
+<P>You are welcome to send feed-back, bug-reports, patches, etc to the
+<A HREF="../mail.html">MTD mailing list</A>.</P>
+
+
+
 <A NAME="L_ubiutils"><H3>UBI utilities</H3></A>
 
 <P>UBI utilities are available from the the
@@ -171,7 +194,7 @@ information.</P>
 
 <P>Note, <CODE>ubiattach</CODE> and <CODE>ubidettach</CODE> won't work unless
 one has ported UBI patches from the
-<A HREF="../faq/ubi.html#L_find_ubi_src">UBI git tree</A>, because the dynamic
+<A HREF="ubi.html#L_source">UBI git tree</A>, because the dynamic
 UBI devices support was implemented quite recently. It should be in the
 main-line kernel starting from version 2.6.25.</P>
 
@@ -444,7 +467,7 @@ contents.</P>
 <P>The operation is available via the <CODE>ubi_leb_change()</CODE> kernel API
 call. The user-space interface for this operation does not exist in the
 mainline kernel so far, but it was recently implemented and may be found in the
-<A HREF="../faq/ubi.html#L_find_ubi_src">UBI git tree</A>. It should be
+<A HREF="ubi.html#L_source">UBI git tree</A>. It should be
 available in the main-line kernels starting from version 2.6.25.</P>
 
 <P>The user-space atomic LEB change operation is run via the

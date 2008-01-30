@@ -1,82 +1,193 @@
 <PAGE>
-	<VAR match="VAR_ORIGIN" replace="../" />
-	<VAR match="VAR_CVSID" replace="$Id: ubifs.xml,v 1.3 2005/11/02 12:27:23 dedekind Exp $"/>
-	<INCLUDE file="../inc/header.tmpl" />
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="$Id: ubifs.xml,v 1.3 2005/11/02 12:27:23 dedekind Exp $"/>
+<INCLUDE file="../inc/header.tmpl" />
 
-	<VAR match="VAR_SEL_DOC" replace="selected" />
-	<VAR match="VAR_SEL_UBIFS" replace="selected" />
-	<PARSE file="../menu1.xml" />
+<VAR match="VAR_SEL_DOC" replace="selected" />
+<VAR match="VAR_SEL_UBIFS" replace="selected" />
+<PARSE file="../menu1.xml" />
 
-	<INCLUDE file="../inc/content.tmpl" />
+<INCLUDE file="../inc/content.tmpl" />
 
-	<H2>UBIFS - new flash file system</H2>
+<H1>UBIFS - UBI File-System</H1>
 
-	<P>UBIFS is a new flash file system which is designed to work on top
-	of UBI. At the moment the file system is developed by Nokia engineers
-	and the <A href="http://www.inf.u-szeged.hu/tanszekek/szoftverfejlesztes/starten.xml">
-	University of Szeged</A>.</P>
+<H2>Table of contents</H2>
+<OL>
+	<LI><A HREF="ubifs.html#L_rednote">Big red note</A></LI>
+	<LI><A HREF="ubifs.html#L_overview">UBIFS overview</A></LI>
+	<LI><A HREF="ubifs.html#L_status">UBIFS status</A></LI>
+	<LI><A HREF="ubifs.html#L_source">UBIFS source code</A></LI>
+	<LI><A HREF="ubifs.html#L_ml">Mailing list</A></LI>
+	<LI><A HREF="ubifs.html#L_utilities">UBIFS utilities</A></LI>
+	<LI><A HREF="ubifs.html#L_scalability">UBIFS scalability</A></LI>
+</OL>
 
-	<P>UBIFS is the new name for the old JFFS3 project. We already have
-	working code which may be found at
-	<CODE>git://git.infradead.org/~dedekind/ubifs-2.6.git</CODE>. The
-	file-system works more or less stably, although it needs clean-ups
-	and some features to be added. Nevertheless, major things are already
-	implemented and work:</P>
-	<UL>
-		<LI>write-back (JFFS2 is write-through for example);</LI>
-		<LI>on-flash LPT - per-logical eraseblock information which is
-		needed when looking for an empty LEB or a target LEB to do
-		garbage-collection is stored on flash in form of LPT
-		(LEB Properties Tree);</LI>
-		<LI>garbage collection of data nodes an indexing nodes;</LI>
-		<LI>multi-headed journal (GC has its own write head, nodes
-		which are expected to be changed soon have their own write
-		head;</LI>
-		<LI>srinker - TNC (Tree Node Cache) which caches indexing nodes
-		may be shrink if Linux VM needs more memory;</LI>
-		<LI>compression - for now we only support LZO, although other
-		compressors will be added later;</LI>
-		<LI>orphan files are supported and handled;</LI>
-	</UL>
 
-	<P>There are many less crucial features to add though, e.g., xattr
-	support.</P>
 
-	<P>We do not have any decent documentation so far, but some documentation
-	may be found at
-	<A href="http://osl.sed.hu/wiki/ubifs">UBIFS Wiki page</A>. Better
-	documentation will be written over time when we have more or less
-	ready-to-use code.</P>
+<A NAME="L_rednote">
+<H2><FONT COLOR="RED">Big red note</FONT></H2>
+</A>
 
-	<P>Using UBI was our design decision. The following is an explanation of
-	why.</P>
+<P>One thing people have to understand when dealing with UBIFS is that UBIFS is
+very different to any traditional file-system - it <B>does not</B> work on top
+of block devices (like hard drive, an SD card, an USB stick, etc). It was
+designed to work on top of UBI volumes, which have nothing to do with block
+devices. This is why UBIFS does not work on MMC cards or USB flash sticks -
+they look like block devices to the outside world because they implement
+FTL (Flash Translation Layer) support in hardware, which simply speaking
+emulates a block device on top of the built-in flash chip.
+<A HREF="../faq/general.html#L_mtd_vs_hdd">This</A> FAQ entry describes the
+difference between block devices and flash chips.</P>
 
-	<P>First off, we have realized that creating a scalable flash file
-	system on top of bare flash is a difficult task, just because the
-	flash media is so problematic (wear-leveling, bad eraseblocks). We
-	have tried this way, and it turned out to be that we solved media problems,
-	instead of concentrating on file system issues. So we decided to split
-	one big and complex tasks into 2 sub-tasks: UBI solves the media problems,
-	like bad eraseblocks and wear-leveling, and UBIFS implements the file
-	system on top. And now finally, we may concentrate on file-system
-	issues: implementing write-back caching, multi-headed journal, garbage
-	collector, indexing information management and so on. There are <B>a
-	lot</B> of FS problems to solve - orphaned files, deletions,
-	recoverability after unclean reboots and so on.</P>
 
-	<P>Of course, one of the main objectives of UBIFS is to provide better
-	scalability then JFFS2 has. But UBI itself is not scalable at the
-	moment, because it needs to scan the flash when attached. But our argument
-	is that UBI is <I>reasonably</I> scalable at the moment because it needs
-	to read only the first few bytes of each eraseblock. So it has to be fairly
-	fast for even 32GiB flashes. We also argue that UBI may be improved in
-	the future and be made more scalable. After all, it is even possible to
-	implement a scalable UBI2 in the future. UBIFS itself will not contain
-	any linearly scalable component and will scale logarithmically.</P>
 
-	<P><A href="../tech/JFFS3design.pdf">Here</A> is the old JFFS3 design
-	document which is totally outdated, but still contains descriptions of
-	the basic ideas used in UBIFS.</P>
+<A NAME="L_overview"><H3>UBIFS overview</H3></A>
 
-	<INCLUDE file="../inc/footer.tmpl" />
+<P>UBIFS is a new flash file system which is designed to work on top
+of UBI. The moment the file system is developed by Nokia engineers
+with help of
+<A href="http://www.inf.u-szeged.hu/tanszekek/szoftverfejlesztes/starten.xml">
+the University of Szeged</A>.</P>
+
+<P>UBIFS works on top of UBI volumes, it cannot operate on top of MTD
+devices. In other words, there are 3 subsystems involved:</P>
+
+<UL>
+	<LI><I>MTD subsystem</I>, which provides a uniform interface to access
+	flash chips. MTD provides a notion of MTD devices (e.g.,
+	<CODE>/dev/mtd0</CODE>) which basically provide access to the raw
+	flash;</LI>
+	<LI><I>UBI subsystem</I>, which is a volume management system for flash
+	devices; UBI works on top of MTD devices and provides a notion of
+	UBI volumes; UBI volumes are more "high level" entities then MTD
+	devices and they are devoid of many unpleasant issues MTD devices have
+	(e.g., wearing and bad blocks); See <A HREF="ubi.html">here</A> for more
+	information;</LI>
+	<LI><I>UBIFS file-system</I>, which works on top of UBI volumes.</LI>
+</UL>
+
+<P>In contrast, JFFS2 file-system works on top of raw MTD devices.</P>
+
+<P>The main objectives of UBIFS are:</P>
+
+<OL>
+	<LI>better scalability comparing to what JFFS2 provides, which is achieved
+	by storing and maintaining the indexing data structures of the file-system
+	on the flash media;</LI>
+	<LI>write-back support;</LI>
+	<LI>support of on-the-flight compression.</LI>
+</OL>
+
+<P>Please, find more comments to each of the above points in the following
+sections.</P>
+
+<P>Here is a short and unsorted list of some of UBIFS features:</P>
+
+<UL>
+	<LI>write-back support - this dramatically improves the throughput of
+	the file-system comparing to JFFS2, which is write-through;</LI>
+
+	<LI>fast mount time - unlike JFFS2, UBIFS does not have to scan whole
+	media when mounting, it takes few milliseconds for UBIFS to mount
+	the media, and this does not depend on flash size; the reason is that
+	however, UBI
+	initialization time depends on flash size and has to be taken into
+	account (see
+	<A HREF="ubi.html#L_scalability">here</A> for more details);</LI>
+
+	<LI>tolerance to unclean reboots - UBIFS is a journaling file system
+	and it tolerates sudden crashes and unclean reboots; UBIFS just replays
+	the journal and recovers from the unclean reboot automatically; mount
+	time is a little bit slower in this case, because of the need to read
+	the journal, but UBIFS does not need to scan whole media, so it anyway
+	takes fractions of second;</LI>
+
+	<LI>fast I/O - even with write-back disabled (e.g., if UBIFS is mounted
+	with <CODE>-o sync</CODE> mount flag UBIFS shows good performance
+	which is close to JFFS2 performance; bear in mind, it is extremely
+	difficult to compete with JFFS2 in synchronous I/O, because JFFS2 does
+	not maintain indexing data structures on flash, so it does not have the
+	maintenance overhead, while UBIFS does have it; the main UBIFS write
+	speed booster is the write-back support; the other one is the way UBIFS
+	commits the journal - it does not move the data physically from one
+	place to another but instead, it just adds corresponding information to
+	the file-system index and picks different eraseblocks for the new
+	journal (i.e., UBIFS has sort of "wandering" journal);</LI>
+
+	<LI>on-the-flight compression - the data is stored in compressed form
+	on the flash media, which makes it possible to put considerably more
+	data to the flash as if the data would not be compressed; this is
+	similar to what JFFS2 has; UBIFS also allows to switch the
+	compression on/off on per-inode basis, which very flexible; for
+	example, one may switch the compression off by default and enable it
+	only for certain files which are supposed to compress well; or one may
+	switch compression on by default but disable it for supposedly
+	uncompressible data like multimedia files; at the moment UBIFS supports
+	only Zlib and LZO compressors and it is not difficult to add more;</LI>
+</UL>
+
+
+
+<A NAME="L_status"><H3>UBIFS status</H3></A>
+
+<P>UBIFS has proved to be fairly stable, however it needs more testing. It
+needs some features like extended attributes support to be implemented. It
+needs tuning, e.g., finding optimal journal size and fan-out of the indexing
+tree. It also needs some profiling and bottleneck hunting.</P>
+
+
+
+<A NAME="L_source"><H3>UBIFS source code</H3></A>
+
+<P>The UBIFS development git tree is:</P>
+
+<CODE>git://git.infradead.org/home/dedekind/ubifs-2.6.git</CODE>
+
+<P>The git tree is usually based on top of the latest main-line Linux kernel
+release, which is 2.6.24 at the moment. There are also 2.6.23 and 2.6.22
+back-ports, although they are not always up-to-date and one needs to pick
+up additional patches from the main development tree to utilize the latest
+UBIFS version. The back-ports may be found at the following git-trees:</P>
+
+<CODE>git://git.infradead.org/home/dedekind/ubifs-v2.6.23.git</CODE><BR/>
+<CODE>git://git.infradead.org/home/dedekind/ubifs-v2.6.23.git</CODE>
+
+
+
+<A NAME="L_ml"><H3>Mailing list</H3></A>
+
+<P>You are welcome to send feed-back, bug-reports, patches, etc to the
+<A HREF="../mail.html">MTD mailing list</A>. There is no good UBIFS
+documentation so far, so feel free to ask any questions.</P>
+
+
+
+<A NAME="L_utilities"><H3>UBIFS utilities</H3></A>
+
+<P>There is only one UBIFS user-space utility at the moment -
+<B>mkfs.ubifs</B>, which is used to create UBIFS images. The utility may be
+found at</P>
+
+<CODE>git://git.infradead.org/home/dedekind/mkfs.ubifs.git</CODE>
+
+<P>The images produced by the <CODE>mkfs.ubifs</CODE> utility may be written to
+UBI volumes using the <CODE>ubiupdate</CODE> tool
+(see <A HREF="ubi.html#L_ubiutils">here</A>) or may be further fed to the
+<CODE>ubinize</CODE> utility (see <A HREF="ubi.html#L_ubiutils">here</A>) to
+create an UBI image which may be put to the MTD device.</P>
+
+
+
+<A NAME="L_scalability"><H3>UBIFS scalability</H3></A>
+
+<P>All the data structures UBIFS is using are trees, so it scales
+logarithmically in terms of flash size. However, UBI scales linearly
+(see <A HREF="ubi.html#L_scalability">here</A> which makes
+overall UBI/UBIFS stack scalability linear. But the UBIFS authors believe it is
+always possible to create logarithmically scalable UBI2 and to improve the
+situation. Current UBI should be OK for 2-32GiB flashes, depending on the
+I/O speed and requirements.</P>
+
+
+<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
