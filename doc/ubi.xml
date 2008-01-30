@@ -139,7 +139,7 @@ which the flash technology imposes.</P>
 <P>UBI is in the main-line Linux kernel starting from version 2.6.22. But it is
 recommended to use the latest UBI which can be found in the UBI git tree:</P>
 
-<CODE>git://git.infradead.org/home/dedekind/ubi-2.6.git</CODE>
+<CODE>git://git.infradead.org/~dedekind/ubi-2.6.git</CODE>
 
 <P>The UBI git tree is usually based on top of the lates release of the linux
 kernel and it should not be too difficult to fetch all UBI patches from the UBI

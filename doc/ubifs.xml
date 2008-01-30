@@ -44,8 +44,7 @@ difference between block devices and flash chips.</P>
 <A NAME="L_overview"><H3>UBIFS overview</H3></A>
 
 <P>UBIFS is a new flash file system which is designed to work on top
-of UBI. The moment the file system is developed by Nokia engineers
-with help of
+of UBI. The file system is developed by Nokia engineers with help of
 <A href="http://www.inf.u-szeged.hu/tanszekek/szoftverfejlesztes/starten.xml">
 the University of Szeged</A>.</P>
 
@@ -141,7 +140,7 @@ tree. It also needs some profiling and bottleneck hunting.</P>
 
 <P>The UBIFS development git tree is:</P>
 
-<CODE>git://git.infradead.org/home/dedekind/ubifs-2.6.git</CODE>
+<CODE>git://git.infradead.org/~dedekind/ubifs-2.6.git</CODE>
 
 <P>The git tree is usually based on top of the latest main-line Linux kernel
 release, which is 2.6.24 at the moment. There are also 2.6.23 and 2.6.22
@@ -149,8 +148,8 @@ back-ports, although they are not always up-to-date and one needs to pick
 up additional patches from the main development tree to utilize the latest
 UBIFS version. The back-ports may be found at the following git-trees:</P>
 
-<CODE>git://git.infradead.org/home/dedekind/ubifs-v2.6.23.git</CODE><BR/>
-<CODE>git://git.infradead.org/home/dedekind/ubifs-v2.6.23.git</CODE>
+<CODE>git://git.infradead.org/~dedekind/ubifs-v2.6.23.git</CODE><BR/>
+<CODE>git://git.infradead.org/~dedekind/ubifs-v2.6.23.git</CODE>
 
 
 
@@ -168,7 +167,7 @@ documentation so far, so feel free to ask any questions.</P>
 <B>mkfs.ubifs</B>, which is used to create UBIFS images. The utility may be
 found at</P>
 
-<CODE>git://git.infradead.org/home/dedekind/mkfs.ubifs.git</CODE>
+<CODE>git://git.infradead.org/~dedekind/mkfs.ubifs.git</CODE>
 
 <P>The images produced by the <CODE>mkfs.ubifs</CODE> utility may be written to
 UBI volumes using the <CODE>ubiupdate</CODE> tool
@@ -182,7 +181,7 @@ create an UBI image which may be put to the MTD device.</P>
 
 <P>All the data structures UBIFS is using are trees, so it scales
 logarithmically in terms of flash size. However, UBI scales linearly
-(see <A HREF="ubi.html#L_scalability">here</A> which makes
+(see <A HREF="ubi.html#L_scalability">here</A>) which makes
 overall UBI/UBIFS stack scalability linear. But the UBIFS authors believe it is
 always possible to create logarithmically scalable UBI2 and to improve the
 situation. Current UBI should be OK for 2-32GiB flashes, depending on the
