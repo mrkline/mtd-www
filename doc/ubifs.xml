@@ -164,8 +164,7 @@ documentation so far, so feel free to ask any questions.</P>
 <A NAME="L_utilities"><H3>UBIFS utilities</H3></A>
 
 <P>There is only one UBIFS user-space utility at the moment -
-<B>mkfs.ubifs</B>, which is used to create UBIFS images. The utility may be
-found at</P>
+<B>mkfs.ubifs</B>, which creates UBIFS images. The utility may be found at</P>
 
 <CODE>git://git.infradead.org/~dedekind/mkfs.ubifs.git</CODE>
 
@@ -184,7 +183,7 @@ logarithmically in terms of flash size. However, UBI scales linearly
 (see <A HREF="ubi.html#L_scalability">here</A>) which makes
 overall UBI/UBIFS stack scalability linear. But the UBIFS authors believe it is
 always possible to create logarithmically scalable UBI2 and to improve the
-situation. Current UBI should be OK for 2-32GiB flashes, depending on the
+situation. Current UBI should be OK for 2-16GiB flashes, depending on the
 I/O speed and requirements.</P>
 
 

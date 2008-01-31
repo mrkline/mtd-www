@@ -17,7 +17,7 @@
 	<LI><A HREF="ubi.html#L_overview">UBI overview</A></LI>
 	<LI><A HREF="ubi.html#L_source">UBI source code</A></LI>
 	<LI><A HREF="ubi.html#L_ml">Mailing list</A></LI>
-	<LI><A HREF="ubi.html#L_ubiutils">UBI utilities</A></LI>
+	<LI><A HREF="ubi.html#L_utilities">UBI utilities</A></LI>
 	<LI><A HREF="ubi.html#L_scalability">UBI scalability</A></LI>
 	<OL><LI><A HREF="ubi.html#L_scalability_det">Implementation details</A></LI></OL>
 	<LI><A HREF="ubi.html#L_unmap">LEB un-map operation</A></LI>
@@ -26,6 +26,7 @@
 	<OL><LI><A HREF="ubi.html#L_volupdate_det">Implementation details</A></LI></OL>
 	<LI><A HREF="ubi.html#L_lebchange">Atomic LEB change operation</A></LI>
 	<OL><LI><A HREF="ubi.html#L_lebchange_det">Implementation details</A></LI></OL>
+	<LI><A HREF="ubi.html#L_autoresize">Volume auto-resize</A></LI>
 	<LI><A HREF="ubi.html#L_ubidoc">UBI documentation</A></LI>
 </OL>
 
@@ -40,7 +41,7 @@
 is not an FTL.</B> Read the following documentation or see
 <A HREF="../faq/ubi.html#L_ext2_over_ubi">this</A> FAQ entry.</P>
 
-<P>Also, sometimes people think that UBI is a flash file-sytstem. This is
+<P>Also, sometimes people think that UBI is a flash file-system. This is
 incorrect, <B>UBI is not a flash file-system</B>.</P>
 
 
@@ -141,7 +142,7 @@ recommended to use the latest UBI which can be found in the UBI git tree:</P>
 
 <CODE>git://git.infradead.org/~dedekind/ubi-2.6.git</CODE>
 
-<P>The UBI git tree is usually based on top of the lates release of the linux
+<P>The UBI git tree is usually based on top of the latest release of the linux
 kernel and it should not be too difficult to fetch all UBI patches from the UBI
 git tree and to apply them to your tree.</P>
 
@@ -154,7 +155,7 @@ git tree and to apply them to your tree.</P>
 
 
 
-<A NAME="L_ubiutils"><H3>UBI utilities</H3></A>
+<A NAME="L_utilities"><H3>UBI utilities</H3></A>
 
 <P>UBI utilities are available from the the
 <CODE>git://git.infradead.org/mtd-utils.git</CODE>
@@ -344,7 +345,7 @@ would pick the newer mapping for <I>L</I>.</P>
 
 <P>One may use the <CODE>ubi_leb_map()</CODE> call which maps the LEB to an
 empty PEB, so the LEB would always contain only 0xFF bytes, even in case of
-an unclea reboot. But do not use this unless it is really needed, because this
+an unclean reboot. But do not use this unless it is really needed, because this
 puts additional overhead on the UBI wear-leveling sub-system, comparing to
 an un-mapped LEB. Indeed, if an LEB is un-mapped, there is no PEB which
 contains LEB's data, and the wear-leveling sub-system does not have to move any
@@ -447,7 +448,7 @@ implemented.</P>
 
 <P>The volume update is implemented with help of so-called "update marker". Once
 the user has issued the <CODE>UBI_IOCVOLUP</CODE> ioctl, UBI sets the update
-marker flag for the volume in the correspoding record of the UBI volume table.
+marker flag for the volume in the corresponding record of the UBI volume table.
 Then the volume is wiped out and UBI waits for the the user to pass the data.
 Once all the data arrived and has been written to the flash, the update marker
 is cleaned. But in case of an interruption (e.g., unclean reboot, crash of the
@@ -550,6 +551,52 @@ the LEB contents in order to check the CRC checksum.</P>
 
 
 
+<A NAME="L_autoresize"><H3>Volume auto-resize</H3></A>
+
+<P>It is well-known that NAND chips have some amount of physical eraseblocks
+marked as bad by the manufacturer. The bad PEBs are distributed randomly
+and their number is different, although manufacturers usually guarantee that
+the first few physical eraseblocks are not bad and the total amount of bad PEBs
+does not exceed certain number. For example, a new 256MiB Samsung OneNAND chip
+is guaranteed to have not larger then 40 128KiB PEBs (but of course, more
+physical eraseblock will become bad over time). This is about 2% of the whole
+flash size.</P>
+
+<P>When it is needed to create an UBI image which will be flashed to the end
+user devices in production line, one have to define exact sizes of all volumes
+(the sizes are stored in the UBI volume table). But it is difficult to do
+because total flash chip may vary depending on the amount of initially bad
+PEBs.</P>
+
+<P>One obvious way to solve the problem is to assume the worst case, when all
+chips would have maximum amount of bad PEBs. But in practice, most of the chips
+will have only few bad PEBs which is far less then the maximum. In general, it
+is fine, this will increase reliability, because UBI anyway uses all PEBs of
+the device. On the other hand UBI anyway reserves some amount of physical
+eraseblocks for bad PEB handling which is 1% of PEBs by default. So in case of
+the above mentioned OneNAND chip the result would be that 1% of PEBs would be
+reserved by UBI, and 0-2% would be available for new volumes (they would be
+seen as available LEBs for UBI users).</P>
+
+<P>But there is an alternative approach - one of the volume may be marked as
+auto-resized, which means that its size is enlarged when UBI is run for the
+first time. After the volume size is adjusted, UBI removes the auto-resize
+mark and the volume is not resized anymore. The auto-resize flag is stored in
+the volume table and only one volume may be marked as auto-resize. For example,
+if there is a volume which is intended to have the root file-system, it may be
+reasonable to mark it as auto-resize.</P>
+
+<P>In the example with OneNAND chip, if one of the UBI volumes is be marked
+as auto-resized, it will be enlarged by 0-2% on the first UBI boot, but 1% of
+PEBs will anyway be reserved for bad PEB handling.</P>
+
+<P>Note, the auto-resize feature was added very recently and it it not in the
+main-line kernel yet, but it should appear in version 2.6.25. Use
+<A HREF="ubi.html#L_source">UBI git tree</A> to find the implementation of the
+feature.</P>
+
+
+
 <A NAME="L_ubidoc"><H3>UBI documentation</H3></A>
 
 <P>Unfortunately, there is no nice and shiny UBI documents. But there is an
@@ -560,8 +607,7 @@ old UBI design document which has some out-of-date information:
 <A HREF="ubi.ppt">ubi.ppt</A>. Note, this document has to be looked at
 in Windows, because it contains a lot of animation and Open Office cannot
 properly show it. Use slide show (<CODE>F5</CODE> key) when you look, because
-otherwise the animation is not shown. The same slide may change to demonstrate
-UBI work once a key is pressed.</P>
+otherwise the animation is not shown.</P>
 
 <P>Many useful information may be found at the
 <A HREF="../faq/ubi.html">FAQ</A> section.</P>

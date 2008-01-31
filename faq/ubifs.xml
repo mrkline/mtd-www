@@ -1,17 +1,101 @@
 <PAGE>
-	<VAR match="VAR_ORIGIN" replace="../" />
-	<VAR match="VAR_CVSID" replace="$Id: ubifs.xml,v 1.3 2005/11/02 12:29:55 dedekind Exp $"/>
-	<INCLUDE file="../inc/header.tmpl" />
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="$Id: ubifs.xml,v 1.3 2005/11/02 12:29:55 dedekind Exp $"/>
+<INCLUDE file="../inc/header.tmpl" />
 
-	<VAR match="VAR_SEL_FAQ" replace="selected" />
-	<VAR match="VAR_SEL_UBIFS" replace="selected" />
-	<PARSE file="../menu1.xml" />
+<VAR match="VAR_SEL_FAQ" replace="selected" />
+<VAR match="VAR_SEL_UBIFS" replace="selected" />
+<PARSE file="../menu1.xml" />
 
-	<INCLUDE file="../inc/content.tmpl" />
+<INCLUDE file="../inc/content.tmpl" />
 
-<H2>UBIFS specific</H2>
+<H1>UBIFS FAQ</H1>
 
-<P>Empty so far.</P>
+<H2>Table of contents</H2>
+<OL>
+	<LI><A HREF="ubifs.html#L_mkfubifs">How to create an UBIFS image</A></LI>
+</OL>
 
-	<INCLUDE file="../inc/footer.tmpl" />
+
+
+<A NAME="L_mkfubifs"><H3>How to create an UBIFS image</H3></A>
+
+<P>UBIFS images are created by the
+<A HREF="../doc/ubifs.html#L_utilities">mkfs.ubifs</A> and 
+<A HREF="../doc/ubi.html#L_utilities">ubinize</A>  utilities. The below
+example demonstrates how to create an UBI/UBIFS image for a 256MiB OneNAND flash
+chip with 128KiB physical eraseblocks, 2048 bytes NAND pages, and which
+supports 4 sub-pages (this means that MTD allows to do 4x512 bytes writes to
+the same NAND page, which is quite typical for SLC flashes). The resulting
+image will have one UBI volume storing UBIFS file-system.</P>
+
+<PRE>
+# mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o out.ubifs
+# ubinize -o ubi.img -m 2048 -p 128KiB -s 512 ubinize.cfg
+</PRE>
+
+<P>where <CODE>ubinize.cfg</CODE> contains:</P>
+
+<PRE>
+# cat ubinize.cfg
+[ubifs]
+mode=ubi
+image=ubifs.img
+vol_id=0
+vol_size=200MiB
+vol_type=dynamic
+vol_name=rootfs
+vol_alignment=1
+vol_flags=autoresize
+</PRE>
+
+<P>Some comments about what the options mean:</P>
+
+<UL>
+	<LI><CODE>-r root-fs</CODE>: tells <CODE>mkfs.ubifs</CODE> to create an
+	UBIFS image which would have identical contents as the local
+	<CODE>root-fs</CODE> directory has;</LI>
+
+	<LI><CODE>-m 2048</CODE>: tells <CODE>mkfs.ubifs</CODE> that the minimum
+	input/output unit size of the flash this UBIFS image is created for is
+	2048 bytes;</LI>
+
+	<LI><CODE>-e 129024</CODE>: logical eraseblock size of the UBI volume
+	this image is created for;</LI>
+
+	<LI><CODE>-c 2047</CODE>: specifies maximum file-system size in logical
+	eraseblocks; this means that it will be possible to use the resulting
+	file-system on volumes up to this size (less or equivalent); so in this
+	particular case, the resulting FS may be put on volumes up to about
+	251MiB (129024 multiplied by 2047);</LI>
+
+	<LI><CODE>-p 128KiB</CODE>: tells <CODE>ubinize</CODE> that physical
+	eraseblock size of the flash chip the UBI image is created for is
+	128KiB (128 * 1024 bytes);</LI>
+
+	<LI><CODE>-s 512</CODE>: tells <CODE>ubinize</CODE> that the flash
+	supports sub-pages and sub-page size is 512 bytes; <CODE>ubinize</CODE>
+	will take this into account and put the VID header to the same NAND
+	page as the EC header;</LI>
+</UL>
+
+<P>The <CODE>ubinize</CODE> utility requires volumes description file which has
+standard <CODE>.ini</CODE> files syntax. One UBI image may contain many UBI
+volumes with different characteristics and it is difficult to invent a nice
+command-line interface for specifying those characteristics, this is why the
+utility requires the volumes description file.</P>
+
+<P>The example configuration file tells <CODE>ubinize</CODE> to create an UBI
+image which has a singe 200MiB dynamic volume with ID 0, name "rootfs", and
+alignment 1. The configuration file also sets the "autoresize" volume flag,
+which means that the volume will be automatically enlarged by UBIFS to have
+the maximum possible size when it runs for the first time. See
+<A HREF="../doc/ubi.html#L_autoresize">here</A> for more information about what
+the auto-resize trick.</P>
+
+<P>Run <CODE>ubinize -h</CODE> and <CODE>mkfs.ubifs -h</CODE> for more
+information and for more possibilities to tweak images.</P>
+
+
+<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
