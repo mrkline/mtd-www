@@ -149,7 +149,12 @@ up additional patches from the main development tree to utilize the latest
 UBIFS version. The back-ports may be found at the following git-trees:</P>
 
 <CODE>git://git.infradead.org/~dedekind/ubifs-v2.6.23.git</CODE><BR/>
-<CODE>git://git.infradead.org/~dedekind/ubifs-v2.6.23.git</CODE>
+<CODE>git://git.infradead.org/~dedekind/ubifs-v2.6.22.git</CODE>
+
+<P>Note, since it is impossible to register memory shrinker in kernel version
+2.6.22, the UBIFS shrinker does not work there, which means the UBIFS TNC cache
+never gets shrinked and the system may run out of memory if the file-system is
+large enough.</P>
 
 
 
