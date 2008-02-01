@@ -18,15 +18,15 @@
 
 
 
-<A NAME="L_mkfubifs"><H3>How to create an UBIFS image</H3></A>
+<A NAME="L_mkfubifs"><H2>How to create an UBIFS image</H2></A>
 
 <P>UBIFS images are created by the
-<A HREF="../doc/ubifs.html#L_utilities">mkfs.ubifs</A> and 
-<A HREF="../doc/ubi.html#L_utilities">ubinize</A>  utilities. The below
-example demonstrates how to create an UBI/UBIFS image for a 256MiB OneNAND flash
-chip with 128KiB physical eraseblocks, 2048 bytes NAND pages, and which
-supports 4 sub-pages (this means that MTD allows to do 4x512 bytes writes to
-the same NAND page, which is quite typical for SLC flashes). The resulting
+<A HREF="../doc/ubifs.html#L_usptools"><CODE>mkfs.ubifs</CODE></A> and
+<A HREF="../doc/ubi.html#L_usptools"><CODE>ubinize</CODE></A> utilities.
+The below example demonstrates how to create an UBI/UBIFS image for a 256MiB
+OneNAND flash chip with 128KiB physical eraseblocks, 2048 bytes NAND pages, and
+which supports 4 sub-pages (this means that MTD allows to do 4x512 bytes writes
+to the same NAND page, which is quite typical for SLC flashes). The resulting
 image will have one UBI volume storing UBIFS file-system.</P>
 
 <PRE>

@@ -14,12 +14,12 @@
 <H2>Table of contents</H2>
 <OL>
 	<LI><A HREF="ubifs.html#L_rednote">Big red note</A></LI>
-	<LI><A HREF="ubifs.html#L_overview">UBIFS overview</A></LI>
-	<LI><A HREF="ubifs.html#L_status">UBIFS status</A></LI>
-	<LI><A HREF="ubifs.html#L_source">UBIFS source code</A></LI>
+	<LI><A HREF="ubifs.html#L_overview">Overview</A></LI>
+	<LI><A HREF="ubifs.html#L_status">Current status</A></LI>
+	<LI><A HREF="ubifs.html#L_source">Source code</A></LI>
 	<LI><A HREF="ubifs.html#L_ml">Mailing list</A></LI>
-	<LI><A HREF="ubifs.html#L_utilities">UBIFS utilities</A></LI>
-	<LI><A HREF="ubifs.html#L_scalability">UBIFS scalability</A></LI>
+	<LI><A HREF="ubifs.html#L_usptools">User-space tools</A></LI>
+	<LI><A HREF="ubifs.html#L_scalability">Scalability</A></LI>
 </OL>
 
 
@@ -41,7 +41,7 @@ difference between block devices and flash chips.</P>
 
 
 
-<A NAME="L_overview"><H3>UBIFS overview</H3></A>
+<A NAME="L_overview"><H2>Overview</H2></A>
 
 <P>UBIFS is a new flash file system which is designed to work on top
 of UBI. The file system is developed by Nokia engineers with help of
@@ -127,16 +127,38 @@ sections.</P>
 
 
 
-<A NAME="L_status"><H3>UBIFS status</H3></A>
+<A NAME="L_status"><H2>Current status</H2></A>
 
 <P>UBIFS has proved to be fairly stable, however it needs more testing. It
 needs some features like extended attributes support to be implemented. It
 needs tuning, e.g., finding optimal journal size and fan-out of the indexing
 tree. It also needs some profiling and bottleneck hunting.</P>
 
+<P>UBIFS is not in the main-line kernel, but the authors a planning to start
+the submission soon. But before can be done, UBIFS needs:</P>
+
+<UL>
+	<LI>code review - there are places in the source code which
+	have to be fixed or cleaned-up;</LI>
+
+	<LI>binary format has to be stabilized - it is difficult to change it
+	once the FS in the main-line; on the other hand, UBIFS is a file-system
+	for embedded device, and it is unlikely the flash chip is moved ever
+	somewhere else from the original device, so the portability issues
+	are not that important for UBIFS as, say, for ext2; this means, it is
+	probably OK to do forward-compatible, but backward-incompatible binary
+	format changes for UBIFS;</LI>
+
+	<LI>UBIFS needs more users - the community does not usually accept stuff
+	which has no or few users; people want to be sure that the piece of
+	code is used, thus, maintained in the long term; on the other hand,
+	users are reluctant to use software before it gets to main-line, which
+	does not help getting there.</LI>
+</UL>
 
 
-<A NAME="L_source"><H3>UBIFS source code</H3></A>
+
+<A NAME="L_source"><H2>Source code</H2></A>
 
 <P>The UBIFS development git tree is:</P>
 
@@ -158,7 +180,7 @@ large enough.</P>
 
 
 
-<A NAME="L_ml"><H3>Mailing list</H3></A>
+<A NAME="L_ml"><H2>Mailing list</H2></A>
 
 <P>You are welcome to send feed-back, bug-reports, patches, etc to the
 <A HREF="../mail.html">MTD mailing list</A>. There is no good UBIFS
@@ -166,22 +188,22 @@ documentation so far, so feel free to ask any questions.</P>
 
 
 
-<A NAME="L_utilities"><H3>UBIFS utilities</H3></A>
+<A NAME="L_usptools"><H2>User-space tools</H2></A>
 
-<P>There is only one UBIFS user-space utility at the moment -
-<B>mkfs.ubifs</B>, which creates UBIFS images. The utility may be found at</P>
+<P>There is only one UBIFS user-space tool at the moment -
+<B>mkfs.ubifs</B>, which creates UBIFS images. The tool may be found at</P>
 
 <CODE>git://git.infradead.org/~dedekind/mkfs.ubifs.git</CODE>
 
-<P>The images produced by the <CODE>mkfs.ubifs</CODE> utility may be written to
-UBI volumes using the <CODE>ubiupdate</CODE> tool
-(see <A HREF="ubi.html#L_ubiutils">here</A>) or may be further fed to the
-<CODE>ubinize</CODE> utility (see <A HREF="ubi.html#L_ubiutils">here</A>) to
-create an UBI image which may be put to the MTD device.</P>
+<P>The images produced by <CODE>mkfs.ubifs</CODE> may be written to
+UBI volumes using <A HREF="ubi.html#L_ubiutils"><CODE>ubiupdate</CODE></A>
+or may be further fed to the
+<A HREF="ubi.html#L_ubiutils"><CODE>ubinize</CODE></A>
+tool to create an UBI image which may be put to the MTD device.</P>
 
 
 
-<A NAME="L_scalability"><H3>UBIFS scalability</H3></A>
+<A NAME="L_scalability"><H2>Scalability</H2></A>
 
 <P>All the data structures UBIFS is using are trees, so it scales
 logarithmically in terms of flash size. However, UBI scales linearly

@@ -13,7 +13,6 @@
 
 <H2>Table of contents</H2>
 <OL>
-	<LI><A HREF="ubi.html#L_abbrev">Abbreviations</A></LI>
 	<LI><A HREF="ubi.html#L_enable_ubi">How to enable UBI?</A></LI>
 	<LI><A HREF="ubi.html#L_run_ubi">How to run UBI on top of my MTD device?</A></LI>
 	<LI><A HREF="ubi.html#L_run_jffs2">Can I run JFFS2 on top of UBI volumes?</A></LI>
@@ -35,20 +34,6 @@
 
 
 
-<A NAME="L_abbrev">
-<H3>Abbreviations</H3>
-</A>
-
-<P>The following is a list of abbreviations used in this FAQ:</P>
-<UL>
-	<LI><I>EC header</I> - erase counter header (see <A HREF="ubi.html#L_why_headers">here</A>);</LI>
-	<LI><I>LEB</I> - logical eraseblock (see <A HREF="ubi.html#L_leb_and_peb">here</A>);</LI>
-	<LI><I>PEB</I> - physical eraseblock (see <A HREF="ubi.html#L_leb_and_peb">here</A>);</LI>
-	<LI><I>VID header</I> - volume identifier header (see <A HREF="ubi.html#L_why_headers">here</A>);</LI>
-</UL>
-
-
-
 <A NAME="L_enable_ubi">
 <H2>How to enable UBI?</H2>
 </A>
@@ -64,7 +49,7 @@ kernel or built as a kernel module.</P>
 <H2>How to run UBI on top of my MTD device?</H2>
 </A>
 
-<H3>A kernel module</H3>
+<H2>A kernel module</H2>
 
 <P>Suppose you have an <CODE>mtd3</CODE> device and want to run UBI on top of
 it. The following command loads the UBI kernel module and attaches
@@ -105,7 +90,7 @@ have a single UBI device, you should first use the MTD concatenation
 (<CODE>mtdconcat</CODE>) layer to create a single "concatenated" MTD device,
 and then feed it to UBI.</P>
 
-<H3>Compiled into the kernel</H3>
+<H2>Compiled into the kernel</H2>
 
 <P>This case is very similar to the above one but an "<CODE>ubi.mtd=</CODE>"
 option should be used instead of the "<CODE>mtd=</CODE>" option and it should
@@ -358,7 +343,7 @@ reboots.</P>
 <H2>How to debug UBI?</H2>
 </A>
 
-<H3>Use fake MTD device</H3>
+<H2>Use fake MTD device</H2>
 
 <P>When debugging UBI you don't have to use a real embedded platform and real
 flash. You may use a PC with an MTD device emulator and run UBI on top of this
@@ -398,7 +383,7 @@ sysfs:</P>
 ubi0  ubi1  version
 </PRE>
 
-<H3>Enable debugging</H3>
+<H2>Enable debugging</H2>
 
 <P>Enable UBI debugging support in the configuration menu
 (the "<B>UBI debugging</B>" check-box). When UBI debugging is enabled, UBI

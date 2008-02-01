@@ -14,11 +14,11 @@
 <H2>Table of contents</H2>
 <OL>
 	<LI><A HREF="ubi.html#L_rednote">Big red note</A></LI>
-	<LI><A HREF="ubi.html#L_overview">UBI overview</A></LI>
-	<LI><A HREF="ubi.html#L_source">UBI source code</A></LI>
+	<LI><A HREF="ubi.html#L_overview">Overview</A></LI>
+	<LI><A HREF="ubi.html#L_source">Source code</A></LI>
 	<LI><A HREF="ubi.html#L_ml">Mailing list</A></LI>
-	<LI><A HREF="ubi.html#L_utilities">UBI utilities</A></LI>
-	<LI><A HREF="ubi.html#L_scalability">UBI scalability</A></LI>
+	<LI><A HREF="ubi.html#L_usptools">User-space tools</A></LI>
+	<LI><A HREF="ubi.html#L_scalability">Scalability issues</A></LI>
 	<OL><LI><A HREF="ubi.html#L_scalability_det">Implementation details</A></LI></OL>
 	<LI><A HREF="ubi.html#L_unmap">LEB un-map operation</A></LI>
 	<OL><LI><A HREF="ubi.html#L_unmap_det">Implementation details</A></LI></OL>
@@ -27,7 +27,7 @@
 	<LI><A HREF="ubi.html#L_lebchange">Atomic LEB change operation</A></LI>
 	<OL><LI><A HREF="ubi.html#L_lebchange_det">Implementation details</A></LI></OL>
 	<LI><A HREF="ubi.html#L_autoresize">Volume auto-resize</A></LI>
-	<LI><A HREF="ubi.html#L_ubidoc">UBI documentation</A></LI>
+	<LI><A HREF="ubi.html#L_ubidoc">More documentation</A></LI>
 </OL>
 
 
@@ -46,7 +46,7 @@ incorrect, <B>UBI is not a flash file-system</B>.</P>
 
 
 
-<A NAME="L_overview"><H3>UBI overview</H3></A>
+<A NAME="L_overview"><H2>Overview</H2></A>
 
 <P>UBI (Latin: "where?") stands for "Unsorted Block Images". It is a
 volume management system for flash devices which manages multiple logical
@@ -135,7 +135,7 @@ which the flash technology imposes.</P>
 
 
 
-<A NAME="L_source"><H3>UBI source code</H3></A>
+<A NAME="L_source"><H2>Source code</H2></A>
 
 <P>UBI is in the main-line Linux kernel starting from version 2.6.22. But it is
 recommended to use the latest UBI which can be found in the UBI git tree:</P>
@@ -148,49 +148,49 @@ git tree and to apply them to your tree.</P>
 
 
 
-<A NAME="L_ml"><H3>Mailing list</H3></A>
+<A NAME="L_ml"><H2>Mailing list</H2></A>
 
 <P>You are welcome to send feed-back, bug-reports, patches, etc to the
 <A HREF="../mail.html">MTD mailing list</A>.</P>
 
 
 
-<A NAME="L_utilities"><H3>UBI utilities</H3></A>
+<A NAME="L_usptools"><H2>User-space tools</H2></A>
 
-<P>UBI utilities are available from the the
+<P>UBI user-space tools are available from the the
 <CODE>git://git.infradead.org/mtd-utils.git</CODE>
 repository (<CODE>ubi-utils</CODE> sub-directory). One should download the
 source codes and compile them. Please, download the latest version of the
-utilities as they were recently changed quite a lot:</P>
+tools as they were recently changed quite a lot:</P>
 
 <CODE>git-clone git://git.infradead.org/mtd-utils.git</CODE>
 
-<P>The repository contains the following UBI utilities:</P>
+<P>The repository contains the following UBI tools:</P>
 <UL>
 	<LI><B>ubinfo</B> - provides information about UBI installed in the
 	system, about all UBI devices and volumes;</LI>
-	<LI><B>ubiattach</B> - an utility to attach MTD devices (which describe
+	<LI><B>ubiattach</B> - a tool to attach MTD devices (which describe
 	raw flash) to UBI, which creates an UBI device sitting on top of the
 	MTD device; this is an alternative method to specifying MTD devices on
 	module load or in kernel boot command line;</LI>
-	<LI><B>ubidetach</B> - an utility to detach MTD devices from UBI
-	devices, which deletes the UBI device; in other words, this utility
+	<LI><B>ubidetach</B> - a tool to detach MTD devices from UBI
+	devices, which deletes the UBI device; in other words, this tool
 	does the opposite to what <B>ubiattach</B> does;</LI>
-	<LI><B>ubimkvol</B> - an utility to create UBI volumes on UBI
+	<LI><B>ubimkvol</B> - a tool to create UBI volumes on UBI
 	devices;</LI>
-	<LI><B>ubirmvol</B> - an utility to remove UBI volumes on UBI
+	<LI><B>ubirmvol</B> - a tool to remove UBI volumes on UBI
 	devices;</LI>
-	<LI><B>ubiupdate</B> - an utility to update UBI volumes, which means to
-	write new volume contents; this utility uses the
+	<LI><B>ubiupdate</B> - a tool to update UBI volumes, which means to
+	write new volume contents; this tool uses the
 	<A HREF="ubi.html#L_volupdate">UBI volume update feature</A> which
 	leaves the volume in "corrupted" state if it is interrupted;
-	additionally, this utility may be used to wipe out UBI volumes;</LI>
+	additionally, this tool may be used to wipe out UBI volumes;</LI>
 	<LI><B>ubicrc32</B> - calculate CRC32 checksum of a file with the same
 	initial seed as UBI would use;</LI>
-	<LI><B>ubinize</B> - an utility to generate UBI images.</LI>
+	<LI><B>ubinize</B> - a tool to generate UBI images.</LI>
 </UL>
 
-<P>All UBI utilities support "-h" option and print sufficient usage
+<P>All UBI tools support "-h" option and print sufficient usage
 information.</P>
 
 <P>Note, <CODE>ubiattach</CODE> and <CODE>ubidettach</CODE> won't work unless
@@ -203,7 +203,7 @@ main-line kernel starting from version 2.6.25.</P>
 some old UBI tools which might be useful (e.g., <B>unubi</B>). But they need
 some fixes/clean-ups/documentation etc.</P>
 
-<A NAME="L_scalability"><H3>UBI scalability</H3></A>
+<A NAME="L_scalability"><H2>Scalability issues</H2></A>
 
 <P>Unfortunately, UBI scales linearly in terms of flash size. UBI
 initialization time linearly depends on the number of physical eraseblocks on
@@ -244,7 +244,7 @@ to us via the <A HREF="../mail.html">MTD mailing list</A>.</P>
 consumption to be linearly dependent on the size of the flash. E.g., it
 consumes about 144KiB of RAM in case of a 256MiB flash (2048x128KiB PEBs).</P>
 
-<A NAME="L_scalability_det"><H3>Implementation details</H3></A>
+<A NAME="L_scalability_det"><H2>Implementation details</H2></A>
 
 <P>In general, UBI needs three tables for operation:</P>
 
@@ -313,7 +313,7 @@ UBI.</P>
 
 
 
-<A NAME="L_unmap"><H3>LEB un-map operation</H3></A>
+<A NAME="L_unmap"><H2>LEB un-map operation</H2></A>
 
 <P>The LEB un-map operation is available via the <CODE>ubi_leb_unmap()</CODE>
 call of the UBI kernel API. The operation is not available via the
@@ -355,7 +355,7 @@ more LEB to re-map to another PEB if the erase counter of the current PEB
 becomes too low (then the LEB is re-mapped to a PEB with higher erase counter
 and the old PEB is used for other operations).</P>
 
-<A NAME="L_unmap_det"><H3>Implementation details</H3></A>
+<A NAME="L_unmap_det"><H2>Implementation details</H2></A>
 
 <P>This section describes how UBI distinguishes between older and newer
 versions of an LEB in case of an unclean reboot. Suppose one un-maps LEB
@@ -387,7 +387,7 @@ necessary to make sure all the date was written, not just part of it.</P>
 
 
 
-<A NAME="L_volupdate"><H3>Volume update operation</H3></A>
+<A NAME="L_volupdate"><H2>Volume update operation</H2></A>
 
 <P>Unlike raw MTD devices, UBI devices support the volume update operation
 which may be useful to implement software updates in end-user devices. The
@@ -458,7 +458,7 @@ update marker.</P>
 
 
 
-<A NAME="L_lebchange"><H3>Atomic LEB change operation</H3></A>
+<A NAME="L_lebchange"><H2>Atomic LEB change operation</H2></A>
 
 <P>UBI also has an atomic LEB change operation which means that the contents of
 the LEB stays unchanged if the operation gets interrupted. In other words, the
@@ -551,7 +551,7 @@ the LEB contents in order to check the CRC checksum.</P>
 
 
 
-<A NAME="L_autoresize"><H3>Volume auto-resize</H3></A>
+<A NAME="L_autoresize"><H2>Volume auto-resize</H2></A>
 
 <P>It is well-known that NAND chips have some amount of physical eraseblocks
 marked as bad by the manufacturer. The bad PEBs are distributed randomly
@@ -597,11 +597,11 @@ feature.</P>
 
 
 
-<A NAME="L_ubidoc"><H3>UBI documentation</H3></A>
+<A NAME="L_ubidoc"><H2>More documentation</H2></A>
 
-<P>Unfortunately, there is no nice and shiny UBI documents. But there is an
-old UBI design document which has some out-of-date information:
-<A HREF="ubidesign/ubidesign.pdf">ubidesign.pdf</A>.</P>
+<P>Unfortunately, there are no thorough and sctrict UBI documents. But there is
+an old UBI design document which has some out-of-date information, but is still
+useful: <A HREF="ubidesign/ubidesign.pdf">ubidesign.pdf</A>.</P>
 
 <P>There is also a PowerPoint UBI presentation available:
 <A HREF="ubi.ppt">ubi.ppt</A>. Note, this document has to be looked at
