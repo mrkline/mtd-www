@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="$Id: ubifs.xml,v 1.3 2005/11/02 12:29:55 dedekind Exp $"/>
+<VAR match="VAR_CVSID" replace="Last updated: 6 Feb 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -9,16 +9,70 @@
 
 <INCLUDE file="../inc/content.tmpl" />
 
-<H1>UBIFS FAQ</H1>
+<H1>UBIFS FAQ and HOWTO</H1>
 
 <H2>Table of contents</H2>
 <OL>
-	<LI><A HREF="ubifs.html#L_mkfubifs">How to create an UBIFS image</A></LI>
+	<LI><A HREF="ubifs.html#L_mount_ubifs">How to mount UBIFS?</A></LI>
+	<LI><A HREF="ubifs.html#L_mkfubifs">How to create an UBIFS image?</A></LI>
+	<LI><A HREF="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</A></LI>
 </OL>
 
 
 
-<A NAME="L_mkfubifs"><H2>How to create an UBIFS image</H2></A>
+<A NAME="L_mount_ubifs"><H2>How to mount UBIFS?</H2></A>
+
+<P>UBIFS mounts UBI volumes, not UBI devices, not MTD devices. There are no
+block device nodes corresponding to UBI volumes exist in <CODE>/dev</CODE>,
+and UBIFS uses device-less mount, just like <CODE>procfs</CODE> or
+<CODE>sysfs</CODE>. The volume to mount is specified using <CODE>ubiX_Y</CODE>
+or <CODE>ubiX:NAME</CODE> syntax, where</P>
+
+<UL>
+	<LI><CODE>X</CODE> - UBI device number;</LI>
+	<LI><CODE>Y</CODE> - UBI volume number;</LI>
+	<LI><CODE>NAME</CODE> - UBI volume name.</LI>
+</UL>
+
+<P>For example,</P>
+
+<PRE>
+$ mount -t ubifs ubi0_0 /mnt/ubifs
+</PRE>
+
+<P>mounts volume 0 on UBI device 0 to <CODE>/mnt/ubifs</CODE>, and</P>
+
+<PRE>
+$ mount -t ubifs ubi0:rootfs /mnt/ubifs
+</PRE>
+
+<P>mounts "rootfs" volume of UBI device 0 to <CODE>/mnt/ubifs</CODE> ("rootfs" is
+volume name. This method of specifying UBI volume is more preferrable because
+it does not depend on device/volume numbers, which may change.</P>
+
+<P>Note, if <CODE>X</CODE> is not specified, UBIFS uses 0, i.e.,
+"<CODE>ubi0:rootfs</CODE>" and "<CODE>ubi:rootfs</CODE>" are
+equivalent.</P>
+
+<P>Some environments like busybox are confused by the ":" delimeter (e.g.,
+<CODE>ubi:rootfs</CODE>) and "!" may be used instead (e.g.,
+<CODE>ubi!rootfs</CODE>).</P>
+
+<P>The following is an example of the kernel boot arguments to attach
+<CODE>mtd0</CODE> to UBI and mount volume "rotfs":</P>
+
+<PRE>
+ubi.mtd=0 root=ubi0:rootfs rootfstype=ubifs
+</PRE>
+
+<P>Please, refer <A HREF="ubi.html#L_attachmtd">this</A> section for
+information about how to create UBI devices and
+<A HREF="ubi.html#L_mkvol">this</A> section for information about how to create
+UBI volumes.</P>
+
+
+
+<A NAME="L_mkfubifs"><H2>How to create an UBIFS image?</H2></A>
 
 <P>UBIFS images are created by the
 <A HREF="../doc/ubifs.html#L_usptools"><CODE>mkfs.ubifs</CODE></A> and
@@ -30,14 +84,14 @@ to the same NAND page, which is quite typical for SLC flashes). The resulting
 image will have one UBI volume storing UBIFS file-system.</P>
 
 <PRE>
-# mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o ubifs.img
-# ubinize -o ubi.img -m 2048 -p 128KiB -s 512 ubinize.cfg
+$ mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o ubifs.img
+$ ubinize -o ubi.img -m 2048 -p 128KiB -s 512 ubinize.cfg
 </PRE>
 
 <P>where <CODE>ubinize.cfg</CODE> contains:</P>
 
 <PRE>
-# cat ubinize.cfg
+$ cat ubinize.cfg
 [ubifs]
 mode=ubi
 image=ubifs.img
@@ -96,6 +150,30 @@ is the auto-resize trick.</P>
 <P>Run <CODE>ubinize -h</CODE> and <CODE>mkfs.ubifs -h</CODE> for more
 information and for more possibilities to tweak images.</P>
 
+
+<A NAME="L_ubifs_nandsim"><H2>How to use UBIFS with nandsim?</H2></A>
+
+<P>The same way as with any MTD device. Here is an example of how to load
+<CODE>nandsim</CODE>, create an UBI volume and mount it.</P>
+
+<PRE>
+# Create an 256MiB emulated NAND flash
+modprobe nandsim first_id_byte=0x20 second_id_byte=0xaa \
+                 third_id_byte=0x00 fourth_id_byte=0x15
+
+# MTD is not LDM-enabled and udev does not create device \
+  MTD device nodes automatically, so create /dev/mtd0
+mknod /dev/mtd0 c 90 0
+
+# Load UBI module and attach mtd0
+modprobe ubi mtd=0
+
+# Create a 200MiB UBI volume with name "ubifs-vol"
+ubimkvol /dev/ubi0 -N ubifs-vol -s 200MiB
+
+# Mount UBIFS
+mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
+</PRE>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

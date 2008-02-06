@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="$Id: ubifs.xml,v 1.3 2005/11/02 12:27:23 dedekind Exp $"/>
+<VAR match="VAR_CVSID" replace="Last updated: 6 Feb 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -20,6 +20,7 @@
 	<LI><A HREF="ubifs.html#L_ml">Mailing list</A></LI>
 	<LI><A HREF="ubifs.html#L_usptools">User-space tools</A></LI>
 	<LI><A HREF="ubifs.html#L_scalability">Scalability</A></LI>
+	<LI><A HREF="ubifs.html#L_todo">TODO and known problems</A></LI>
 </OL>
 
 
@@ -58,7 +59,7 @@ devices. In other words, there are 3 subsystems involved:</P>
 	flash;</LI>
 	<LI><I>UBI subsystem</I>, which is a volume management system for flash
 	devices; UBI works on top of MTD devices and provides a notion of
-	UBI volumes; UBI volumes are more "high level" entities then MTD
+	UBI volumes; UBI volumes are more "high level" entities than MTD
 	devices and they are devoid of many unpleasant issues MTD devices have
 	(e.g., wearing and bad blocks); See <A HREF="ubi.html">here</A> for more
 	information;</LI>
@@ -212,6 +213,22 @@ overall UBI/UBIFS stack scalability linear. But the UBIFS authors believe it is
 always possible to create logarithmically scalable UBI2 and to improve the
 situation. Current UBI should be OK for 2-16GiB flashes, depending on the
 I/O speed and requirements.</P>
+
+
+
+<A NAME="L_todo"><H2>TODO and known problems</H2></A>
+
+<P>Here is a list of known UBIFS issues and the things which have to be
+done:</P>
+
+<OL>
+	<LI>NOR support - UBIFS should support anything which is supported by
+	UBI, but we never tested NOR support and there might be bugs; it makes
+	sense to test this on <CODE>mtdram</CODE> and fix if needed;</LI>
+
+	<LI>There is no interface to select compressor type (zlib or LZO) for
+	an inode.</LI>
+</OL>
 
 
 <INCLUDE file="../inc/footer.tmpl" />

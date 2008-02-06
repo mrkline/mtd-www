@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="$Id:$"/>
+<VAR match="VAR_CVSID" replace="Last updated: 6 Feb 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -20,6 +20,7 @@
 	<LI><A HREF="ubi.html#L_usptools">User-space tools</A></LI>
 	<LI><A HREF="ubi.html#L_scalability">Scalability issues</A></LI>
 	<OL><LI><A HREF="ubi.html#L_scalability_det">Implementation details</A></LI></OL>
+	<LI><A HREF="ubi.html#L_overhead">Flash space overhead</A></LI>
 	<LI><A HREF="ubi.html#L_unmap">LEB un-map operation</A></LI>
 	<OL><LI><A HREF="ubi.html#L_unmap_det">Implementation details</A></LI></OL>
 	<LI><A HREF="ubi.html#L_volupdate">Volume update operation</A></LI>
@@ -38,8 +39,7 @@
 
 <P>People are often confused and treat UBI as a block device emulation layer
 (also known as FTL - flash translation layer). But this is not true - <B>UBI
-is not an FTL.</B> Read the following documentation or see
-<A HREF="../faq/ubi.html#L_ext2_over_ubi">this</A> FAQ entry.</P>
+is not an FTL.</B></P>
 
 <P>Also, sometimes people think that UBI is a flash file-system. This is
 incorrect, <B>UBI is not a flash file-system</B>.</P>
@@ -218,8 +218,8 @@ depends on the flash I/O speed and (slightly) on the CPU speed, because:</P>
 	bytes each), so this means reading 128 bytes from each PEB on NOR flash
 	or one or two NAND pages in case of NAND page (this depends on whether
 	the flash supports sub-page writes or not); this is anyway much less
-	then JFFS2 needs to read when it mounts MTD devices, so UBI attaches
-	MTD devices many times faster then JFFS2 would mount a file system on
+	than JFFS2 needs to read when it mounts MTD devices, so UBI attaches
+	MTD devices many times faster than JFFS2 would mount a file system on
 	the same MTD device;</LI>
 	<LI>UBI calculates CRC32 checksum of each EC and VID header, which
 	consumes CPU, although this is usually minor comparing to the
@@ -229,7 +229,7 @@ depends on the flash I/O speed and (slightly) on the CPU speed, because:</P>
 <P>Here are some figures:</P>
 <UL>
 	<LI>a 256MiB OneNAND flash found in Nokia N800 devices is attached for
-	less then 1 sec; the flash does support sub-pages so UBI has to read
+	less than 1 sec; the flash does support sub-pages so UBI has to read
 	the first 2KiB NAND page of each PEB while scanning;</LI>
 	<LI>a 1GiB NAND flash found in OLPC devices is attached for about 2
 	seconds; the flash is an SLC and supports sub-pages, but the Cafe
@@ -240,9 +240,7 @@ depends on the flash I/O speed and (slightly) on the CPU speed, because:</P>
 <P>Unfortunately we do not have more data and the reader is welcome to send it
 to us via the <A HREF="../mail.html">MTD mailing list</A>.</P>
 
-<P>UBI allocates few small memory objects for each PEB, which makes its memory
-consumption to be linearly dependent on the size of the flash. E.g., it
-consumes about 144KiB of RAM in case of a 256MiB flash (2048x128KiB PEBs).</P>
+
 
 <A NAME="L_scalability_det"><H2>Implementation details</H2></A>
 
@@ -310,6 +308,61 @@ tables in separate flash areas. UBI2 would not be compatible with UBI because
 of completely different on-flash format, but the user interfaces would stay the
 same, which would guarantee compatibility of all the software built on top of
 UBI.</P>
+
+
+
+<A NAME="L_overhead"><H2>Flash space overhead</H2></A>
+
+<P>UBI uses some amount of flash space for its own purposes thus, reducing the
+amount of flash space available for UBI users. Namely:</P>
+
+<UL>
+	<LI>2 PEBs are used to store the volume table;</LI>
+	<LI>1 PEB is reserved for wear-levelling purposes;</LI>
+	<LI>1 PEB is reserved for the
+	<A HREF="ubi.html#L_lebchange">atomic LEB change</A> operation;</LI>
+	<LI>some percent of PEBs is reserved for bad PEB handling if the flash
+	may have bad PEBs; this is applicable for NAND flash, but not for NOR
+	flash; the percentage is configurable and is 1% by dafault;</LI>
+	<LI>UBI stores the erase counter (EC) and volume ID (VID) headers at
+	the beginning of each PEB; the amount of bytes used for these purposes
+	depends on the flash type and is explained below;</LI>
+</UL>
+
+<P>Lets introduce symbols:</P>
+
+<UL>
+	<LI><I>P</I> - total number of physical eraseblocks on the MTD
+	device;</LI>
+	<LI><I>S<SUB>P</SUB></I> - physical eraseblock size;</LI>
+	<LI><I>S<SUB>L</SUB></I> - logical eraseblock size;</LI>
+	<LI><I>B</I> - number of PEBs reserved for bad PEB handling; it is
+	1% of <I>P</I> for NAND by default, and 0 for NOR and other flash types
+	which do not admit of bad PEBs;</LI>
+	<LI><I>O</I> - the overhead related to storing EC and VID headers in
+	bytes, i.e. <I>O</I> = <I>S<SUB>P</SUB></I> - <I>S<SUB>L</SUB></I>.</LI>
+</UL>
+
+<P>The UBI overhead is (<I>B</I> + 4 + <I>O</I>) * <I>S<SUB>P</SUB></I>,
+i.e., this amount of bytes will not be accessible for users. <I>O</I> is
+different for different flashes:</P>
+
+<UL>
+	<LI>in case of NOR flash which has 1 byte minimum input/output unit,
+	<I>O</I> is 128 bytes (each UBI header takes 64 bytes);</LI>
+	<LI>in case of NAND flash which does not allow sub-pages (e.g., MLC
+	NAND), <I>O</I> is 2 NAND pages, i.e. 4KiB in case of 2KiB NAND page
+	and 1KiB in case of 512 bytes NAND page;</LI>
+	<LI>if the NAND flash, NAND flash controller, and NAND flash driver
+	support sub-page writes (e.g., SLC NANDs and most of their Linux
+	driverso, OneNAND), UBI optimises its on-flash layout and puts the
+	EC and VID headers to the same NAND page, but different sub-pages; in
+	this case <I>O</I> is only one NAND page;</LI>
+	<LI>for other flashes with different min. I/O unit size, the overhead
+	should be 2 min. I/O untis if min. I/O unit size is greater or
+	equivalent than 64, and 128 aligned on the min. I/O unit size if min.
+	I/O unit size is less than 64.</LI>
+</UL>
 
 
 
@@ -426,7 +479,7 @@ old contents of the volume is not preserved in case of an interrupted update.
 Also, it is not necessary to write all new data at one go. It is OK to call
 the <CODE>write()</CODE> function arbitrary number of times and pass arbitrary
 amount of data each time. The operation will be finished only after all the
-data have been written. If the last write operation contains more bytes then
+data have been written. If the last write operation contains more bytes than
 UBI expects, the extra data is just ignored.</P>
 
 <P>Special case of volume update is what we call "volume truncation", which
@@ -467,7 +520,7 @@ contents.</P>
 
 <P>The operation is available via the <CODE>ubi_leb_change()</CODE> kernel API
 call. The user-space interface for this operation does not exist in the
-mainline kernel so far, but it was recently implemented and may be found in the
+main-line kernel so far, but it was recently implemented and may be found in the
 <A HREF="ubi.html#L_source">UBI git tree</A>. It should be
 available in the main-line kernels starting from version 2.6.25.</P>
 
@@ -511,7 +564,7 @@ here</A> for the description of the idea).</P>
 <P>Keep in mind that the atomic LEB change operation calculates CRC32 checksum
 of the new data, so it has some overhead comparing to the LEB erase plus LEB
 write sequence. The volume update operation does not calculate data CRC, so it
-is faster to update the volume then to atomically change all its eraseblocks.
+is faster to update the volume than to atomically change all its eraseblocks.
 This additional overhead has to be remembered about and the operation should
 not be used if the atomicity is not really needed.</P>
 
@@ -558,7 +611,7 @@ marked as bad by the manufacturer. The bad PEBs are distributed randomly
 and their number is different, although manufacturers usually guarantee that
 the first few physical eraseblocks are not bad and the total amount of bad PEBs
 does not exceed certain number. For example, a new 256MiB Samsung OneNAND chip
-is guaranteed to have not larger then 40 128KiB PEBs (but of course, more
+is guaranteed to have not larger than 40 128KiB PEBs (but of course, more
 physical eraseblock will become bad over time). This is about 2% of the whole
 flash size.</P>
 
@@ -570,7 +623,7 @@ PEBs.</P>
 
 <P>One obvious way to solve the problem is to assume the worst case, when all
 chips would have maximum amount of bad PEBs. But in practice, most of the chips
-will have only few bad PEBs which is far less then the maximum. In general, it
+will have only few bad PEBs which is far less than the maximum. In general, it
 is fine, this will increase reliability, because UBI anyway uses all PEBs of
 the device. On the other hand UBI anyway reserves some amount of physical
 eraseblocks for bad PEB handling which is 1% of PEBs by default. So in case of

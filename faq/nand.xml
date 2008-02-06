@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="$Id: nand.xml,v 1.1 2005/03/12 13:48:22 gleixner Exp $"/>
+<VAR match="VAR_CVSID" replace="Last updated: 6 Feb 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -8,8 +8,6 @@
 <PARSE file="../menu1.xml" />
 
 <INCLUDE file="../inc/content.tmpl" />
-
-
 
 <H2>Table of contents</H2>
 <OL>
@@ -185,8 +183,8 @@ Yes, you can. The requirements are the same as for boot-loaders
 <P>
 NAND simulator (<CODE>nandsim</CODE>) is an extremely useful debugging and
 development tool which simulates NAND flashes in RAM. To select the simulated
-flash type you should specify ID bytes of your flashe - the onese which are
-returned by the "Read ID" command (<CODE>0x90</CODE>). Please, consult your
+flash type one should specify ID bytes of your flashe - the onese which are
+returned by the "Read ID" command (<CODE>0x90</CODE>) - consult the
 flash manual. The following are examples of input parameters:
 </P>
 
@@ -233,11 +231,12 @@ flash manual. The following are examples of input parameters:
 </LI>
 </OL>
 
-<P>
-Note, nandsim theoretically can emulate 16-bit bus witdth devices, but it this
-may not work. Fell free to try and send your feedback.
-</P>
+<P><CODE>nandsim</CODE> can emulate various errors and report wear statistics,
+which is extrimely useful when testing how flash software handles errors (e.g.,
+what does JFFS2 do in case of bit-flips or write errors).</P>
+
+<P>Note, theoretically <CODE>nandsim</CODE> can emulate 16-bit bus witdth
+devices, but it this may not work.</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
-
