@@ -166,11 +166,12 @@ the submission soon. But before can be done, UBIFS needs:</P>
 <CODE>git://git.infradead.org/~dedekind/ubifs-2.6.git</CODE>
 
 <P>The git tree is usually based on top of the latest main-line Linux kernel
-release, which is 2.6.24 at the moment. There are also 2.6.23 and 2.6.22
-back-ports, although they are not always up-to-date and one needs to pick
-up additional patches from the main development tree to utilize the latest
-UBIFS version. The back-ports may be found at the following git-trees:</P>
+release candidate and it is re-based often. But there are also 2.6.22, 2.6.23,
+and 2.6.24 back-ports, although they are not always up-to-date and one may want
+to pick up additional patches from the main development tree to utilize the
+latest UBIFS version. The back-ports may be found at the following git-trees:</P>
 
+<CODE>git://git.infradead.org/~dedekind/ubifs-v2.6.24.git</CODE><BR/>
 <CODE>git://git.infradead.org/~dedekind/ubifs-v2.6.23.git</CODE><BR/>
 <CODE>git://git.infradead.org/~dedekind/ubifs-v2.6.22.git</CODE>
 
