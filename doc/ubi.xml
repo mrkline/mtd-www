@@ -159,49 +159,50 @@ git tree and to apply them to your tree.</P>
 
 <P>UBI user-space tools are available from the the
 <CODE>git://git.infradead.org/mtd-utils.git</CODE>
-repository (<CODE>ubi-utils</CODE> sub-directory). One should download the
-source codes and compile them. Please, download the latest version of the
-tools as they were recently changed quite a lot:</P>
+repository (<CODE>ubi-utils/new-utils</CODE> sub-directory). One should
+download the source codes and compile them. Please, download the latest
+version of the tools as they were recently changed quite a lot:</P>
 
 <CODE>git-clone git://git.infradead.org/mtd-utils.git</CODE>
 
 <P>The repository contains the following UBI tools:</P>
 <UL>
-	<LI><B>ubinfo</B> - provides information about UBI installed in the
+	<LI><B>ubi-info</B> - provides information about UBI installed in the
 	system, about all UBI devices and volumes;</LI>
-	<LI><B>ubiattach</B> - a tool to attach MTD devices (which describe
+	<LI><B>ubi-attach</B> - a tool to attach MTD devices (which describe
 	raw flash) to UBI, which creates an UBI device sitting on top of the
 	MTD device; this is an alternative method to specifying MTD devices on
 	module load or in kernel boot command line;</LI>
-	<LI><B>ubidetach</B> - a tool to detach MTD devices from UBI
+	<LI><B>ubi-detach</B> - a tool to detach MTD devices from UBI
 	devices, which deletes the UBI device; in other words, this tool
-	does the opposite to what <B>ubiattach</B> does;</LI>
-	<LI><B>ubimkvol</B> - a tool to create UBI volumes on UBI
+	does the opposite to what <B>ubi-attach</B> does;</LI>
+	<LI><B>ubi-mkvol</B> - a tool to create UBI volumes on UBI
 	devices;</LI>
-	<LI><B>ubirmvol</B> - a tool to remove UBI volumes on UBI
+	<LI><B>ubi-rmvol</B> - a tool to remove UBI volumes on UBI
 	devices;</LI>
-	<LI><B>ubiupdate</B> - a tool to update UBI volumes, which means to
+	<LI><B>ubi-update</B> - a tool to update UBI volumes, which means to
 	write new volume contents; this tool uses the
 	<A HREF="ubi.html#L_volupdate">UBI volume update feature</A> which
 	leaves the volume in "corrupted" state if it is interrupted;
 	additionally, this tool may be used to wipe out UBI volumes;</LI>
-	<LI><B>ubicrc32</B> - calculate CRC32 checksum of a file with the same
+	<LI><B>ubi-crc32</B> - calculate CRC32 checksum of a file with the same
 	initial seed as UBI would use;</LI>
-	<LI><B>ubinize</B> - a tool to generate UBI images.</LI>
+	<LI><B>ubi-nize</B> - a tool to generate UBI images.</LI>
 </UL>
 
 <P>All UBI tools support "-h" option and print sufficient usage
 information.</P>
 
-<P>Note, <CODE>ubiattach</CODE> and <CODE>ubidettach</CODE> won't work unless
+<P>Note, <CODE>ubi-attach</CODE> and <CODE>ubi-dettach</CODE> won't work unless
 one has ported UBI patches from the
 <A HREF="ubi.html#L_source">UBI git tree</A>, because the dynamic
 UBI devices support was implemented quite recently. It should be in the
 main-line kernel starting from version 2.6.25.</P>
 
-<P>Also note, there is an <CODE>old-tools</CODE> sub-directory which contains
-some old UBI tools which might be useful (e.g., <B>unubi</B>). But they need
-some fixes/clean-ups/documentation etc.</P>
+<P>Also note, there are older UBI tools which might be useful (e.g.,
+<B>unubi</B>).</P>
+
+
 
 <A NAME="L_scalability"><H2>Scalability issues</H2></A>
 
