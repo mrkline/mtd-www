@@ -199,9 +199,9 @@ documentation so far, so feel free to ask any questions.</P>
 <CODE>git://git.infradead.org/~dedekind/mkfs.ubifs.git</CODE>
 
 <P>The images produced by <CODE>mkfs.ubifs</CODE> may be written to
-UBI volumes using <A HREF="ubi.html#L_usptools"><CODE>ubi-update</CODE></A>
+UBI volumes using <A HREF="ubi.html#L_usptools"><CODE>ubiupdatevol</CODE></A>
 or may be further fed to the
-<A HREF="ubi.html#L_usptools"><CODE>ubi-nize</CODE></A>
+<A HREF="ubi.html#L_usptools"><CODE>ubinize</CODE></A>
 tool to create an UBI image which may be put to the MTD device.</P>
 
 

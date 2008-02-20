@@ -75,11 +75,11 @@ ubi.mtd=3 ubi.mtd=3
 <P>command makes UBI attach <CODE>mtd3</CODE> and <CODE>mtd6</CODE>.</P>
 
 <P>And finally, MTD devices may be attached or detached any time with the
-<CODE>ubi-attach</CODE> and <CODE>ubi-detach</CODE> utilities
+<CODE>ubiattach</CODE> and <CODE>ubidetach</CODE> utilities
 (see <A HREF="../doc/ubi.html#L_usptools">here</A>); For example,</P>
 
 <PRE>
-$ ubi-attach /dev/ubi_ctrl -m 3
+$ ubiattach /dev/ubi_ctrl -m 3
 </PRE>
 
 <P>attaches <CODE>mtd3</CODE>. But this "run-time attach" UBI capability was
@@ -91,22 +91,22 @@ available in the main-line kernels starting from version 2.6.25.</P>
 
 <A NAME="L_mkvol"><H2>How to create/delete UBI volumes?</H2></A>
 
-<P>Use <CODE>ubi-mkvol</CODE> and <CODE>ubi-rmvol</CODE> tools (see
+<P>Use <CODE>ubimkvol</CODE> and <CODE>ubirmvol</CODE> tools (see
 <A HREF="../doc/ubi.html#L_usptools">here</A>). For example, the below command
 creates a 128MiB volume on UBI device 0:</P>
 
 <PRE>
-$ ubi-mkvol /dev/ubi0 -N rootfs -s 128MiB
+$ ubimkvol /dev/ubi0 -N rootfs -s 128MiB
 </PRE>
 
 <P>and the following command removes it:</P>
 
 <PRE>
-$ ubi-rmvol /dev/ubi0 -n 0
+$ ubirmvol /dev/ubi0 -n 0
 </PRE>
 
-<P>For more usage information, use <CODE>ubi-mkvol -h</CODE> and
-<CODE>ubi-rmvol -h</CODE>.</P>
+<P>For more usage information, use <CODE>ubimkvol -h</CODE> and
+<CODE>ubirmvol -h</CODE>.</P>
 
 
 

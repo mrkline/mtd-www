@@ -76,7 +76,7 @@ UBI volumes.</P>
 
 <P>UBIFS images are created by the
 <A HREF="../doc/ubifs.html#L_usptools"><CODE>mkfs.ubifs</CODE></A> and
-<A HREF="../doc/ubi.html#L_usptools"><CODE>ubi-nize</CODE></A> utilities.
+<A HREF="../doc/ubi.html#L_usptools"><CODE>ubinize</CODE></A> utilities.
 The below example demonstrates how to create an UBI/UBIFS image for a 256MiB
 OneNAND flash chip with 128KiB physical eraseblocks, 2048 bytes NAND pages, and
 which supports 4 sub-pages (this means that MTD allows to do 4x512 bytes writes
@@ -85,13 +85,13 @@ image will have one UBI volume storing UBIFS file-system.</P>
 
 <PRE>
 $ mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o ubifs.img
-$ ubi-nize -o ubi.img -m 2048 -p 128KiB -s 512 ubi-nize.cfg
+$ ubinize -o ubi.img -m 2048 -p 128KiB -s 512 ubinize.cfg
 </PRE>
 
-<P>where <CODE>ubi-nize.cfg</CODE> contains:</P>
+<P>where <CODE>ubinize.cfg</CODE> contains:</P>
 
 <PRE>
-$ cat ubi-nize.cfg
+$ cat ubinize.cfg
 [ubifs]
 mode=ubi
 image=ubifs.img
@@ -123,23 +123,23 @@ vol_flags=autoresize
 	particular case, the resulting FS may be put on volumes up to about
 	251MiB (129024 multiplied by 2047);</LI>
 
-	<LI><CODE>-p 128KiB</CODE>: tells <CODE>ubi-nize</CODE> that physical
+	<LI><CODE>-p 128KiB</CODE>: tells <CODE>ubinize</CODE> that physical
 	eraseblock size of the flash chip the UBI image is created for is
 	128KiB (128 * 1024 bytes);</LI>
 
-	<LI><CODE>-s 512</CODE>: tells <CODE>ubi-nize</CODE> that the flash
-	supports sub-pages and sub-page size is 512 bytes; <CODE>ubi-nize</CODE>
+	<LI><CODE>-s 512</CODE>: tells <CODE>ubinize</CODE> that the flash
+	supports sub-pages and sub-page size is 512 bytes; <CODE>ubinize</CODE>
 	will take this into account and put the VID header to the same NAND
 	page as the EC header.</LI>
 </UL>
 
-<P>The <CODE>ubi-nize</CODE> utility requires volumes description file which has
+<P>The <CODE>ubinize</CODE> utility requires volumes description file which has
 standard <CODE>.ini</CODE> file syntax. One UBI image may contain many UBI
 volumes with different characteristics and it is difficult to invent a nice
 command-line interface for specifying those characteristics, this is why the
 utility requires the volumes description file.</P>
 
-<P>The example configuration file tells <CODE>ubi-nize</CODE> to create an UBI
+<P>The example configuration file tells <CODE>ubinize</CODE> to create an UBI
 image which has a singe 200MiB dynamic volume with ID 0, name "rootfs", and
 alignment 1. The configuration file also sets the "autoresize" volume flag,
 which means that the volume will be automatically enlarged by UBIFS to have
@@ -169,7 +169,7 @@ mknod /dev/mtd0 c 90 0
 modprobe ubi mtd=0
 
 # Create a 200MiB UBI volume with name "ubifs-vol"
-ubi-mkvol /dev/ubi0 -N ubifs-vol -s 200MiB
+ubimkvol /dev/ubi0 -N ubifs-vol -s 200MiB
 
 # Mount UBIFS
 mount -t ubifs ubi0:ubifs-vol /mnt/ubifs

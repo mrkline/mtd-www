@@ -167,33 +167,33 @@ version of the tools as they were recently changed quite a lot:</P>
 
 <P>The repository contains the following UBI tools:</P>
 <UL>
-	<LI><B>ubi-info</B> - provides information about UBI installed in the
+	<LI><B>ubinfo</B> - provides information about UBI installed in the
 	system, about all UBI devices and volumes;</LI>
-	<LI><B>ubi-attach</B> - a tool to attach MTD devices (which describe
+	<LI><B>ubiattach</B> - a tool to attach MTD devices (which describe
 	raw flash) to UBI, which creates an UBI device sitting on top of the
 	MTD device; this is an alternative method to specifying MTD devices on
 	module load or in kernel boot command line;</LI>
-	<LI><B>ubi-detach</B> - a tool to detach MTD devices from UBI
+	<LI><B>ubidetach</B> - a tool to detach MTD devices from UBI
 	devices, which deletes the UBI device; in other words, this tool
-	does the opposite to what <B>ubi-attach</B> does;</LI>
-	<LI><B>ubi-mkvol</B> - a tool to create UBI volumes on UBI
+	does the opposite to what <B>ubiattach</B> does;</LI>
+	<LI><B>ubimkvol</B> - a tool to create UBI volumes on UBI
 	devices;</LI>
-	<LI><B>ubi-rmvol</B> - a tool to remove UBI volumes on UBI
+	<LI><B>ubirmvol</B> - a tool to remove UBI volumes on UBI
 	devices;</LI>
-	<LI><B>ubi-update</B> - a tool to update UBI volumes, which means to
+	<LI><B>ubiupdatevol</B> - a tool to update UBI volumes, which means to
 	write new volume contents; this tool uses the
 	<A HREF="ubi.html#L_volupdate">UBI volume update feature</A> which
 	leaves the volume in "corrupted" state if it is interrupted;
 	additionally, this tool may be used to wipe out UBI volumes;</LI>
-	<LI><B>ubi-crc32</B> - calculate CRC32 checksum of a file with the same
+	<LI><B>ubicrc32</B> - calculate CRC32 checksum of a file with the same
 	initial seed as UBI would use;</LI>
-	<LI><B>ubi-nize</B> - a tool to generate UBI images.</LI>
+	<LI><B>ubinize</B> - a tool to generate UBI images.</LI>
 </UL>
 
 <P>All UBI tools support "-h" option and print sufficient usage
 information.</P>
 
-<P>Note, <CODE>ubi-attach</CODE> and <CODE>ubi-dettach</CODE> won't work unless
+<P>Note, <CODE>ubiattach</CODE> and <CODE>ubidetach</CODE> won't work unless
 one has ported UBI patches from the
 <A HREF="ubi.html#L_source">UBI git tree</A>, because the dynamic
 UBI devices support was implemented quite recently. It should be in the
