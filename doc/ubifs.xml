@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 17 Feb 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 11 March 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -20,8 +20,8 @@
 	<LI><A HREF="ubifs.html#L_ml">Mailing list</A></LI>
 	<LI><A HREF="ubifs.html#L_usptools">User-space tools</A></LI>
 	<LI><A HREF="ubifs.html#L_scalability">Scalability</A></LI>
+	<LI><A HREF="ubifs.html#L_xattr">Extended attributes</A></LI>
 	<LI><A HREF="ubifs.html#L_documentation">Documentation</A></LI>
-	<LI><A HREF="ubifs.html#L_todo">TODO and known problems</A></LI>
 </OL>
 
 
@@ -218,31 +218,21 @@ I/O speed and requirements.</P>
 
 
 
+<A NAME="L_xattr"><H2>Extended attributes</H2></A>
+
+<P>UBIFS supports extended attributes if the corresponding configuration option
+is enabled (no additional mount options are required). It supports
+<CODE>user</CODE>, <CODE>trusted</CODE>, and <CODE>security</CODE> name-spaces.
+Access control list (ACL) support is not implemented.</P>
+
+
+
 <A NAME="L_documentation"><H2>Documentation</H2></A>
 
 <P>There is no UBIFS design document or white paper so far. There is
 <A HREF="../faq/ubifs.html">UBIFS FAQ</A> which might be useful. Also, there is
 <A HREF="http://osl.sed.hu/wiki/ubifs/index.php/Main_Page">a wiki page</A>, but
 there is no much information and some of it is out-of-date.</P>
-
-
-
-<A NAME="L_todo"><H2>TODO and known problems</H2></A>
-
-<P>Here is a list of known UBIFS issues and the things which have to be
-done:</P>
-
-<OL>
-	<LI>NOR support - UBIFS should support anything which is supported by
-	UBI, but we never tested NOR support and there might be bugs; it makes
-	sense to test this on <CODE>mtdram</CODE> and fix if needed;</LI>
-
-	<LI>There is no interface to select compressor type (zlib or LZO) for
-	an inode. This may be set only globally now. Disabling compression is
-	implemented via the standard "compression" inode flag which is not used
-	by other file-systems, though. See <CODE>FS_IOC_SETFLAGS</CODE> command
-	and "c" mode of the standard <CODE>chattr</CODE> utility.</LI>
-</OL>
 
 
 <INCLUDE file="../inc/footer.tmpl" />

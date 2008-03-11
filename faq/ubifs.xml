@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 6 Feb 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 11 March 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -15,6 +15,7 @@
 <OL>
 	<LI><A HREF="ubifs.html#L_mount_ubifs">How to mount UBIFS?</A></LI>
 	<LI><A HREF="ubifs.html#L_mkfubifs">How to create an UBIFS image?</A></LI>
+	<LI><A HREF="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</A></LI>
 	<LI><A HREF="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</A></LI>
 </OL>
 
@@ -47,19 +48,19 @@ $ mount -t ubifs ubi0:rootfs /mnt/ubifs
 </PRE>
 
 <P>mounts "rootfs" volume of UBI device 0 to <CODE>/mnt/ubifs</CODE> ("rootfs" is
-volume name. This method of specifying UBI volume is more preferrable because
+volume name. This method of specifying UBI volume is more preferable because
 it does not depend on device/volume numbers, which may change.</P>
 
 <P>Note, if <CODE>X</CODE> is not specified, UBIFS uses 0, i.e.,
 "<CODE>ubi0:rootfs</CODE>" and "<CODE>ubi:rootfs</CODE>" are
 equivalent.</P>
 
-<P>Some environments like busybox are confused by the ":" delimeter (e.g.,
+<P>Some environments like busybox are confused by the ":" delimiter (e.g.,
 <CODE>ubi:rootfs</CODE>) and "!" may be used instead (e.g.,
 <CODE>ubi!rootfs</CODE>).</P>
 
 <P>The following is an example of the kernel boot arguments to attach
-<CODE>mtd0</CODE> to UBI and mount volume "rotfs":</P>
+<CODE>mtd0</CODE> to UBI and mount volume "rootfs":</P>
 
 <PRE>
 ubi.mtd=0 root=ubi0:rootfs rootfstype=ubifs
@@ -151,6 +152,47 @@ is the auto-resize trick.</P>
 information and for more possibilities to tweak images.</P>
 
 
+<A NAME="L_emptyflash"><H2>Is it OK to mount empty UBI volumes?</H2></A>
+
+<P>Yes, it is OK to mount empty UBI volumes, which are volumes which
+contain only 0xFF bytes. In this case UBIFS formats the media automatically
+with default parameters (journal size, compression, etc). But generally, this
+feature should be used while developing, and a proper UBI/UBIFS image should
+preferrably be flashed in production
+(see <A HREF="ubifs.html#L_mkfubifs">this</A> section).</P>
+
+<P>Note, UBI has similar property and automatically formats the flash media if
+it is empty. So if there is an <CODE>mtd0</CODE>  MTD device, the following
+is possible:</P>
+
+<PRE>
+# Wipe the MTD device out
+flash_eraseall /dev/mtd0
+
+# Load UBI module
+modprobe ubi
+
+# Attach mtd0 to UBI - UBI will detect that the MTD device is
+# empty and automatically format it. This command will also create
+# UBI device 0 and udev should create /dev/ubi0 node
+ubiattach /dev/ubi_ctrl -m 0
+
+# Create an UBI volume - the created volume will be empty
+ubimkvol /dev/ubi0 -N test_volume -s 10MiB
+
+# Mount UBIFS - it will automatically format the empty volume
+mount -t ubifs ubi0:test_volume /mnt/ubifs
+</PRE>
+
+<P>Note, it is also possible to wipe out an existing UBIFS volume represented
+by <CODE>/dev/ubi0_0</CODE> using the following command:</P>
+
+<PRE>
+ubiupdatevol /dev/ubi0_0 -t
+</PRE>
+
+
+
 <A NAME="L_ubifs_nandsim"><H2>How to use UBIFS with nandsim?</H2></A>
 
 <P>The same way as with any MTD device. Here is an example of how to load
@@ -161,8 +203,8 @@ information and for more possibilities to tweak images.</P>
 modprobe nandsim first_id_byte=0x20 second_id_byte=0xaa \
                  third_id_byte=0x00 fourth_id_byte=0x15
 
-# MTD is not LDM-enabled and udev does not create device \
-  MTD device nodes automatically, so create /dev/mtd0
+# MTD is not LDM-enabled and udev does not create device
+# MTD device nodes automatically, so create /dev/mtd0
 mknod /dev/mtd0 c 90 0
 
 # Load UBI module and attach mtd0
@@ -174,6 +216,9 @@ ubimkvol /dev/ubi0 -N ubifs-vol -s 200MiB
 # Mount UBIFS
 mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
 </PRE>
+
+<P>For more information about nandsim see <A
+HREF="nand.html#L_nand_nandsim">here</A>.</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
