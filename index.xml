@@ -1,6 +1,6 @@
 <PAGE>
 	<VAR match="VAR_ORIGIN" replace="" />
-	<VAR match="VAR_CVSID" replace="Last updated: 11 March 2008, dedekind"/>
+	<VAR match="VAR_CVSID" replace="Last updated: 13 March 2008, dedekind"/>
 	<INCLUDE file="inc/header.tmpl" />
 
 	<VAR match="VAR_SEL_INDEX" replace="selected" />
@@ -25,9 +25,9 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>13 Mar 2008: 2.6.21 UBIFS back-port is now available</li>
 	<li>06 Mar 2008: New stable UBIFS v0.2</li>
 	<li>06 Mar 2008: UBIFS now supports extended attributes</li>
-	<li>28 Jan 2008: UBI documentation is considerably updated</li>
 	<li>26 Dec 2007: <A HREF="doc/ubi.ppt">UBI slides</A> are available</li>
 	</ul>
 
