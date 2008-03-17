@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 13 March 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 17 March 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -217,6 +217,118 @@ overall UBI/UBIFS stack scalability linear. But the UBIFS authors believe it is
 always possible to create logarithmically scalable UBI2 and to improve the
 situation. Current UBI should be OK for 2-16GiB flashes, depending on the
 I/O speed and requirements.</P>
+
+<P>Note, although the UBI scalability is linear, it anyway scales better
+then JFFS2, which was originally designed for small ~32MiB NOR flashes. JFFS2
+has scalability issues on the "file-system level", while UBI/UBIFS stack has
+scalability issues only on lower "raw flash level". The following table
+describes the issues in more details.</P>
+
+<TABLE BORDER="2" CELLPADDING="4" CELLSPACING="0">
+<TR>
+	<TD><B>Scalability issue</B></TD>
+	<TD><B>JFFS2</B></TD><TD><B>UBIFS</B></TD>
+</TR>
+
+<TR>
+	<TD>Mount time linearly depends on the flash size</TD>
+	<TD>True, the dependency is linear, because JFFS2 has to scan whole
+	    flash media when mounting.</TD>
+	<TD>UBIFS mount time does not depend on the flash size. But UBI needs
+	    to scan the flash media, which is actually quicker than JFFS2
+	    scanning. So overall, UBI/UBIFS has the linear dependency.</TD>
+</TR>
+
+<TR>
+	<TD>Memory consumption linearly depends on the flash size</TD>
+	<TD>True, the dependency is linear.</TD>
+	<TD>UBIFS memory does depend on the flash size in the current implementation,
+	    because the LPT shrinker is not implemented. But it is not
+	    difficult to implement the LPT shrinker and get rid of the
+	    dependency. It is not implemented only because the memory
+	    consumption is too small to make the coding work worth it. UBI
+	    memory consumption linearly depends on flash size. Thus, overall
+	    UBI/UBIFS stack has the linear dependency.</TD>
+</TR>
+
+<TR>
+	<TD>Mount time linearly depends on the file-system contents</TD>
+	<TD>True, the more data is stored on the file-system, the longer it
+	    takes to mount it, because JFFS2 has to do more scanning work.</TD>
+	<TD>False, mount time does not depend on the file-system contents. At
+	    the worst case (if there was an unclean reboot), UBIFS has to scan
+	    and replay the journal which has fixed and configurable size.</TD>
+</TR>
+
+<TR>
+	<TD>Full file-system checking is required after each mount</TD>
+	<TD>True. JFFS2 has to check whole file system just after it has been
+	    mounted in case of NAND flash. The checking involves reading all
+	    nodes for each inode and checking their CRC checksums, which
+	    consumes a lot of CPU. For example, this may be seen by running the
+	    <CODE>top</CODE> utility just after JFFS2 has been mounted. This
+	    slows down overall system boot-up time. Fundamentally, this is
+	    needed because JFFS2 does not store space accounting information
+	    (i.e., free/dirty space) on the flash media but instead, gathers
+	    this information by scanning the flash media.</TD>
+	<TD>False. UBIFS does not scan/check whole file-system because it stores
+	    the space accounting information on the flash media in the so-called
+	    LPT (Logical eraseblock Properties Tree) tree.</TD>
+</TR>
+
+<TR>
+	<TD>Memory consumption linearly depends on file-system contents</TD>
+	<TD>True. JFFS2 keeps a small data structure in RAM for each node on
+	    flash, so the more data is stored on the flash media, the more
+	    memory JFFS2 consumes.</TD>
+	<TD>False. UBIFS memory consumption does not depend on how much data is
+	    stored on the flash media.</TD>
+</TR>
+
+<TR>
+	<TD>The first file access time linearly depends on its size</TD>
+	<TD>True. JFFS2 has to keep in RAM so-called "fragment tree" for each
+	    inode corresponding to an opened file. The fragment tree is an
+	    in-memory RB-tree which is indexed by file offset and refers
+	    on-flash nodes corresponding to this offset. The fragment tree is
+	    <I>not</I> stored on the flash media. Instead, it is built
+	    on-the-flight when the file is opened for the first time. To build
+	    the fragment tree, JFFS2 has to read each data node corresponding
+	    to this inode from the flash. This means, the larger is the file,
+	    the longer it takes to open it for the first time. And the larger
+	    is the file the more memory it takes when it is opened. Depending
+	    on the system, JFFS2 becomes nearly unusable starting from certain
+	    file size.</TD>
+	<TD>False. UBIFS stores all the indexing information on the media in
+	    the indexing B-tree. Whenever a piece of data has to be read from
+	    the file-system, the B-tree is looked-up and the corresponding
+	    flash address to read is found. There is a TNC cache which caches
+	    the B-tree nodes whin the B-tree is looked-up, and the cache is
+	    shrinkable, which means it might be shrunk when the kernel needs
+	    more memory.</TD>
+</TR>
+
+<TR>
+	<TD>File-system performance depends on I/O history</TD>
+	<TD>True. Since JFFS2 is fully synchronous, it writes data to the flash
+	    media as soon as the data arrives. If one changes few bytes in the
+	    middle of a file, JFFS2 writes a data node which contains those
+	    bytes to the flash. If there are many random small writes all
+	    over the place, the file-system becomes fragmented. JFFS2 merges
+	    small fragments to 4KiB chunks, which involves re-compression and
+	    re-writing the data. But this "de-fragmentation" is happening
+	    during garbage collection and at random time, because JFFS2
+	    wear-leveling algorithm is based on random eraseblock selection. So
+	    if there were a lot of small writes, JFFS2 becomes slower some time
+	    later - the performance just drops out of the blue which makes the
+	    system less predictable.</TD>
+	<TD>False. UBIFS always writes in 4KiB chunks. This does not hurt the
+	    performance because of write-back support: the data changes do not
+	    go to the flash straight away - they are instead deferred and are
+	    done later, when (hopefully) more data is changed at the same data
+	    page and usually in background.</TD>
+</TR>
+</TABLE>
 
 
 
