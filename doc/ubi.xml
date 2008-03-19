@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 6 Feb 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 19 Mar 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -243,7 +243,7 @@ to us via the <A HREF="../mail.html">MTD mailing list</A>.</P>
 
 
 
-<A NAME="L_scalability_det"><H2>Implementation details</H2></A>
+<A NAME="L_scalability_det"><H4>Implementation details</H4></A>
 
 <P>In general, UBI needs three tables for operation:</P>
 
@@ -409,7 +409,7 @@ more LEB to re-map to another PEB if the erase counter of the current PEB
 becomes too low (then the LEB is re-mapped to a PEB with higher erase counter
 and the old PEB is used for other operations).</P>
 
-<A NAME="L_unmap_det"><H2>Implementation details</H2></A>
+<A NAME="L_unmap_det"><H4>Implementation details</H4></A>
 
 <P>This section describes how UBI distinguishes between older and newer
 versions of an LEB in case of an unclean reboot. Suppose one un-maps LEB
