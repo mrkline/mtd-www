@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 6 Feb 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 27 March 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -25,6 +25,7 @@
 	<LI><A HREF="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</A></LI>
 	<LI><A HREF="ubi.html#L_volume_table">What is volume table?</A></LI>
 	<LI><A HREF="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</A></LI>
+	<LI><A HREF="ubi.html#L_mlc">May UBI be used on MLC flash?</A></LI>
 	<LI><A HREF="ubi.html#L_how_debug">How to debug UBI?</A></LI>
 	<LI><A HREF="ubi.html#L_how_send_bugreport">How to send a bugreport?</A></LI>
 </OL>
@@ -115,7 +116,8 @@ $ ubirmvol /dev/ubi0 -n 0
 <P>Although it may sound weird, UBI can emulate MTD devices for UBI volumes and
 JFFS2 can be mounted on these emulated MTD devices. Enable the
 "Emulate MTD devices" UBI configuration menu check-box to make UBI create one
-MTD device for each UBI volume.</P>
+MTD device for each UBI volume. One of the reasons to do this migt be using of
+MLC NAND flash (see <A HREF="ubi.html#L_mlc">this</A> section).</P>
 
 
 
@@ -125,8 +127,8 @@ MTD device for each UBI volume.</P>
 
 <P>UBI is not a block device emulation layer, it is not an FTL. Neither ext2
 nor other "traditional" file systems can be run on top of an UBI device.
-Please, read the <A HREF="../ubi.html#L_rednote">big red note</A>
-and <A HREF="../ubi.html#L_overview">overview</A> documentation sections to
+Please, read the <A HREF="../doc/ubi.html#L_rednote">big red note</A>
+and <A HREF="../doc/ubi.html#L_overview">overview</A> documentation sections to
 realize why.</P>
 
 <P>But it is much easier to implement FTL on top of UBI then on top of MTD,
@@ -262,6 +264,28 @@ table for reliability reasons.</P>
 
 <P>Yes, UBI is designed to be tolerant of power failures and unclean
 reboots.</P>
+
+
+
+<A NAME="L_mlc">
+<H2>May UBI be used on MLC flash?</H2>
+</A>
+
+<P>Yes, it may, as long as the flash is supported by the MTD layer. UBI does
+not use OOB and it requires data to be written sequintially (see
+<A HREF="ubi.html#L_mlc">here</A>). UBI guarantes that the difference
+between maximum and minimum erase-counters is withing certain threshold,
+which is 4096 by default. Since MLC flashes have quite low eraseblock
+life-cycle (about 1000-10000, unlike 100000-1000000 for SLC NAND and NOR
+flashes), the threshold has to be set to a lower value (e.g., 128). This may be
+done via the linux kernel configuration menu.</P>
+
+<P>Note, unlike UBI, JFFS2 uses random wear-levelling algorithm, which is in
+fact not completely random, because JFFS2 makes it more probable to
+garbage collect eraseblocks with more dirty data. This means that JFFS2 is not
+really appropriate for MLC flashes. However, it is possible to use JFFS2
+file-system on top of UBI (see <A HREF="ubi.html#L_run_jffs2">this</A>
+section) to improve wear-leveling.</P>
 
 
 

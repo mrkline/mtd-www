@@ -13,11 +13,35 @@
 
 <H2>Table of contents</H2>
 <OL>
+	<LI><A HREF="ubifs.html#L_ubifs_mlc">May UBIFS be used on MLC flash?</A></LI>
 	<LI><A HREF="ubifs.html#L_mount_ubifs">How to mount UBIFS?</A></LI>
 	<LI><A HREF="ubifs.html#L_mkfubifs">How to create an UBIFS image?</A></LI>
 	<LI><A HREF="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</A></LI>
 	<LI><A HREF="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</A></LI>
 </OL>
+
+
+
+<A NAME="L_ubifs_mlc"><H2>May UBIFS be used on MLC flash?</H2></A>
+
+<P>The authors did not test it, but they belive it should run fine.
+Consider the main specific aspects of MLC flashes:</P>
+
+<UL>
+	<LI>MLC flashes are more "faulty" then SLC, so they use stronger ECC
+	codes which occupies whole OOB area - this is not a problem because
+	neither UBIFS nor UBI use the OOB area;</LI>
+
+	<LI>when the data is written to an eraseblock, it has to be written
+	sequentially, from the beginning of the eraseblock to the end of it -
+	this is not a problem because it is exactly what UBI/UBIFS do (see
+	also <A HREF="../faq/ubi.html#L_restrict">this</A> section);</LI>
+
+	<LI>MLC flashes have rather short eraseblock lifecycle of just few
+	thousand of erase cycles - this is not be a problem, because UBI uses
+	determenistic wear-leveling algorithm (see
+	<A HREF="../faq/ubi.html#L_mlc">this</A> section).</LI>
+</UL>
 
 
 
@@ -223,8 +247,8 @@ ubimkvol /dev/ubi0 -N ubifs-vol -s 200MiB
 mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
 </PRE>
 
-<P>For more information about nandsim see <A
-HREF="nand.html#L_nand_nandsim">here</A>.</P>
+<P>For more information about nandsim see
+<A HREF="nand.html#L_nand_nandsim">here</A>.</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
