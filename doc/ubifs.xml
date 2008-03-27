@@ -320,10 +320,11 @@ Access control list (ACL) support is not implemented.</P>
 
 <A NAME="L_documentation"><H2>Documentation</H2></A>
 
-<P>There is no UBIFS design document or white paper so far. There is
+<P>The UBIFS white-paper which briefly describes main UBIFS design aspects is
+available here: <A HREF="ubifs_whitepaper.pdf">ubifs_whitepaper.pdf</A>. There is
 <A HREF="../faq/ubifs.html">UBIFS FAQ</A> which might be useful. Also, there is
 <A HREF="http://osl.sed.hu/wiki/ubifs/index.php/Main_Page">a wiki page</A>, but
-there is no much information and some of it is out-of-date.</P>
+it has a lot of out-of-date information.</P>
 
 
 <INCLUDE file="../inc/footer.tmpl" />
