@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 17 March 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 27 March 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -131,32 +131,9 @@ sections.</P>
 
 <A NAME="L_status"><H2>Current status</H2></A>
 
-<P>UBIFS has proved to be fairly stable, however it needs more testing. It
-needs some features like extended attributes support to be implemented. It
-needs tuning, e.g., finding optimal journal size and fan-out of the indexing
-tree. It also needs some profiling and bottleneck hunting.</P>
-
-<P>UBIFS is not in the main-line kernel, but the authors a planning to start
-the submission soon. But before can be done, UBIFS needs:</P>
-
-<UL>
-	<LI>code review - there are places in the source code which
-	have to be fixed or cleaned-up;</LI>
-
-	<LI>binary format has to be stabilized - it is difficult to change it
-	once the FS in the main-line; on the other hand, UBIFS is a file-system
-	for embedded device, and it is unlikely the flash chip is moved ever
-	somewhere else from the original device, so the portability issues
-	are not that important for UBIFS as, say, for ext2; this means, it is
-	probably OK to do forward-compatible, but backward-incompatible binary
-	format changes for UBIFS;</LI>
-
-	<LI>UBIFS needs more users - the community does not usually accept stuff
-	which has no or few users; people want to be sure that the piece of
-	code is used, thus, maintained in the long term; on the other hand,
-	users are reluctant to use software before it gets to main-line, which
-	does not help getting there.</LI>
-</UL>
+<P>UBIFS has proved to be fairly stable, however it needs more testing, review,
+and tuning (e.g., finding optimal journal size, etc).  It also needs some
+profiling and bottleneck hunting.</P>
 
 
 
