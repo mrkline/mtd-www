@@ -63,8 +63,8 @@ global wear-leveling and I/O errors handling.</P>
 logical eraseblock may be mapped to any physical eraseblock. This mapping is
 managed by UBI, it is hidden from users and it is the base mechanism to provide
 global wear-leveling (along with per-physical eraseblock erase counters and
-the ability to transparently move data from less worn-out physical eraseblocks
-to more worn-out ones).</P>
+the ability to transparently move data from more worn-out physical eraseblocks
+to the less worn-out ones).</P>
 
 <P>UBI volume size is specified when the volume is created a may later be
 changed (volumes are dynamically re-sizable). UBI supports <I>dynamic</I>
