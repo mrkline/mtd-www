@@ -25,11 +25,13 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
-	<li>27 Mar 2008: <A HREF="doc/ubifs_whitepaper.pdf">UBIFS white-paper</A>
+	<li>03 Apr 2008: UBIFS on-flash format changed, UBIFS and mkfs.ubifs
+	    v0.3 hav been tagged</li>
+	<li>27 Mar 2008: <a HREF="doc/ubifs_whitepaper.pdf">UBIFS white-paper</a>
 	    is available</li>
 	<li>13 Mar 2008: 2.6.21 UBIFS back-port is now available</li>
 	<li>06 Mar 2008: UBIFS now supports extended attributes</li>
-	<li>26 Dec 2007: <A HREF="doc/ubi.ppt">UBI slides</A> are available</li>
+	<li>26 Dec 2007: <a HREF="doc/ubi.ppt">UBI slides</a> are available</li>
 	</ul>
 
 	<INCLUDE file="inc/footer.tmpl" />
