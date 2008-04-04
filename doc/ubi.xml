@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 19 Mar 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 04 Apr 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -29,6 +29,7 @@
 	<OL><LI><A HREF="ubi.html#L_lebchange_det">Implementation details</A></LI></OL>
 	<LI><A HREF="ubi.html#L_autoresize">Volume auto-resize</A></LI>
 	<LI><A HREF="ubi.html#L_ubidoc">More documentation</A></LI>
+	<LI><A HREF="ubi.html#L_how_send_bugreport">How to send a bugreport?</A></LI>
 </OL>
 
 
@@ -673,6 +674,28 @@ commands and the involved data structures),
 <CODE>include/linux/mtd/ubi.h</CODE> defines the kernel API and the
 <CODE>drivers/mtd/ubi/kapi.c</CODE> file contains comments for each kernel API
 function (just above the body of the function).</P>
+
+
+
+<A NAME="L_how_send_bugreport">
+<H2>How to send an UBI bugreport?</H2>
+</A>
+
+<P>Before sending a bug report:</P>
+<UL>
+	<LI>make sure you have compiled kernel symbols in
+	(<CODE>CONFIG_KALLSYMS_ALL=y</CODE> in <CODE>.config</CODE>);</LI>
+
+	<LI>enable UBI debugging (<CODE>CONFIG_MTD_UBI_DEBUG=y</CODE>
+	in <CODE>.config</CODE>).</LI>
+</UL>
+
+<P>Please, attach all the bug-related messages including the UBI messages from
+the kernel ring buffer, which may be collected using the <CODE>dmesg</CODE>
+utility or using <CODE>minicom</CODE> with serial console capturing. And of
+course, it is wise to describe how the problem can be reproduced. The bugreport
+should be sent to the <A HREF="../mail.html">MTD mailing list</A>.</P>
+
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

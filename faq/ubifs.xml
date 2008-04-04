@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 27 March 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 04 Apr 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -249,6 +249,7 @@ mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
 
 <P>For more information about nandsim see
 <A HREF="nand.html#L_nand_nandsim">here</A>.</P>
+
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

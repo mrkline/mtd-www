@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 27 March 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 04 Apr 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -22,6 +22,7 @@
 	<LI><A HREF="ubifs.html#L_scalability">Scalability</A></LI>
 	<LI><A HREF="ubifs.html#L_xattr">Extended attributes</A></LI>
 	<LI><A HREF="ubifs.html#L_documentation">Documentation</A></LI>
+	<LI><A HREF="ubifs.html#L_how_send_bugreport">How to send a bugreport?</A></LI>
 </OL>
 
 
@@ -324,6 +325,27 @@ available here: <A HREF="ubifs_whitepaper.pdf">ubifs_whitepaper.pdf</A>. There i
 <A HREF="../faq/ubifs.html">UBIFS FAQ</A> which might be useful. Also, there is
 <A HREF="http://osl.sed.hu/wiki/ubifs/index.php/Main_Page">a wiki page</A>, but
 it has a lot of out-of-date information.</P>
+
+
+
+<A NAME="L_how_send_bugreport">
+<H2>How to send an UBI bugreport?</H2>
+</A>
+
+<P>Before sending a bug report:</P>
+<UL>
+	<LI>make sure you have compiled kernel symbols in
+	(<CODE>CONFIG_KALLSYMS_ALL=y</CODE> in <CODE>.config</CODE>);</LI>
+
+	<LI>enable UBI debugging (<CODE>CONFIG_UBIFS_FS_DEBUG=y</CODE>
+	in <CODE>.config</CODE>).</LI>
+</UL>
+
+<P>Please, attach all the bug-related messages including the UBI messages from
+the kernel ring buffer, which may be collected using the <CODE>dmesg</CODE>
+utility or using <CODE>minicom</CODE> with serial console capturing. And of
+course, it is wise to describe how the problem can be reproduced. The bugreport
+should be sent to the <A HREF="../mail.html">MTD mailing list</A>.</P>
 
 
 <INCLUDE file="../inc/footer.tmpl" />

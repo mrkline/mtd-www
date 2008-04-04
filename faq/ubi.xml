@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 27 March 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 04 Apr 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -27,7 +27,6 @@
 	<LI><A HREF="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</A></LI>
 	<LI><A HREF="ubi.html#L_mlc">May UBI be used on MLC flash?</A></LI>
 	<LI><A HREF="ubi.html#L_how_debug">How to debug UBI?</A></LI>
-	<LI><A HREF="ubi.html#L_how_send_bugreport">How to send a bugreport?</A></LI>
 </OL>
 
 
@@ -116,7 +115,7 @@ $ ubirmvol /dev/ubi0 -n 0
 <P>Although it may sound weird, UBI can emulate MTD devices for UBI volumes and
 JFFS2 can be mounted on these emulated MTD devices. Enable the
 "Emulate MTD devices" UBI configuration menu check-box to make UBI create one
-MTD device for each UBI volume. One of the reasons to do this migt be using of
+MTD device for each UBI volume. One of the reasons to do this might be using of
 MLC NAND flash (see <A HREF="ubi.html#L_mlc">this</A> section).</P>
 
 
@@ -272,15 +271,15 @@ reboots.</P>
 </A>
 
 <P>Yes, it may, as long as the flash is supported by the MTD layer. UBI does
-not use OOB and it requires data to be written sequintially (see
-<A HREF="ubi.html#L_mlc">here</A>). UBI guarantes that the difference
+not use OOB and it requires data to be written sequentially (see
+<A HREF="ubi.html#L_mlc">here</A>). UBI guarantees that the difference
 between maximum and minimum erase-counters is withing certain threshold,
 which is 4096 by default. Since MLC flashes have quite low eraseblock
 life-cycle (about 1000-10000, unlike 100000-1000000 for SLC NAND and NOR
 flashes), the threshold has to be set to a lower value (e.g., 128). This may be
-done via the linux kernel configuration menu.</P>
+done via the Linux kernel configuration menu.</P>
 
-<P>Note, unlike UBI, JFFS2 uses random wear-levelling algorithm, which is in
+<P>Note, unlike UBI, JFFS2 uses random wear-leveling algorithm, which is in
 fact not completely random, because JFFS2 makes it more probable to
 garbage collect eraseblocks with more dirty data. This means that JFFS2 is not
 really appropriate for MLC flashes. However, it is possible to use JFFS2
@@ -337,34 +336,28 @@ mtd1: 04000000 00004000 "NAND simulator partition"
 <P>Enable UBI debugging support in the configuration menu
 (the "<B>UBI debugging</B>" check-box). When debugging is enabled, UBI
 prints more information about errors, and adds extra assertions in the code
-which may help to catch bugs. For deeper investigation, enable debugging prints
-and some extra self-checks, depending on the problem symptoms.</P>
+which may help to catch bugs. For deeper debugging, enable debugging prints
+and extra self-checks. The prints help to realize what UBI is doing, and the
+extra self-checks make sure internal data structures are consistent and may
+catch the problem much earlier then it would have been noticed otherwise.
+However, the debugging messages and the extra self-checks makes UBI
+considerably slower.</P>
 
-<P>Note, when UBI debugging messages are enabled, UBI prints a lot. Serial
-console may be used to capture all of them, but it is quite slow. The other
-possibility is to enlarge the kernel printk buffer size - for example,
-make it 64MiB by adding <CODE>log_buf_len=64M</CODE> kernel boot argument.</P>
+<P>When UBI debugging messages are enabled, UBI prints a lot and the kernel
+ring buffer will likely not fit all the messages, so the fair part of them will
+be lost. One way to solve this issue is to make all the messages to go to the
+serial console (configure the serial console and run <CODE>dmesg -n 8</CODE> to
+make all the messages go there). Then they may be captured, for example with
+help of <CODE>minicom</CODE>. However, the system will become really slow
+because printing to the serial console is synchronous and slow. Also, UBI makes
+it possible to enable/disable debugging messages from various subsystems
+separately. This may help to lessen the amount of them (e.g., I/O messages are
+rarely needed). And finally, it is possible to enlarge the ring buffer and make
+it, say, 64MiB by adding <CODE>log_buf_len=64M</CODE> kernel boot argument. In
+this case the ring buffer will likely have enough messages. The big advantage
+of this approach is that the system does not become too slow because it does
+not send the output to slow serial console.</P>
 
-
-
-<A NAME="L_how_send_bugreport">
-<H2>How to send an UBI bugreport?</H2>
-</A>
-
-<P>Before sending a bug report:</P>
-<UL>
-	<LI>make sure you have compiled kernel symbols in
-	(<CODE>CONFIG_KALLSYMS_ALL=y</CODE> in <CODE>.config</CODE>);</LI>
-
-	<LI>enable UBI debugging;</LI>
-
-	<LI>try to enable additional self-checks; if they make the bug to be
-	not reproducible or make UBI dramatically slower, try to disable
-	some them; the slowest one is the I/O self-check;</LI>
-</UL>
-
-<P>When sending the bugreport, please include the bug-related messages and
-UBI debugging output.</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
