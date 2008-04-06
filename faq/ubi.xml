@@ -9,354 +9,354 @@
 
 <INCLUDE file="../inc/content.tmpl" />
 
-<H1>UBI FAQ and HOWTO</H1>
+<h1>UBI FAQ and HOWTO</h1>
 
-<H2>Table of contents</H2>
-<OL>
-	<LI><A HREF="ubi.html#L_enable_ubi">How to enable UBI?</A></LI>
-	<LI><A HREF="ubi.html#L_attachmtd">How to attach an MTD device?</A></LI>
-	<LI><A HREF="ubi.html#L_mkvol">How to create/delete UBI volumes?</A></LI>
-	<LI><A HREF="ubi.html#L_run_jffs2">How to run JFFS2 on top of an UBI volume?</A></LI>
-	<LI><A HREF="ubi.html#L_ext2_over_ubi">Can I run ext2 on top of UBI?</A></LI>
-	<LI><A HREF="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</A></LI>
-	<LI><A HREF="ubi.html#L_restrict">Can logical eraseblocks be written randomly?</A></LI>
-	<LI><A HREF="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</A></LI>
-	<LI><A HREF="ubi.html#L_why_2_hdrs">Why does UBI need two headers, not just one?</A></LI>
-	<LI><A HREF="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</A></LI>
-	<LI><A HREF="ubi.html#L_volume_table">What is volume table?</A></LI>
-	<LI><A HREF="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</A></LI>
-	<LI><A HREF="ubi.html#L_mlc">May UBI be used on MLC flash?</A></LI>
-	<LI><A HREF="ubi.html#L_how_debug">How to debug UBI?</A></LI>
-</OL>
-
-
-
-<A NAME="L_enable_ubi"><H2>How to enable UBI?</H2></A>
-
-<P>In the Linux configuration menu, go to "<B>Device Drivers</B>" ->
-"<B>Memory Technology Devices (MTD)</B>" -> "<B>UBI - Unsorted block images</B>",
-and mark the "<B>Enable UBI</B>" check-box. UBI may be either compiled into the
-kernel or built as a kernel module.</P>
+<h2>Table of contents</h2>
+<ol>
+	<li><a href="ubi.html#L_enable_ubi">How to enable UBI?</a></li>
+	<li><a href="ubi.html#L_attachmtd">How to attach an MTD device?</a></li>
+	<li><a href="ubi.html#L_mkvol">How to create/delete UBI volumes?</a></li>
+	<li><a href="ubi.html#L_run_jffs2">How to run JFFS2 on top of an UBI volume?</a></li>
+	<li><a href="ubi.html#L_ext2_over_ubi">Can I run ext2 on top of UBI?</a></li>
+	<li><a href="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</a></li>
+	<li><a href="ubi.html#L_restrict">Can logical eraseblocks be written randomly?</a></li>
+	<li><a href="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</a></li>
+	<li><a href="ubi.html#L_why_2_hdrs">Why does UBI need two headers, not just one?</a></li>
+	<li><a href="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</a></li>
+	<li><a href="ubi.html#L_volume_table">What is volume table?</a></li>
+	<li><a href="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</a></li>
+	<li><a href="ubi.html#L_mlc">May UBI be used on MLC flash?</a></li>
+	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
+</ol>
 
 
 
-<A NAME="L_attachmtd"><H2>How to attach an MTD device?</H2></A>
+<a name="L_enable_ubi"><h2>How to enable UBI?</h2></a>
 
-<P>If UBI is compiled as a kernel module, it is enough to specify the MTD
-device to attach in the module arguments, e.g.</P>
+<p>In the Linux configuration menu, go to "<b>Device Drivers</b>" ->
+"<b>Memory Technology Devices (MTD)</b>" -> "<b>UBI - Unsorted block images</b>",
+and mark the "<b>Enable UBI</b>" check-box. UBI may be either compiled into the
+kernel or built as a kernel module.</p>
 
-<PRE>
+
+
+<a name="L_attachmtd"><h2>How to attach an MTD device?</h2></a>
+
+<p>If UBI is compiled as a kernel module, it is enough to specify the MTD
+device to attach in the module arguments, e.g.</p>
+
+<pre>
 $ modprobe ubi mtd=3
-</PRE>
+</pre>
 
-<P>loads the UBI kernel module and attaches <CODE>mtd3</CODE>. And</P>
+<p>loads the UBI kernel module and attaches <code>mtd3</code>. And</p>
 
-<PRE>
+<pre>
 $ modprobe ubi mtd=3 mtd=5
-</PRE>
+</pre>
 
-<P>command loads UBI kernel module and attaches MTD devices <CODE>mtd3</CODE>
-and <CODE>mtd5</CODE>.</P>
+<p>command loads UBI kernel module and attaches MTD devices <code>mtd3</code>
+and <code>mtd5</code>.</p>
 
-<P>If UBI is compiled into the kernel, the mtd device to attach may be
-specified in the kernel boot parameters, e.g.,</P>
+<p>If UBI is compiled into the kernel, the mtd device to attach may be
+specified in the kernel boot parameters, e.g.,</p>
 
-<PRE>
+<pre>
 ubi.mtd=3
-</PRE>
+</pre>
 
-<P>command makes UBI attach <CODE>mtd3</CODE> when the kernel is booting,
-and</P>
+<p>command makes UBI attach <code>mtd3</code> when the kernel is booting,
+and</p>
 
-<PRE>
+<pre>
 ubi.mtd=3 ubi.mtd=3
-</PRE>
+</pre>
 
-<P>command makes UBI attach <CODE>mtd3</CODE> and <CODE>mtd6</CODE>.</P>
+<p>command makes UBI attach <code>mtd3</code> and <code>mtd6</code>.</p>
 
-<P>And finally, MTD devices may be attached or detached any time with the
-<CODE>ubiattach</CODE> and <CODE>ubidetach</CODE> utilities
-(see <A HREF="../doc/ubi.html#L_usptools">here</A>); For example,</P>
+<p>And finally, MTD devices may be attached or detached any time with the
+<code>ubiattach</code> and <code>ubidetach</code> utilities
+(see <a href="../doc/ubi.html#L_usptools">here</a>); For example,</p>
 
-<PRE>
+<pre>
 $ ubiattach /dev/ubi_ctrl -m 3
-</PRE>
+</pre>
 
-<P>attaches <CODE>mtd3</CODE>. But this "run-time attach" UBI capability was
+<p>attaches <code>mtd3</code>. But this "run-time attach" UBI capability was
 added very recently and has not yet reached the main-line kernel, but may be
-found in the <A HREF="ubi.html#L_source">UBI git tree</A>. It should be
-available in the main-line kernels starting from version 2.6.25.</P>
+found in the <a href="ubi.html#L_source">UBI git tree</a>. It should be
+available in the main-line kernels starting from version 2.6.25.</p>
 
 
 
-<A NAME="L_mkvol"><H2>How to create/delete UBI volumes?</H2></A>
+<a name="L_mkvol"><h2>How to create/delete UBI volumes?</h2></a>
 
-<P>Use <CODE>ubimkvol</CODE> and <CODE>ubirmvol</CODE> tools (see
-<A HREF="../doc/ubi.html#L_usptools">here</A>). For example, the below command
-creates a 128MiB volume on UBI device 0:</P>
+<p>Use <code>ubimkvol</code> and <code>ubirmvol</code> tools (see
+<a href="../doc/ubi.html#L_usptools">here</a>). For example, the below command
+creates a 128MiB volume on UBI device 0:</p>
 
-<PRE>
+<pre>
 $ ubimkvol /dev/ubi0 -N rootfs -s 128MiB
-</PRE>
+</pre>
 
-<P>and the following command removes it:</P>
+<p>and the following command removes it:</p>
 
-<PRE>
+<pre>
 $ ubirmvol /dev/ubi0 -n 0
-</PRE>
+</pre>
 
-<P>For more usage information, use <CODE>ubimkvol -h</CODE> and
-<CODE>ubirmvol -h</CODE>.</P>
+<p>For more usage information, use <code>ubimkvol -h</code> and
+<code>ubirmvol -h</code>.</p>
 
 
 
-<A NAME="L_run_jffs2"><H2>How to run JFFS2 on top of an UBI volume?</H2></A>
+<a name="L_run_jffs2"><h2>How to run JFFS2 on top of an UBI volume?</h2></a>
 
-<P>Although it may sound weird, UBI can emulate MTD devices for UBI volumes and
+<p>Although it may sound weird, UBI can emulate MTD devices for UBI volumes and
 JFFS2 can be mounted on these emulated MTD devices. Enable the
 "Emulate MTD devices" UBI configuration menu check-box to make UBI create one
 MTD device for each UBI volume. One of the reasons to do this might be using of
-MLC NAND flash (see <A HREF="ubi.html#L_mlc">this</A> section).</P>
+MLC NAND flash (see <a href="ubi.html#L_mlc">this</a> section).</p>
 
 
 
-<A NAME="L_ext2_over_ubi">
-<H2>Can I run ext2 on top of UBI?</H2>
-</A>
+<a name="L_ext2_over_ubi">
+<h2>Can I run ext2 on top of UBI?</h2>
+</a>
 
-<P>UBI is not a block device emulation layer, it is not an FTL. Neither ext2
+<p>UBI is not a block device emulation layer, it is not an FTL. Neither ext2
 nor other "traditional" file systems can be run on top of an UBI device.
-Please, read the <A HREF="../doc/ubi.html#L_rednote">big red note</A>
-and <A HREF="../doc/ubi.html#L_overview">overview</A> documentation sections to
-realize why.</P>
+Please, read the <a href="../doc/ubi.html#L_rednote">big red note</a>
+and <a href="../doc/ubi.html#L_overview">overview</a> documentation sections to
+realize why.</p>
 
-<P>But it is much easier to implement FTL on top of UBI then on top of MTD,
+<p>But it is much easier to implement FTL on top of UBI then on top of MTD,
 because UBI takes care about many flash complexities and makes it
 possible to concentrate on on upper-level issues rather then solving flash
-media problems like wear-leveling, bit-flips, bad-blocks, etc.</P>
+media problems like wear-leveling, bit-flips, bad-blocks, etc.</p>
 
-<P><A
-HREF="http://lists.infradead.org/pipermail/linux-mtd/2008-January/020381.html">
-This</A> e-mail describes an idea of a simple FTL layer on top of UBI.</P>
+<p><a
+href="http://lists.infradead.org/pipermail/linux-mtd/2008-January/020381.html">
+This</a> e-mail describes an idea of a simple FTL layer on top of UBI.</p>
 
 
 
-<A NAME="L_format_mtd">
-<H2>Do I have to format my empty flash before running UBI on top of it?</H2>
-</A>
+<a name="L_format_mtd">
+<h2>Do I have to format my empty flash before running UBI on top of it?</h2>
+</a>
 
-<P>No, you don't have to. Although UBI stores some internal information,
+<p>No, you don't have to. Although UBI stores some internal information,
 you may feed it an empty MTD device and UBI will format it automatically.
 The resulting MTD device will have all the internal data in place and no
-user volumes.</P>
+user volumes.</p>
 
-<P>Note, "empty flash" means that it has to contain only <CODE>0xFF</CODE>
-bytes, i.e., to be fully erased. You may use the <CODE>flash_eraseall</CODE>
-MTD utility to wipe out MTD devices.</P>
+<p>Note, "empty flash" means that it has to contain only <code>0xFF</code>
+bytes, i.e., to be fully erased. You may use the <code>flash_eraseall</code>
+MTD utility to wipe out MTD devices.</p>
 
 
 
-<A NAME="L_restrict">
-<H2>Can logical eraseblocks be written randomly?</H2>
-</A>
+<a name="L_restrict">
+<h2>Can logical eraseblocks be written randomly?</h2>
+</a>
 
-<P>No, the flash chip restrictions have to be taken into account. This is
+<p>No, the flash chip restrictions have to be taken into account. This is
 because UBI logical eraseblocks (LEB) are mapped to physical eraseblocks (PEB),
 and an LEB write operation is essentially a write to the corresponding PEB
 plus a small offset, because there are erase counter and volume ID headers at
-the beginning of the PEB (see <A HREF="../doc/ubi.html#L_overhead">here</A>
-for few more details). The important flash restrictions are:</P>
+the beginning of the PEB (see <a href="../doc/ubi.html#L_overhead">here</a>
+for few more details). The important flash restrictions are:</p>
 
-<OL>
-	<LI>many flashes have minimal input-output unit size larger then 1 byte,
+<ol>
+	<li>many flashes have minimal input-output unit size larger then 1 byte,
 	so write offsets and lengths have to be aligned to the minimum I/O unit
 	size; for example, in case of a NAND flash with 2KiB NAND page it is
 	possible to write only 2, 4, 8, etc KiB chunks and only to 0, 2, 4, 8,
-	etc KiB offsets;</LI>
+	etc KiB offsets;</li>
 
-	<LI>it is prohibited to write more then once to the same PEB
-	offset;</LI>
+	<li>it is prohibited to write more then once to the same PEB
+	offset;</li>
 
-	<LI>many NAND flashes (specifically, MLC NAND flashes) require NAND
+	<li>many NAND flashes (specifically, MLC NAND flashes) require NAND
 	pages to be written consecutively from the beginning of a physical
 	eraseblock, to the end of the physical eraseblock; for example, it is
 	prohibited to write first to offset 2048, then to offset 0; once offset
 	2048 has been written to, it is possible to write only to further
-	offsets;</LI>
-</OL>
+	offsets;</li>
+</ol>
 
-<P>Even if the flash chip is devoid of the last restriction, UBI anyway
+<p>Even if the flash chip is devoid of the last restriction, UBI anyway
 requires logical eraseblocks to be written to sequentially from the beginning
 to the end; this is needed because UBI calculates data CRC when moving logical
 eraseblocks to other physical eraseblocks (see
-<A HREF="../doc/ubi.html#L_lebchange_det">here</A> to realize why),
-so a write operation to before the furthest data offset causes a CRC error;</P>
+<a href="../doc/ubi.html#L_lebchange_det">here</a> to realize why),
+so a write operation to before the furthest data offset causes a CRC error;</p>
 
 
 
-<A NAME="L_why_headers">
-<H2>What for does UBI need headers in physical eraseblocks?</H2>
-</A>
+<a name="L_why_headers">
+<h2>What for does UBI need headers in physical eraseblocks?</h2>
+</a>
 
-<P>The headers are needed to keep track of erase counters and
+<p>The headers are needed to keep track of erase counters and
 physical-to-logical eraseblock associations. There are two UBI headers stored
-in each PEB:</P>
-<UL>
-	<LI><B>erase counter header</B> (or <B>EC header</B>) which is mostly
-	needed to store the erase counter of the PEB;</LI>
+in each PEB:</p>
+<ul>
+	<li><b>erase counter header</b> (or <b>EC header</b>) which is mostly
+	needed to store the erase counter of the PEB;</li>
 
-	<LI><B>volume identifier header</B> (or <B>VID header</B>) which stores
-	volume ID and LEB number this PEB belongs to.</LI>
-</UL>
+	<li><b>volume identifier header</b> (or <b>VID header</b>) which stores
+	volume ID and LEB number this PEB belongs to.</li>
+</ul>
 
-<P>Note, there are also some other data stored in EC and VID headers, see
-<CODE>ubi-media.h</CODE> for more details.</P>
+<p>Note, there are also some other data stored in EC and VID headers, see
+<code>ubi-media.h</code> for more details.</p>
 
 
 
-<A NAME="L_why_2_hdrs">
-<H2>Why does UBI need two headers, not just one?</H2>
-</A>
+<a name="L_why_2_hdrs">
+<h2>Why does UBI need two headers, not just one?</h2>
+</a>
 
-<P>UBI maintains two per-eraseblock headers because it needs to write different
-information on flash at different moments of time:</P>
-<UL>
-	<LI>after a PEB is erased, the EC header is written straight away,
+<p>UBI maintains two per-eraseblock headers because it needs to write different
+information on flash at different moments of time:</p>
+<ul>
+	<li>after a PEB is erased, the EC header is written straight away,
 	which minimizes the probability of losing the erase counter due to an
-	unclean reboot;</LI>
+	unclean reboot;</li>
 
-	<LI>when UBI associates a PEB with to a LEB, the VID header is written
-	to the PEB.</LI>
-</UL>
+	<li>when UBI associates a PEB with to a LEB, the VID header is written
+	to the PEB.</li>
+</ul>
 
-<P>When the EC header is written to a PEB, UBI does not yet know the volume ID
+<p>When the EC header is written to a PEB, UBI does not yet know the volume ID
 and LEB number this PEB will be associated with. This is why UBI needs to do
-two separate write operations and to have two separate headers.</P>
+two separate write operations and to have two separate headers.</p>
 
 
 
-<A NAME="L_why_no_oob">
-<H2>Why UBI does not use OOB area of NAND flashes?</H2>
-</A>
+<a name="L_why_no_oob">
+<h2>Why UBI does not use OOB area of NAND flashes?</h2>
+</a>
 
-<P>Because many flashes (e.g., NOR) do not have OOB and UBI was designed to be
-a <I>generic</I> wear-leveling layer. Also, modern MLC NAND flashes use whole
-OOB area for ECC checksum, so there is no room for application data.</P>
+<p>Because many flashes (e.g., NOR) do not have OOB and UBI was designed to be
+a <i>generic</i> wear-leveling layer. Also, modern MLC NAND flashes use whole
+OOB area for ECC checksum, so there is no room for application data.</p>
 
 
 
-<A NAME="L_volume_table">
-<H2>What is volume table?</H2>
-</A>
+<a name="L_volume_table">
+<h2>What is volume table?</h2>
+</a>
 
-<P><B>Volume table</B> is an on-flash data structure containing information
+<p><b>Volume table</b> is an on-flash data structure containing information
 about each user volume on this UBI device (e.g., volume size, name,
 type, etc.). Each time a volume is created, removed or re-sized, or
 updated, the volume table is altered. UBI maintains two copies of the volume
-table for reliability reasons.</P>
+table for reliability reasons.</p>
 
 
 
-<A NAME="L_crash_safe">
-<H2>Is UBI tolerant of power failures?</H2>
-</A>
+<a name="L_crash_safe">
+<h2>Is UBI tolerant of power failures?</h2>
+</a>
 
-<P>Yes, UBI is designed to be tolerant of power failures and unclean
-reboots.</P>
+<p>Yes, UBI is designed to be tolerant of power failures and unclean
+reboots.</p>
 
 
 
-<A NAME="L_mlc">
-<H2>May UBI be used on MLC flash?</H2>
-</A>
+<a name="L_mlc">
+<h2>May UBI be used on MLC flash?</h2>
+</a>
 
-<P>Yes, it may, as long as the flash is supported by the MTD layer. UBI does
+<p>Yes, it may, as long as the flash is supported by the MTD layer. UBI does
 not use OOB and it requires data to be written sequentially (see
-<A HREF="ubi.html#L_mlc">here</A>). UBI guarantees that the difference
+<a href="ubi.html#L_mlc">here</a>). UBI guarantees that the difference
 between maximum and minimum erase-counters is withing certain threshold,
 which is 4096 by default. Since MLC flashes have quite low eraseblock
 life-cycle (about 1000-10000, unlike 100000-1000000 for SLC NAND and NOR
 flashes), the threshold has to be set to a lower value (e.g., 128). This may be
-done via the Linux kernel configuration menu.</P>
+done via the Linux kernel configuration menu.</p>
 
-<P>Note, unlike UBI, JFFS2 uses random wear-leveling algorithm, which is in
+<p>Note, unlike UBI, JFFS2 uses random wear-leveling algorithm, which is in
 fact not completely random, because JFFS2 makes it more probable to
 garbage collect eraseblocks with more dirty data. This means that JFFS2 is not
 really appropriate for MLC flashes. However, it is possible to use JFFS2
-file-system on top of UBI (see <A HREF="ubi.html#L_run_jffs2">this</A>
-section) to improve wear-leveling.</P>
+file-system on top of UBI (see <a href="ubi.html#L_run_jffs2">this</a>
+section) to improve wear-leveling.</p>
 
 
 
-<A NAME="L_how_debug"><H2>How to debug UBI?</H2></A>
+<a name="L_how_debug"><h2>How to debug UBI?</h2></a>
 
-<H3>Use fake MTD device</H3>
+<h3>Use fake MTD device</h3>
 
-<P>When debugging UBI one doesn't have to use a real embedded platform with real
+<p>When debugging UBI one doesn't have to use a real embedded platform with real
 flash. In many cases, it is easier to use a PC with an MTD device emulator and
-run UBI on top of this emulated MTD device.</P>
+run UBI on top of this emulated MTD device.</p>
 
-<P>There are 3 MTD device emulators in Linux kernel available:</P>
-<UL>
-	<LI><B>mtdram</B> which simulates NOR flash in RAM;</LI>
-	<LI><B>nandsim</B> which simulates NAND flash in RAM;</LI>
-	<LI><B>block2mtd</B> which simulates NOR flash on top of a block device;</LI>
-</UL>
+<p>There are 3 MTD device emulators in Linux kernel available:</p>
+<ul>
+	<li><b>mtdram</b> which simulates NOR flash in RAM;</li>
+	<li><b>nandsim</b> which simulates NAND flash in RAM;</li>
+	<li><b>block2mtd</b> which simulates NOR flash on top of a block device;</li>
+</ul>
 
-<P>For example, to get a 32MiB fake NOR flash, run</P>
+<p>For example, to get a 32MiB fake NOR flash, run</p>
 
-<PRE>
+<pre>
 $ modprobe mtdram total_size=32768
-</PRE>
+</pre>
 
-<P>or to get a 64MiB fake NAND flash, run</P>
+<p>or to get a 64MiB fake NAND flash, run</p>
 
-<PRE>
+<pre>
 $ modprobe nandsim second_id_byte=0x36
-</PRE>
+</pre>
 
-<P>See <A HREF="nand.html#L_nand_nandsim">here</A> for more information about
-the NAND simulator.</P>
+<p>See <a href="nand.html#L_nand_nandsim">here</a> for more information about
+the NAND simulator.</p>
 
-<P>To ensure that you have fake MTD devices, run "<CODE>cat /prof/mtd</CODE>".
-It should print something like</P>
+<p>To ensure that you have fake MTD devices, run "<code>cat /prof/mtd</code>".
+It should print something like</p>
 
-<PRE>
+<pre>
 dev:    size   erasesize  name
 mtd0: 02000000 00020000 "mtdram test device"
 mtd1: 04000000 00004000 "NAND simulator partition"
-</PRE>
+</pre>
 
-<P>The fake MTD devices may further be attached to UBI (see
-<A HREF="ubi.html#L_attachmtd">here</A>).</P>
+<p>The fake MTD devices may further be attached to UBI (see
+<a href="ubi.html#L_attachmtd">here</a>).</p>
 
 
-<H3>Enable debugging</H3>
+<h3>Enable debugging</h3>
 
-<P>Enable UBI debugging support in the configuration menu
-(the "<B>UBI debugging</B>" check-box). When debugging is enabled, UBI
+<p>Enable UBI debugging support in the configuration menu
+(the "<b>UBI debugging</b>" check-box). When debugging is enabled, UBI
 prints more information about errors, and adds extra assertions in the code
 which may help to catch bugs. For deeper debugging, enable debugging prints
 and extra self-checks. The prints help to realize what UBI is doing, and the
 extra self-checks make sure internal data structures are consistent and may
 catch the problem much earlier then it would have been noticed otherwise.
 However, the debugging messages and the extra self-checks makes UBI
-considerably slower.</P>
+considerably slower.</p>
 
-<P>When UBI debugging messages are enabled, UBI prints a lot and the kernel
+<p>When UBI debugging messages are enabled, UBI prints a lot and the kernel
 ring buffer will likely not fit all the messages, so the fair part of them will
 be lost. One way to solve this issue is to make all the messages to go to the
-serial console (configure the serial console and run <CODE>dmesg -n 8</CODE> to
+serial console (configure the serial console and run <code>dmesg -n 8</code> to
 make all the messages go there). Then they may be captured, for example with
-help of <CODE>minicom</CODE>. However, the system will become really slow
+help of <code>minicom</code>. However, the system will become really slow
 because printing to the serial console is synchronous and slow. Also, UBI makes
 it possible to enable/disable debugging messages from various subsystems
 separately. This may help to lessen the amount of them (e.g., I/O messages are
 rarely needed). And finally, it is possible to enlarge the ring buffer and make
-it, say, 64MiB by adding <CODE>log_buf_len=64M</CODE> kernel boot argument. In
+it, say, 64MiB by adding <code>log_buf_len=64M</code> kernel boot argument. In
 this case the ring buffer will likely have enough messages. The big advantage
 of this approach is that the system does not become too slow because it does
-not send the output to slow serial console.</P>
+not send the output to slow serial console.</p>
 
 
 <INCLUDE file="../inc/footer.tmpl" />

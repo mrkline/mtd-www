@@ -9,119 +9,119 @@
 
 <INCLUDE file="../inc/content.tmpl" />
 
-<H1>UBIFS FAQ and HOWTO</H1>
+<h1>UBIFS FAQ and HOWTO</h1>
 
-<H2>Table of contents</H2>
-<OL>
-	<LI><A HREF="ubifs.html#L_ubifs_mlc">May UBIFS be used on MLC flash?</A></LI>
-	<LI><A HREF="ubifs.html#L_mount_ubifs">How to mount UBIFS?</A></LI>
-	<LI><A HREF="ubifs.html#L_mkfubifs">How to create an UBIFS image?</A></LI>
-	<LI><A HREF="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</A></LI>
-	<LI><A HREF="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</A></LI>
-</OL>
+<h2>Table of contents</h2>
+<ol>
+	<li><a href="ubifs.html#L_ubifs_mlc">May UBIFS be used on MLC flash?</a></li>
+	<li><a href="ubifs.html#L_mount_ubifs">How to mount UBIFS?</a></li>
+	<li><a href="ubifs.html#L_mkfubifs">How to create an UBIFS image?</a></li>
+	<li><a href="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</a></li>
+	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
+</ol>
 
 
 
-<A NAME="L_ubifs_mlc"><H2>May UBIFS be used on MLC flash?</H2></A>
+<a name="L_ubifs_mlc"><h2>May UBIFS be used on MLC flash?</h2></a>
 
-<P>The authors did not test it, but they belive it should run fine.
-Consider the main specific aspects of MLC flashes:</P>
+<p>The authors did not test it, but they belive it should run fine.
+Consider the main specific aspects of MLC flashes:</p>
 
-<UL>
-	<LI>MLC flashes are more "faulty" then SLC, so they use stronger ECC
+<ul>
+	<li>MLC flashes are more "faulty" then SLC, so they use stronger ECC
 	codes which occupies whole OOB area - this is not a problem because
-	neither UBIFS nor UBI use the OOB area;</LI>
+	neither UBIFS nor UBI use the OOB area;</li>
 
-	<LI>when the data is written to an eraseblock, it has to be written
+	<li>when the data is written to an eraseblock, it has to be written
 	sequentially, from the beginning of the eraseblock to the end of it -
 	this is not a problem because it is exactly what UBI/UBIFS do (see
-	also <A HREF="../faq/ubi.html#L_restrict">this</A> section);</LI>
+	also <a href="../faq/ubi.html#L_restrict">this</a> section);</li>
 
-	<LI>MLC flashes have rather short eraseblock lifecycle of just few
+	<li>MLC flashes have rather short eraseblock lifecycle of just few
 	thousand of erase cycles - this is not be a problem, because UBI uses
 	determenistic wear-leveling algorithm (see
-	<A HREF="../faq/ubi.html#L_mlc">this</A> section).</LI>
-</UL>
+	<a href="../faq/ubi.html#L_mlc">this</a> section).</li>
+</ul>
 
 
 
-<A NAME="L_mount_ubifs"><H2>How to mount UBIFS?</H2></A>
+<a name="L_mount_ubifs"><h2>How to mount UBIFS?</h2></a>
 
-<P>UBIFS mounts UBI volumes, not UBI devices, not MTD devices. There are no
-block device nodes corresponding to UBI volumes exist in <CODE>/dev</CODE>,
-and UBIFS uses device-less mount, just like <CODE>procfs</CODE> or
-<CODE>sysfs</CODE>. The volume to mount is specified using <CODE>ubiX_Y</CODE>
-or <CODE>ubiX:NAME</CODE> syntax, where</P>
+<p>UBIFS mounts UBI volumes, not UBI devices, not MTD devices. There are no
+block device nodes corresponding to UBI volumes exist in <code>/dev</code>,
+and UBIFS uses device-less mount, just like <code>procfs</code> or
+<code>sysfs</code>. The volume to mount is specified using <code>ubiX_Y</code>
+or <code>ubiX:NAME</code> syntax, where</p>
 
-<UL>
-	<LI><CODE>X</CODE> - UBI device number;</LI>
-	<LI><CODE>Y</CODE> - UBI volume number;</LI>
-	<LI><CODE>NAME</CODE> - UBI volume name.</LI>
-</UL>
+<ul>
+	<li><code>X</code> - UBI device number;</li>
+	<li><code>Y</code> - UBI volume number;</li>
+	<li><code>NAME</code> - UBI volume name.</li>
+</ul>
 
-<P>For example,</P>
+<p>For example,</p>
 
-<PRE>
+<pre>
 $ mount -t ubifs ubi0_0 /mnt/ubifs
-</PRE>
+</pre>
 
-<P>mounts volume 0 on UBI device 0 to <CODE>/mnt/ubifs</CODE>, and</P>
+<p>mounts volume 0 on UBI device 0 to <code>/mnt/ubifs</code>, and</p>
 
-<PRE>
+<pre>
 $ mount -t ubifs ubi0:rootfs /mnt/ubifs
-</PRE>
+</pre>
 
-<P>mounts "rootfs" volume of UBI device 0 to <CODE>/mnt/ubifs</CODE> ("rootfs" is
+<p>mounts "rootfs" volume of UBI device 0 to <code>/mnt/ubifs</code> ("rootfs" is
 volume name. This method of specifying UBI volume is more preferable because
-it does not depend on device/volume numbers, which may change.</P>
+it does not depend on device/volume numbers, which may change.</p>
 
-<P>Note, if <CODE>X</CODE> is not specified, UBIFS uses 0, i.e.,
-"<CODE>ubi0:rootfs</CODE>" and "<CODE>ubi:rootfs</CODE>" are
-equivalent.</P>
+<p>Note, if <code>X</code> is not specified, UBIFS uses 0, i.e.,
+"<code>ubi0:rootfs</code>" and "<code>ubi:rootfs</code>" are
+equivalent.</p>
 
-<P>Some environments like busybox are confused by the ":" delimiter (e.g.,
-<CODE>ubi:rootfs</CODE>) and "!" may be used instead (e.g.,
-<CODE>ubi!rootfs</CODE>).</P>
+<p>Some environments like busybox are confused by the ":" delimiter (e.g.,
+<code>ubi:rootfs</code>) and "!" may be used instead (e.g.,
+<code>ubi!rootfs</code>).</p>
 
-<P>The following is an example of the kernel boot arguments to attach
-<CODE>mtd0</CODE> to UBI and mount volume "rootfs":</P>
+<p>The following is an example of the kernel boot arguments to attach
+<code>mtd0</code> to UBI and mount volume "rootfs":</p>
 
-<PRE>
+<pre>
 ubi.mtd=0 root=ubi0:rootfs rootfstype=ubifs
-</PRE>
+</pre>
 
-<P>Please, refer <A HREF="ubi.html#L_attachmtd">this</A> section for
+<p>Please, refer <a href="ubi.html#L_attachmtd">this</a> section for
 information about how to create UBI devices and
-<A HREF="ubi.html#L_mkvol">this</A> section for information about how to create
-UBI volumes.</P>
+<a href="ubi.html#L_mkvol">this</a> section for information about how to create
+UBI volumes.</p>
 
 
 
-<A NAME="L_mkfubifs"><H2>How to create an UBIFS image?</H2></A>
+<a name="L_mkfubifs"><h2>How to create an UBIFS image?</h2></a>
 
-<P>UBIFS images are created by the
-<A HREF="../doc/ubifs.html#L_usptools"><CODE>mkfs.ubifs</CODE></A> utility.
+<p>UBIFS images are created by the
+<a href="../doc/ubifs.html#L_usptools"><code>mkfs.ubifs</code></a> utility.
 The image is assumed to be written to UBI volumes, for example using
-<A HREF="../doc/ubi.html#L_usptools"><CODE>ubiupdatevol</CODE></A>. But this
+<a href="../doc/ubi.html#L_usptools"><code>ubiupdatevol</code></a>. But this
 might be not enough for purposes like production at the factory, where you have
 to have raw flash image. And there is
-<A HREF="../doc/ubi.html#L_usptools"><CODE>ubinize</CODE></A> utility which may
-produce raw flash images.</P>
+<a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a> utility which may
+produce raw flash images.</p>
 
-<P>The below example demonstrates how to create an UBI/UBIFS image for a 256MiB
+<p>The below example demonstrates how to create an UBI/UBIFS image for a 256MiB
 OneNAND flash chip with 128KiB physical eraseblocks, 2048 bytes NAND pages, and
 which supports 4 sub-pages (this means that MTD allows to do 4x512 bytes writes
 to the same NAND page, which is quite typical for SLC flashes). The resulting
-image will have one UBI volume storing UBIFS file-system.</P>
+image will have one UBI volume storing UBIFS file-system.</p>
 
-<PRE>
+<pre>
 $ mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o ubifs.img
 $ ubinize -o ubi.img -m 2048 -p 128KiB -s 512 ubinize.cfg
-</PRE>
+</pre>
 
-<P>where <CODE>ubinize.cfg</CODE> contains:</P>
+<p>where <code>ubinize.cfg</code> contains:</p>
 
-<PRE>
+<pre>
 $ cat ubinize.cfg
 [ubifs]
 mode=ubi
@@ -132,70 +132,70 @@ vol_type=dynamic
 vol_name=rootfs
 vol_alignment=1
 vol_flags=autoresize
-</PRE>
+</pre>
 
-<P>Some comments about what the options mean:</P>
+<p>Some comments about what the options mean:</p>
 
-<UL>
-	<LI><CODE>-r root-fs</CODE>: tells <CODE>mkfs.ubifs</CODE> to create an
+<ul>
+	<li><code>-r root-fs</code>: tells <code>mkfs.ubifs</code> to create an
 	UBIFS image which would have identical contents as the local
-	<CODE>root-fs</CODE> directory has;</LI>
+	<code>root-fs</code> directory has;</li>
 
-	<LI><CODE>-m 2048</CODE>: tells <CODE>mkfs.ubifs</CODE> that the minimum
+	<li><code>-m 2048</code>: tells <code>mkfs.ubifs</code> that the minimum
 	input/output unit size of the flash this UBIFS image is created for is
-	2048 bytes;</LI>
+	2048 bytes;</li>
 
-	<LI><CODE>-e 129024</CODE>: logical eraseblock size of the UBI volume
-	this image is created for;</LI>
+	<li><code>-e 129024</code>: logical eraseblock size of the UBI volume
+	this image is created for;</li>
 
-	<LI><CODE>-c 2047</CODE>: specifies maximum file-system size in logical
+	<li><code>-c 2047</code>: specifies maximum file-system size in logical
 	eraseblocks; this means that it will be possible to use the resulting
 	file-system on volumes up to this size (less or equivalent); so in this
 	particular case, the resulting FS may be put on volumes up to about
-	251MiB (129024 multiplied by 2047);</LI>
+	251MiB (129024 multiplied by 2047);</li>
 
-	<LI><CODE>-p 128KiB</CODE>: tells <CODE>ubinize</CODE> that physical
+	<li><code>-p 128KiB</code>: tells <code>ubinize</code> that physical
 	eraseblock size of the flash chip the UBI image is created for is
-	128KiB (128 * 1024 bytes);</LI>
+	128KiB (128 * 1024 bytes);</li>
 
-	<LI><CODE>-s 512</CODE>: tells <CODE>ubinize</CODE> that the flash
-	supports sub-pages and sub-page size is 512 bytes; <CODE>ubinize</CODE>
+	<li><code>-s 512</code>: tells <code>ubinize</code> that the flash
+	supports sub-pages and sub-page size is 512 bytes; <code>ubinize</code>
 	will take this into account and put the VID header to the same NAND
-	page as the EC header.</LI>
-</UL>
+	page as the EC header.</li>
+</ul>
 
-<P>The <CODE>ubinize</CODE> utility requires volumes description file which has
-standard <CODE>.ini</CODE> file syntax. One UBI image may contain many UBI
+<p>The <code>ubinize</code> utility requires volumes description file which has
+standard <code>.ini</code> file syntax. One UBI image may contain many UBI
 volumes with different characteristics and it is difficult to invent a nice
 command-line interface for specifying those characteristics, this is why the
-utility requires the volumes description file.</P>
+utility requires the volumes description file.</p>
 
-<P>The example configuration file tells <CODE>ubinize</CODE> to create an UBI
+<p>The example configuration file tells <code>ubinize</code> to create an UBI
 image which has a singe 200MiB dynamic volume with ID 0, name "rootfs", and
 alignment 1. The configuration file also sets the "autoresize" volume flag,
 which means that the volume will be automatically enlarged by UBIFS to have
 the maximum possible size when it runs for the first time. See
-<A HREF="../doc/ubi.html#L_autoresize">here</A> for more information about what
-is the auto-resize trick.</P>
+<a href="../doc/ubi.html#L_autoresize">here</a> for more information about what
+is the auto-resize trick.</p>
 
-<P>Run <CODE>ubinize -h</CODE> and <CODE>mkfs.ubifs -h</CODE> for more
-information and for more possibilities to tweak images.</P>
+<p>Run <code>ubinize -h</code> and <code>mkfs.ubifs -h</code> for more
+information and for more possibilities to tweak images.</p>
 
 
-<A NAME="L_emptyflash"><H2>Is it OK to mount empty UBI volumes?</H2></A>
+<a name="L_emptyflash"><h2>Is it OK to mount empty UBI volumes?</h2></a>
 
-<P>Yes, it is OK to mount empty UBI volumes, which are volumes which
+<p>Yes, it is OK to mount empty UBI volumes, which are volumes which
 contain only 0xFF bytes. In this case UBIFS formats the media automatically
 with default parameters (journal size, compression, etc). But generally, this
 feature should be used while developing, and a proper UBI/UBIFS image should
 preferrably be flashed in production
-(see <A HREF="ubifs.html#L_mkfubifs">this</A> section).</P>
+(see <a href="ubifs.html#L_mkfubifs">this</a> section).</p>
 
-<P>Note, UBI has similar property and automatically formats the flash media if
-it is empty. So if there is an <CODE>mtd0</CODE>  MTD device, the following
-is possible:</P>
+<p>Note, UBI has similar property and automatically formats the flash media if
+it is empty. So if there is an <code>mtd0</code>  MTD device, the following
+is possible:</p>
 
-<PRE>
+<pre>
 # Wipe the MTD device out
 flash_eraseall /dev/mtd0
 
@@ -212,23 +212,23 @@ ubimkvol /dev/ubi0 -N test_volume -s 10MiB
 
 # Mount UBIFS - it will automatically format the empty volume
 mount -t ubifs ubi0:test_volume /mnt/ubifs
-</PRE>
+</pre>
 
-<P>Note, it is also possible to wipe out an existing UBIFS volume represented
-by <CODE>/dev/ubi0_0</CODE> using the following command:</P>
+<p>Note, it is also possible to wipe out an existing UBIFS volume represented
+by <code>/dev/ubi0_0</code> using the following command:</p>
 
-<PRE>
+<pre>
 ubiupdatevol /dev/ubi0_0 -t
-</PRE>
+</pre>
 
 
 
-<A NAME="L_ubifs_nandsim"><H2>How to use UBIFS with nandsim?</H2></A>
+<a name="L_ubifs_nandsim"><h2>How to use UBIFS with nandsim?</h2></a>
 
-<P>The same way as with any MTD device. Here is an example of how to load
-<CODE>nandsim</CODE>, create an UBI volume and mount it.</P>
+<p>The same way as with any MTD device. Here is an example of how to load
+<code>nandsim</code>, create an UBI volume and mount it.</p>
 
-<PRE>
+<pre>
 # Create an 256MiB emulated NAND flash
 modprobe nandsim first_id_byte=0x20 second_id_byte=0xaa \
                  third_id_byte=0x00 fourth_id_byte=0x15
@@ -245,10 +245,10 @@ ubimkvol /dev/ubi0 -N ubifs-vol -s 200MiB
 
 # Mount UBIFS
 mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
-</PRE>
+</pre>
 
-<P>For more information about nandsim see
-<A HREF="nand.html#L_nand_nandsim">here</A>.</P>
+<p>For more information about nandsim see
+<a href="nand.html#L_nand_nandsim">here</a>.</p>
 
 
 <INCLUDE file="../inc/footer.tmpl" />

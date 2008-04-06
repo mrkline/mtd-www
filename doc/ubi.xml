@@ -9,212 +9,212 @@
 
 <INCLUDE file="../inc/content.tmpl" />
 
-<H1>UBI - Unsorted Block Images</H1>
+<h1>UBI - Unsorted Block Images</h1>
 
-<H2>Table of contents</H2>
-<OL>
-	<LI><A HREF="ubi.html#L_rednote">Big red note</A></LI>
-	<LI><A HREF="ubi.html#L_overview">Overview</A></LI>
-	<LI><A HREF="ubi.html#L_source">Source code</A></LI>
-	<LI><A HREF="ubi.html#L_ml">Mailing list</A></LI>
-	<LI><A HREF="ubi.html#L_usptools">User-space tools</A></LI>
-	<LI><A HREF="ubi.html#L_scalability">Scalability issues</A></LI>
-	<OL><LI><A HREF="ubi.html#L_scalability_det">Implementation details</A></LI></OL>
-	<LI><A HREF="ubi.html#L_overhead">Flash space overhead</A></LI>
-	<LI><A HREF="ubi.html#L_unmap">LEB un-map operation</A></LI>
-	<OL><LI><A HREF="ubi.html#L_unmap_det">Implementation details</A></LI></OL>
-	<LI><A HREF="ubi.html#L_volupdate">Volume update operation</A></LI>
-	<OL><LI><A HREF="ubi.html#L_volupdate_det">Implementation details</A></LI></OL>
-	<LI><A HREF="ubi.html#L_lebchange">Atomic LEB change operation</A></LI>
-	<OL><LI><A HREF="ubi.html#L_lebchange_det">Implementation details</A></LI></OL>
-	<LI><A HREF="ubi.html#L_autoresize">Volume auto-resize</A></LI>
-	<LI><A HREF="ubi.html#L_ubidoc">More documentation</A></LI>
-	<LI><A HREF="ubi.html#L_how_send_bugreport">How to send a bugreport?</A></LI>
-</OL>
-
-
-
-<A NAME="L_rednote">
-<H2><FONT COLOR="RED">Big red note</FONT></H2>
-</A>
-
-<P>People are often confused and treat UBI as a block device emulation layer
-(also known as FTL - flash translation layer). But this is not true - <B>UBI
-is not an FTL.</B></P>
-
-<P>Also, sometimes people think that UBI is a flash file-system. This is
-incorrect, <B>UBI is not a flash file-system</B>.</P>
+<h2>Table of contents</h2>
+<ol>
+	<li><a href="ubi.html#L_rednote">Big red note</a></li>
+	<li><a href="ubi.html#L_overview">Overview</a></li>
+	<li><a href="ubi.html#L_source">Source code</a></li>
+	<li><a href="ubi.html#L_ml">Mailing list</a></li>
+	<li><a href="ubi.html#L_usptools">User-space tools</a></li>
+	<li><a href="ubi.html#L_scalability">Scalability issues</a></li>
+	<ol><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ol>
+	<li><a href="ubi.html#L_overhead">Flash space overhead</a></li>
+	<li><a href="ubi.html#L_unmap">LEB un-map operation</a></li>
+	<ol><li><a href="ubi.html#L_unmap_det">Implementation details</a></li></ol>
+	<li><a href="ubi.html#L_volupdate">Volume update operation</a></li>
+	<ol><li><a href="ubi.html#L_volupdate_det">Implementation details</a></li></ol>
+	<li><a href="ubi.html#L_lebchange">Atomic LEB change operation</a></li>
+	<ol><li><a href="ubi.html#L_lebchange_det">Implementation details</a></li></ol>
+	<li><a href="ubi.html#L_autoresize">Volume auto-resize</a></li>
+	<li><a href="ubi.html#L_ubidoc">More documentation</a></li>
+	<li><a href="ubi.html#L_how_send_bugreport">How to send a bugreport?</a></li>
+</ol>
 
 
 
-<A NAME="L_overview"><H2>Overview</H2></A>
+<a name="L_rednote">
+<h2><font color="red">Big red note</font></h2>
+</a>
 
-<P>UBI (Latin: "where?") stands for "Unsorted Block Images". It is a
+<p>People are often confused and treat UBI as a block device emulation layer
+(also known as FTL - flash translation layer). But this is not true - <b>UBI
+is not an FTL.</b></p>
+
+<p>Also, sometimes people think that UBI is a flash file-system. This is
+incorrect, <b>UBI is not a flash file-system</b>.</p>
+
+
+
+<a name="L_overview"><h2>Overview</h2></a>
+
+<p>UBI (Latin: "where?") stands for "Unsorted Block Images". It is a
 volume management system for flash devices which manages multiple logical
 volumes on a single physical flash device and spreads the I/O load (i.e,
-wear-leveling) across the whole flash chip.</P>
+wear-leveling) across the whole flash chip.</p>
 
-<P>In a sense, UBI may be compared to the Logical Volume Manager
-(<A HREF="http://sources.redhat.com/lvm2/">LVM</A>).
+<p>In a sense, UBI may be compared to the Logical Volume Manager
+(<a href="http://sources.redhat.com/lvm2/">LVM</a>).
 Whereas LVM maps logical sectors to physical sectors, UBI maps logical
 eraseblocks to physical eraseblocks. But besides the mapping, UBI implements
-global wear-leveling and I/O errors handling.</P>
+global wear-leveling and I/O errors handling.</p>
 
-<P>An UBI volume is a set of consecutive <I>logical eraseblocks</I>. Each
+<p>An UBI volume is a set of consecutive <i>logical eraseblocks</i>. Each
 logical eraseblock may be mapped to any physical eraseblock. This mapping is
 managed by UBI, it is hidden from users and it is the base mechanism to provide
 global wear-leveling (along with per-physical eraseblock erase counters and
 the ability to transparently move data from more worn-out physical eraseblocks
-to the less worn-out ones).</P>
+to the less worn-out ones).</p>
 
-<P>UBI volume size is specified when the volume is created a may later be
-changed (volumes are dynamically re-sizable). UBI supports <I>dynamic</I>
-volumes and <I>static</I> volumes. Static volumes are read-only and their
+<p>UBI volume size is specified when the volume is created a may later be
+changed (volumes are dynamically re-sizable). UBI supports <i>dynamic</i>
+volumes and <i>static</i> volumes. Static volumes are read-only and their
 contents are protected by CRC check sums, while dynamic volumes are read-write
-and the upper layer (e.g., a file-system) is responsible for data integrity.</P>
+and the upper layer (e.g., a file-system) is responsible for data integrity.</p>
 
-<P>UBI is aware of bad eraseblocks (e.g., NAND flash may have them) and
+<p>UBI is aware of bad eraseblocks (e.g., NAND flash may have them) and
 frees the upper layer from any bad block handling. UBI has a pool of reserved
 physical eraseblocks, and when a physical eraseblock becomes bad, it
 transparently substitutes it by a good physical eraseblock. UBI moves good data
 from the newly appeared bad physical eraseblock to the good one as well. The
 result is that users of UBI volumes do not notice I/O errors as UBI takes care
-of them.</P>
+of them.</p>
 
-<P>NAND flashes may have bit-flips which occur on read and write operations.
+<p>NAND flashes may have bit-flips which occur on read and write operations.
 Bit-flips are corrected by ECC checksums, but they may accumulate over
 time and cause data loss. UBI handles this by moving data from physical
 eraseblocks with bit-flips to other physical eraseblocks, thus doing active
 scrubbing. This is done transparently in background and is hidden from upper
-layers.</P>
+layers.</p>
 
-<P>Here is a short list of the main UBI features:</P>
-<UL>
-	<LI>UBI provides volumes which may be dynamically created, removed, or
-	re-sized;</LI>
-	<LI>UBI implements wear-leveling across whole flash device (i.e., one
+<p>Here is a short list of the main UBI features:</p>
+<ul>
+	<li>UBI provides volumes which may be dynamically created, removed, or
+	re-sized;</li>
+	<li>UBI implements wear-leveling across whole flash device (i.e., one
 	may continuously write/erase only the first logical eraseblock
 	of an UBI volume, but UBI will spread this to all physical
-	eraseblocks of the flash chip);</LI>
-	<LI>UBI transparently handles bad physical eraseblocks;</LI>
-	<LI>minimizes chances to loose data by means of "scrubbing".</LI>
-</UL>
+	eraseblocks of the flash chip);</li>
+	<li>UBI transparently handles bad physical eraseblocks;</li>
+	<li>minimizes chances to loose data by means of "scrubbing".</li>
+</ul>
 
-<P>Here is a comparison of MTD partitions and UBI volumes. UBI volumes are
-rather similar to MTD partitions because:</P>
-<UL>
-	<LI>both consist of eraseblocks - logical eraseblocks in case of UBI
-	volumes, and physical eraseblocks in case of static partitions;</LI>
-	<LI>both support three basic operations - read, write, erase.</LI>
-</UL>
+<p>Here is a comparison of MTD partitions and UBI volumes. UBI volumes are
+rather similar to MTD partitions because:</p>
+<ul>
+	<li>both consist of eraseblocks - logical eraseblocks in case of UBI
+	volumes, and physical eraseblocks in case of static partitions;</li>
+	<li>both support three basic operations - read, write, erase.</li>
+</ul>
 
-<P>But UBI volumes have the following advantages over traditional MTD
-partitions:</P>
-<UL>
-	<LI>there are no eraseblock wear-leveling constraints in case of UBI
+<p>But UBI volumes have the following advantages over traditional MTD
+partitions:</p>
+<ul>
+	<li>there are no eraseblock wear-leveling constraints in case of UBI
 	volumes, so users do not have to care about this at all, which means
-	the upper-level software may be simpler;</LI>
-	<LI>there are no bad eraseblocks in case of UBI volumes, which also leads
-	to simpler upper-level software;</LI>
-	<LI>UBI handles bit-flips;</LI>
-	<LI>UBI also provides an <A HREF="ubi.html#L_lebchange">atomic logical
-	eraseblock change</A> operation which allows to change the contents of
+	the upper-level software may be simpler;</li>
+	<li>there are no bad eraseblocks in case of UBI volumes, which also leads
+	to simpler upper-level software;</li>
+	<li>UBI handles bit-flips;</li>
+	<li>UBI also provides an <a href="ubi.html#L_lebchange">atomic logical
+	eraseblock change</a> operation which allows to change the contents of
 	a logical eraseblock and do not loose data if an unclean reboot happens
 	during the operation; this is might be very useful for the upper-level
-	software (e.g., for a file-system);</LI>
-	<LI>UBI has an <A HREF="ubi.html#L_unmap">un-map</A> operation, which
+	software (e.g., for a file-system);</li>
+	<li>UBI has an <a href="ubi.html#L_unmap">un-map</a> operation, which
 	just un-maps a logical eraseblock from the physical eraseblock,
 	schedules the physical eraseblock for erasure and returns; this is very
 	quick and frees upper level software from implementing their own
 	mechanisms to defer erasures (e.g., JFFS2 has to implements such
-	mechanisms).</LI>
-</UL>
+	mechanisms).</li>
+</ul>
 
-<P>So, existing software may still work on top of UBI volumes, while new
+<p>So, existing software may still work on top of UBI volumes, while new
 software may benefit from the UBI features and let UBI solve many issues
-which the flash technology imposes.</P>
+which the flash technology imposes.</p>
 
 
 
-<A NAME="L_source"><H2>Source code</H2></A>
+<a name="L_source"><h2>Source code</h2></a>
 
-<P>UBI is in the main-line Linux kernel starting from version 2.6.22. But it is
-recommended to use the latest UBI which can be found in the UBI git tree:</P>
+<p>UBI is in the main-line Linux kernel starting from version 2.6.22. But it is
+recommended to use the latest UBI which can be found in the UBI git tree:</p>
 
-<CODE>git://git.infradead.org/~dedekind/ubi-2.6.git</CODE>
+<code>git://git.infradead.org/~dedekind/ubi-2.6.git</code>
 
-<P>The UBI git tree is usually based on top of the latest release of the linux
+<p>The UBI git tree is usually based on top of the latest release of the linux
 kernel and it should not be too difficult to fetch all UBI patches from the UBI
-git tree and to apply them to your tree.</P>
+git tree and to apply them to your tree.</p>
 
 
 
-<A NAME="L_ml"><H2>Mailing list</H2></A>
+<a name="L_ml"><h2>Mailing list</h2></a>
 
-<P>You are welcome to send feed-back, bug-reports, patches, etc to the
-<A HREF="../mail.html">MTD mailing list</A>.</P>
+<p>You are welcome to send feed-back, bug-reports, patches, etc to the
+<a href="../mail.html">MTD mailing list</a>.</p>
 
 
 
-<A NAME="L_usptools"><H2>User-space tools</H2></A>
+<a name="L_usptools"><h2>User-space tools</h2></a>
 
-<P>UBI user-space tools are available from the the
-<CODE>git://git.infradead.org/mtd-utils.git</CODE>
-repository (<CODE>ubi-utils/new-utils</CODE> sub-directory). One should
+<p>UBI user-space tools are available from the the
+<code>git://git.infradead.org/mtd-utils.git</code>
+repository (<code>ubi-utils/new-utils</code> sub-directory). One should
 download the source codes and compile them. Please, download the latest
-version of the tools as they were recently changed quite a lot:</P>
+version of the tools as they were recently changed quite a lot:</p>
 
-<CODE>git-clone git://git.infradead.org/mtd-utils.git</CODE>
+<code>git-clone git://git.infradead.org/mtd-utils.git</code>
 
-<P>The repository contains the following UBI tools:</P>
-<UL>
-	<LI><B>ubinfo</B> - provides information about UBI installed in the
-	system, about all UBI devices and volumes;</LI>
-	<LI><B>ubiattach</B> - a tool to attach MTD devices (which describe
+<p>The repository contains the following UBI tools:</p>
+<ul>
+	<li><b>ubinfo</b> - provides information about UBI installed in the
+	system, about all UBI devices and volumes;</li>
+	<li><b>ubiattach</b> - a tool to attach MTD devices (which describe
 	raw flash) to UBI, which creates an UBI device sitting on top of the
 	MTD device; this is an alternative method to specifying MTD devices on
-	module load or in kernel boot command line;</LI>
-	<LI><B>ubidetach</B> - a tool to detach MTD devices from UBI
+	module load or in kernel boot command line;</li>
+	<li><b>ubidetach</b> - a tool to detach MTD devices from UBI
 	devices, which deletes the UBI device; in other words, this tool
-	does the opposite to what <B>ubiattach</B> does;</LI>
-	<LI><B>ubimkvol</B> - a tool to create UBI volumes on UBI
-	devices;</LI>
-	<LI><B>ubirmvol</B> - a tool to remove UBI volumes on UBI
-	devices;</LI>
-	<LI><B>ubiupdatevol</B> - a tool to update UBI volumes, which means to
+	does the opposite to what <b>ubiattach</b> does;</li>
+	<li><b>ubimkvol</b> - a tool to create UBI volumes on UBI
+	devices;</li>
+	<li><b>ubirmvol</b> - a tool to remove UBI volumes on UBI
+	devices;</li>
+	<li><b>ubiupdatevol</b> - a tool to update UBI volumes, which means to
 	write new volume contents; this tool uses the
-	<A HREF="ubi.html#L_volupdate">UBI volume update feature</A> which
+	<a href="ubi.html#L_volupdate">UBI volume update feature</a> which
 	leaves the volume in "corrupted" state if it is interrupted;
-	additionally, this tool may be used to wipe out UBI volumes;</LI>
-	<LI><B>ubicrc32</B> - calculate CRC32 checksum of a file with the same
-	initial seed as UBI would use;</LI>
-	<LI><B>ubinize</B> - a tool to generate UBI images.</LI>
-</UL>
+	additionally, this tool may be used to wipe out UBI volumes;</li>
+	<li><b>ubicrc32</b> - calculate CRC32 checksum of a file with the same
+	initial seed as UBI would use;</li>
+	<li><b>ubinize</b> - a tool to generate UBI images.</li>
+</ul>
 
-<P>All UBI tools support "-h" option and print sufficient usage
-information.</P>
+<p>All UBI tools support "-h" option and print sufficient usage
+information.</p>
 
-<P>Note, <CODE>ubiattach</CODE> and <CODE>ubidetach</CODE> won't work unless
+<p>Note, <code>ubiattach</code> and <code>ubidetach</code> won't work unless
 one has ported UBI patches from the
-<A HREF="ubi.html#L_source">UBI git tree</A>, because the dynamic
+<a href="ubi.html#L_source">UBI git tree</a>, because the dynamic
 UBI devices support was implemented quite recently. It should be in the
-main-line kernel starting from version 2.6.25.</P>
+main-line kernel starting from version 2.6.25.</p>
 
-<P>Also note, there are older UBI tools which might be useful (e.g.,
-<B>unubi</B>).</P>
+<p>Also note, there are older UBI tools which might be useful (e.g.,
+<b>unubi</b>).</p>
 
 
 
-<A NAME="L_scalability"><H2>Scalability issues</H2></A>
+<a name="L_scalability"><h2>Scalability issues</h2></a>
 
-<P>Unfortunately, UBI scales linearly in terms of flash size. UBI
+<p>Unfortunately, UBI scales linearly in terms of flash size. UBI
 initialization time linearly depends on the number of physical eraseblocks on
 the flash. This means that the larger is the flash, the more time it takes for
 UBI to initialize (i.e., to attach the MTD device). The initialization time
-depends on the flash I/O speed and (slightly) on the CPU speed, because:</P>
+depends on the flash I/O speed and (slightly) on the CPU speed, because:</p>
 
-<UL>
-	<LI>UBI scans flash when it is attaching an MTD device - it reads the
+<ul>
+	<li>UBI scans flash when it is attaching an MTD device - it reads the
 	erase counter (EC) and the volume ID (VID) headers from every single
 	physical eraseblock of the MTD device; the headers are quite small (64
 	bytes each), so this means reading 128 bytes from each PEB on NOR flash
@@ -222,183 +222,183 @@ depends on the flash I/O speed and (slightly) on the CPU speed, because:</P>
 	the flash supports sub-page writes or not); this is anyway much less
 	than JFFS2 needs to read when it mounts MTD devices, so UBI attaches
 	MTD devices many times faster than JFFS2 would mount a file system on
-	the same MTD device;</LI>
-	<LI>UBI calculates CRC32 checksum of each EC and VID header, which
+	the same MTD device;</li>
+	<li>UBI calculates CRC32 checksum of each EC and VID header, which
 	consumes CPU, although this is usually minor comparing to the
-	I/O overhead.</LI>
-</UL>
+	I/O overhead.</li>
+</ul>
 
-<P>Here are some figures:</P>
-<UL>
-	<LI>a 256MiB OneNAND flash found in Nokia N800 devices is attached for
+<p>Here are some figures:</p>
+<ul>
+	<li>a 256MiB OneNAND flash found in Nokia N800 devices is attached for
 	less than 1 sec; the flash does support sub-pages so UBI has to read
-	the first 2KiB NAND page of each PEB while scanning;</LI>
-	<LI>a 1GiB NAND flash found in OLPC devices is attached for about 2
+	the first 2KiB NAND page of each PEB while scanning;</li>
+	<li>a 1GiB NAND flash found in OLPC devices is attached for about 2
 	seconds; the flash is an SLC and supports sub-pages, but the Cafe
 	controller which is used in the laptop does not allow sub-page writes,
-	so UBI has to read two 2KiB NAND pages from each PEB.</LI>
-</UL>
+	so UBI has to read two 2KiB NAND pages from each PEB.</li>
+</ul>
 
-<P>Unfortunately we do not have more data and the reader is welcome to send it
-to us via the <A HREF="../mail.html">MTD mailing list</A>.</P>
+<p>Unfortunately we do not have more data and the reader is welcome to send it
+to us via the <a href="../mail.html">MTD mailing list</a>.</p>
 
 
 
-<A NAME="L_scalability_det"><H4>Implementation details</H4></A>
+<a name="L_scalability_det"><h4>Implementation details</h4></a>
 
-<P>In general, UBI needs three tables for operation:</P>
+<p>In general, UBI needs three tables for operation:</p>
 
-<UL>
-	<LI><B>volume table</B> which contains per-volume information,
-	like volume size, type, etc;</LI>
-	<LI><B>eraseblock association (EBA) table</B> which contains the
+<ul>
+	<li><b>volume table</b> which contains per-volume information,
+	like volume size, type, etc;</li>
+	<li><b>eraseblock association (EBA) table</b> which contains the
 	logical-to-physical eraseblock mapping information; for example, when
 	reading an LEB, UBI first looks up the table to find the corresponding
-	PEB number, then reads from this PEB;</LI>
-	<LI><B>erase counters (EC) table</B> which contains the erase counter
+	PEB number, then reads from this PEB;</li>
+	<li><b>erase counters (EC) table</b> which contains the erase counter
 	value for each physical eraseblock; UBI wear-leveling sub-system uses
 	this table when it needs to find, for example, a highly worn-out
-	LEB;</LI>
-</UL>
+	LEB;</li>
+</ul>
 
-<P>The volume table is maintained on flash. It changes only when UBI volumes are
+<p>The volume table is maintained on flash. It changes only when UBI volumes are
 created, deleted and re-sized, which are rare and not time-critical operations,
-and UBI can afford a slow and simple method of the volume table management.</P>
+and UBI can afford a slow and simple method of the volume table management.</p>
 
-<P>The EBA and EC tables are changed every time an LEB is mapped to a PEB or a
+<p>The EBA and EC tables are changed every time an LEB is mapped to a PEB or a
 PEB is erased, which happens quite often and means that the table
 management methods would have to be fast and efficient if the table
 was maintained on flash. And this would inevitably involve journaling, journal
 replay, journal commit, etc. UBI could be logarithmically scalable if it
-maintained the latter 2 tables on the flash media, but it does not do this.</P>
+maintained the latter 2 tables on the flash media, but it does not do this.</p>
 
-<P>One of the UBI requirements was simplicity of on-flash format, because the
+<p>One of the UBI requirements was simplicity of on-flash format, because the
 original UBI designers had to read UBI volumes from the boot-loader and they
 had very tough constraints on the boot-loader code size. It was basically
 impossible to add complex journal scanning and replay code to the
-boot-loader.</P>
+boot-loader.</p>
 
-<P>UBI does not maintain the EBA and EC tables on flash, but instead, it builds
+<p>UBI does not maintain the EBA and EC tables on flash, but instead, it builds
 them in RAM each time it attaches an MTD device. Instead of maintaining
 separate tables, UBI maintains erase counter and LEB mapping of each
-physical eraseblock in the physical eraseblock itself. This means, that:</P>
+physical eraseblock in the physical eraseblock itself. This means, that:</p>
 
-<UL>
-	<LI>the erase counter of a PEB is stored at the beginning of the PEB in
+<ul>
+	<li>the erase counter of a PEB is stored at the beginning of the PEB in
 	the EC header; when a PEB is erased, UBI increases its erase
-	counter and writes the EC header just after the erasure;</LI>
-	<LI>the LEB-to-PEB mapping information is stored at the VID header which
+	counter and writes the EC header just after the erasure;</li>
+	<li>the LEB-to-PEB mapping information is stored at the VID header which
 	is placed after the EC header; the VID header is written only when the
 	PEB gets mapped to an LEB, which happens only when an LEB which was
 	previously erased (un-mapped) is written to for the first time; this
 	explains why UBI has to write the EC and VID headers separately, which
 	requires 2 NAND pages in case of NAND flash (unless the flash allows to
 	write 2 or more	times to the same NAND page which is referred to as
-	<I>sub-page</I> write).</LI>
-</UL>
+	<i>sub-page</i> write).</li>
+</ul>
 
-<P>So, UBI has to scan the flash and read the EC and VID header from each PEB in
-order to build in-RAM EC and EBA tables.</P>
+<p>So, UBI has to scan the flash and read the EC and VID header from each PEB in
+order to build in-RAM EC and EBA tables.</p>
 
-<P>The drawbacks of this design are poor scalability and relatively high
+<p>The drawbacks of this design are poor scalability and relatively high
 overhead on NAND flashes (e.g., the overhead is 1.5%-3% of flash space in case
 of a NAND flash with 2KiB NAND page and 128KiB eraseblock). The advantages are
-simple binary format and robustness, as the result of symplicity.</P>
+simple binary format and robustness, as the result of symplicity.</p>
 
-<P>Nonetheless, it is always possible to create UBI2 which would maintain the
+<p>Nonetheless, it is always possible to create UBI2 which would maintain the
 tables in separate flash areas. UBI2 would not be compatible with UBI because
 of completely different on-flash format, but the user interfaces would stay the
 same, which would guarantee compatibility of all the software built on top of
-UBI.</P>
+UBI.</p>
 
 
 
-<A NAME="L_overhead"><H2>Flash space overhead</H2></A>
+<a name="L_overhead"><h2>Flash space overhead</h2></a>
 
-<P>UBI uses some amount of flash space for its own purposes thus, reducing the
-amount of flash space available for UBI users. Namely:</P>
+<p>UBI uses some amount of flash space for its own purposes thus, reducing the
+amount of flash space available for UBI users. Namely:</p>
 
-<UL>
-	<LI>2 PEBs are used to store the volume table;</LI>
-	<LI>1 PEB is reserved for wear-levelling purposes;</LI>
-	<LI>1 PEB is reserved for the
-	<A HREF="ubi.html#L_lebchange">atomic LEB change</A> operation;</LI>
-	<LI>some percent of PEBs is reserved for bad PEB handling if the flash
+<ul>
+	<li>2 PEBs are used to store the volume table;</li>
+	<li>1 PEB is reserved for wear-levelling purposes;</li>
+	<li>1 PEB is reserved for the
+	<a href="ubi.html#L_lebchange">atomic LEB change</a> operation;</li>
+	<li>some percent of PEBs is reserved for bad PEB handling if the flash
 	may have bad PEBs; this is applicable for NAND flash, but not for NOR
-	flash; the percentage is configurable and is 1% by dafault;</LI>
-	<LI>UBI stores the erase counter (EC) and volume ID (VID) headers at
+	flash; the percentage is configurable and is 1% by dafault;</li>
+	<li>UBI stores the erase counter (EC) and volume ID (VID) headers at
 	the beginning of each PEB; the amount of bytes used for these purposes
-	depends on the flash type and is explained below;</LI>
-</UL>
+	depends on the flash type and is explained below;</li>
+</ul>
 
-<P>Lets introduce symbols:</P>
+<p>Lets introduce symbols:</p>
 
-<UL>
-	<LI><I>P</I> - total number of physical eraseblocks on the MTD
-	device;</LI>
-	<LI><I>S<SUB>P</SUB></I> - physical eraseblock size;</LI>
-	<LI><I>S<SUB>L</SUB></I> - logical eraseblock size;</LI>
-	<LI><I>B</I> - number of PEBs reserved for bad PEB handling; it is
-	1% of <I>P</I> for NAND by default, and 0 for NOR and other flash types
-	which do not admit of bad PEBs;</LI>
-	<LI><I>O</I> - the overhead related to storing EC and VID headers in
-	bytes, i.e. <I>O</I> = <I>S<SUB>P</SUB></I> - <I>S<SUB>L</SUB></I>.</LI>
-</UL>
+<ul>
+	<li><i>P</i> - total number of physical eraseblocks on the MTD
+	device;</li>
+	<li><i>S<sub>P</sub></i> - physical eraseblock size;</li>
+	<li><i>S<sub>L</sub></i> - logical eraseblock size;</li>
+	<li><i>B</i> - number of PEBs reserved for bad PEB handling; it is
+	1% of <i>P</i> for NAND by default, and 0 for NOR and other flash types
+	which do not admit of bad PEBs;</li>
+	<li><i>O</i> - the overhead related to storing EC and VID headers in
+	bytes, i.e. <i>O</i> = <i>S<sub>P</sub></i> - <i>S<sub>L</sub></i>.</li>
+</ul>
 
-<P>The UBI overhead is (<I>B</I> + 4 + <I>O</I>) * <I>S<SUB>P</SUB></I>,
-i.e., this amount of bytes will not be accessible for users. <I>O</I> is
-different for different flashes:</P>
+<p>The UBI overhead is (<i>B</i> + 4 + <i>O</i>) * <i>S<sub>P</sub></i>,
+i.e., this amount of bytes will not be accessible for users. <i>O</i> is
+different for different flashes:</p>
 
-<UL>
-	<LI>in case of NOR flash which has 1 byte minimum input/output unit,
-	<I>O</I> is 128 bytes (each UBI header takes 64 bytes);</LI>
-	<LI>in case of NAND flash which does not allow sub-pages (e.g., MLC
-	NAND), <I>O</I> is 2 NAND pages, i.e. 4KiB in case of 2KiB NAND page
-	and 1KiB in case of 512 bytes NAND page;</LI>
-	<LI>if the NAND flash, NAND flash controller, and NAND flash driver
+<ul>
+	<li>in case of NOR flash which has 1 byte minimum input/output unit,
+	<i>O</i> is 128 bytes (each UBI header takes 64 bytes);</li>
+	<li>in case of NAND flash which does not allow sub-pages (e.g., MLC
+	NAND), <i>O</i> is 2 NAND pages, i.e. 4KiB in case of 2KiB NAND page
+	and 1KiB in case of 512 bytes NAND page;</li>
+	<li>if the NAND flash, NAND flash controller, and NAND flash driver
 	support sub-page writes (e.g., SLC NANDs and most of their Linux
 	driverso, OneNAND), UBI optimises its on-flash layout and puts the
 	EC and VID headers to the same NAND page, but different sub-pages; in
-	this case <I>O</I> is only one NAND page;</LI>
-	<LI>for other flashes with different min. I/O unit size, the overhead
+	this case <i>O</i> is only one NAND page;</li>
+	<li>for other flashes with different min. I/O unit size, the overhead
 	should be 2 min. I/O untis if min. I/O unit size is greater or
 	equivalent than 64, and 128 aligned on the min. I/O unit size if min.
-	I/O unit size is less than 64.</LI>
-</UL>
+	I/O unit size is less than 64.</li>
+</ul>
 
 
 
-<A NAME="L_unmap"><H2>LEB un-map operation</H2></A>
+<a name="L_unmap"><h2>LEB un-map operation</h2></a>
 
-<P>The LEB un-map operation is available via the <CODE>ubi_leb_unmap()</CODE>
+<p>The LEB un-map operation is available via the <code>ubi_leb_unmap()</code>
 call of the UBI kernel API. The operation is not available via the
-user-space interfaces. The LEB un-map operation:</P>
+user-space interfaces. The LEB un-map operation:</p>
 
-<UL>
-	<LI>first un-maps the LEB from the corresponding PEB;</LI>
-	<LI>then schedules the PEB for erasure and returns; it does not wait
+<ul>
+	<li>first un-maps the LEB from the corresponding PEB;</li>
+	<li>then schedules the PEB for erasure and returns; it does not wait
 	for the erasure of the PEB to be finished; the PEB is instead erased
-	in context of the UBI background thread;</LI>
-</UL>
+	in context of the UBI background thread;</li>
+</ul>
 
-<P>UBI returns all <CODE>0xFF</CODE> bytes when an un-mapped LEB is read, so
+<p>UBI returns all <code>0xFF</code> bytes when an un-mapped LEB is read, so
 the un-map operation is very similar to the erase operation (a very fast erase
 operation). But there is a difference UBI programmers have to be well aware
-of.</P>
+of.</p>
 
-<P>Suppose one un-maps LEB <I>L</I> which is mapped to PEB <I>P</I>. Since
-<I>P</I> is not synchronously erased, but just scheduled for erasure, there
+<p>Suppose one un-maps LEB <i>L</i> which is mapped to PEB <i>P</i>. Since
+<i>P</i> is not synchronously erased, but just scheduled for erasure, there
 might be "surprises" in case of unclean reboots: if the reboot happens before
-<I>P</I> has been physically erased, <I>L</I> will be mapped to <I>P</I> again
+<i>P</i> has been physically erased, <i>L</i> will be mapped to <i>P</i> again
 when UBI attaches the MTD device after the unclean reboot. Indeed, UBI will
-scan the MTD device and find <I>P</I> which refers <I>L</I>, and it will
-add this mapping information to the EBA table.</P>
+scan the MTD device and find <i>P</i> which refers <i>L</i>, and it will
+add this mapping information to the EBA table.</p>
 
-<P>But once one writes any data to <I>L</I>, it gets mapped to a new empty PEB,
+<p>But once one writes any data to <i>L</i>, it gets mapped to a new empty PEB,
 and the old contents goes forever, because even in case of an unclean reboot UBI
-would pick the newer mapping for <I>L</I>.</P>
+would pick the newer mapping for <i>L</i>.</p>
 
-<P>One may use the <CODE>ubi_leb_map()</CODE> call which maps the LEB to an
+<p>One may use the <code>ubi_leb_map()</code> call which maps the LEB to an
 empty PEB, so the LEB would always contain only 0xFF bytes, even in case of
 an unclean reboot. But do not use this unless it is really needed, because this
 puts additional overhead on the UBI wear-leveling sub-system, comparing to
@@ -408,133 +408,133 @@ data to maintain wear-leveling. Conversely, if the LEB is mapped to a PEB,
 there is one more PEB for the wear-leveling sub-system to care about, and one
 more LEB to re-map to another PEB if the erase counter of the current PEB
 becomes too low (then the LEB is re-mapped to a PEB with higher erase counter
-and the old PEB is used for other operations).</P>
+and the old PEB is used for other operations).</p>
 
-<A NAME="L_unmap_det"><H4>Implementation details</H4></A>
+<a name="L_unmap_det"><h4>Implementation details</h4></a>
 
-<P>This section describes how UBI distinguishes between older and newer
+<p>This section describes how UBI distinguishes between older and newer
 versions of an LEB in case of an unclean reboot. Suppose one un-maps LEB
-<I>L</I> which is mapped to PEB <I>P<SUB>1</SUB></I>, which means UBI schedules
-<I>P<SUB>1</SUB></I> for erasure. Then one writes some data to <I>L</I>, which
-means that UBI finds another PEB <I>P<SUB>2</SUB></I>, maps <I>L</I> to
-<I>P<SUB>2</SUB></I>, and writes the data to <I>P<SUB>2</SUB></I>. If an
-unclean reboot happens before <I>P<SUB>1</SUB></I> is physically erased, but
-after the write operation, we end up with 2 PEBs (<I>P<SUB>1</SUB></I> and
-<I>P<SUB>2</SUB></I>) mapped to the same LEB <I>L</I>.</P>
+<i>L</i> which is mapped to PEB <i>P<sub>1</sub></i>, which means UBI schedules
+<i>P<sub>1</sub></i> for erasure. Then one writes some data to <i>L</i>, which
+means that UBI finds another PEB <i>P<sub>2</sub></i>, maps <i>L</i> to
+<i>P<sub>2</sub></i>, and writes the data to <i>P<sub>2</sub></i>. If an
+unclean reboot happens before <i>P<sub>1</sub></i> is physically erased, but
+after the write operation, we end up with 2 PEBs (<i>P<sub>1</sub></i> and
+<i>P<sub>2</sub></i>) mapped to the same LEB <i>L</i>.</p>
 
-<P>To handle situations like this, UBI maintains a global 64-bit <I>sequence
-number</I> variable. The sequence number variable is increased each time a PEB
+<p>To handle situations like this, UBI maintains a global 64-bit <i>sequence
+number</i> variable. The sequence number variable is increased each time a PEB
 is mapped to a LEB and its value is stored in the VID header of the PEB. So each
 VID header has a unique sequence number, and the larger is the sequence number,
 the "younger" is the VID header. When UBI attaches an MTD device, it
 initializes the global sequence number variable to the highest value found
-in existing VID headers plus one.</P>
+in existing VID headers plus one.</p>
 
-<P>In the above situation, UBI just selects a PEB with higher sequence number
-(<I>P<SUB>2</SUB></I>) and drops the PEB with lower sequence number
-(<I>P<SUB>1</SUB></I>).</P>
+<p>In the above situation, UBI just selects a PEB with higher sequence number
+(<i>P<sub>2</sub></i>) and drops the PEB with lower sequence number
+(<i>P<sub>1</sub></i>).</p>
 
-<P>Note, the situation is more difficult if an unclean reboot happens when UBI
+<p>Note, the situation is more difficult if an unclean reboot happens when UBI
 moves the contents of one PEB to another for a wear-leveling purposes, or when
-it happens during the <A HREF="ubi.html#L_lebchange">atomic LEB change</A>
+it happens during the <a href="ubi.html#L_lebchange">atomic LEB change</a>
 operation. In this case it is not enough to just pick the newer PEB, it is also
-necessary to make sure all the date was written, not just part of it.</P>
+necessary to make sure all the date was written, not just part of it.</p>
 
 
 
-<A NAME="L_volupdate"><H2>Volume update operation</H2></A>
+<a name="L_volupdate"><h2>Volume update operation</h2></a>
 
-<P>Unlike raw MTD devices, UBI devices support the volume update operation
+<p>Unlike raw MTD devices, UBI devices support the volume update operation
 which may be useful to implement software updates in end-user devices. The
 operation changes the contents of whole UBI volume with new contents. Of
 course, one could do this with raw MTD devices by means of just erasing the
 device and putting the new image on it. But the advantage of the UBI volume
 update operation is that if it gets interrupted, the volume goes into
 "corrupted" state and further I/O on the volume ends up with an
-<CODE>EBADF</CODE> error. And the only way to get the volume back to the normal
-state is to start a new volume update operation and to finish it.</P>
+<code>EBADF</code> error. And the only way to get the volume back to the normal
+state is to start a new volume update operation and to finish it.</p>
 
-<P>The volume update operation allows to detect interrupted updates and to
+<p>The volume update operation allows to detect interrupted updates and to
 re-start it with help of, for example, a "mirror" volume which would have the
 same contents or by showing a dialog window which would inform the end user
 about the problem and request flashing. In contrast, it is difficult to
-detect interrupted updates in case of raw MTD devices.</P>
+detect interrupted updates in case of raw MTD devices.</p>
 
-<P>The volume update operation is available only via the user-space UBI
+<p>The volume update operation is available only via the user-space UBI
 interface and it is not available via the UBI kernel API. To update a
-volume, one first has to call the <CODE>UBI_IOCVOLUP</CODE> ioctl of the
+volume, one first has to call the <code>UBI_IOCVOLUP</code> ioctl of the
 corresponding volume character device and to pass a pointer to a 64-bit value
 containing the length of the new volume contents in bytes. Then this amount of
 bytes has to be written to the volume character device. Once the last byte has
 been send to the character device, the update operation is finished.
-Schematically, the sequence is:</P>
+Schematically, the sequence is:</p>
 
-<PRE>
+<pre>
 fd = open("/dev/my_volume");
 ioctl(fd, UBI_IOCVOLUP, &amp;image_size);
 write(fd, buf, image_size);
 close(fd);
-</PRE>
+</pre>
 
-<P>See <CODE>include/mtd/ubi-user.h</CODE> for more details. Bear in mind, the
+<p>See <code>include/mtd/ubi-user.h</code> for more details. Bear in mind, the
 old contents of the volume is not preserved in case of an interrupted update.
 Also, it is not necessary to write all new data at one go. It is OK to call
-the <CODE>write()</CODE> function arbitrary number of times and pass arbitrary
+the <code>write()</code> function arbitrary number of times and pass arbitrary
 amount of data each time. The operation will be finished only after all the
 data have been written. If the last write operation contains more bytes than
-UBI expects, the extra data is just ignored.</P>
+UBI expects, the extra data is just ignored.</p>
 
-<P>Special case of volume update is what we call "volume truncation", which
+<p>Special case of volume update is what we call "volume truncation", which
 may be done by specifying zero length of the new contents. In this case the
-volume is just wiped out and will contain all <CODE>0xFF</CODE> bytes.</P>
+volume is just wiped out and will contain all <code>0xFF</code> bytes.</p>
 
-<P>Note, the <CODE>/sys/class/ubi/ubiX_X/corrupted</CODE> sysfs file reflects
+<p>Note, the <code>/sys/class/ubi/ubiX_X/corrupted</code> sysfs file reflects
 the "corrupted" state of the volume: it contains ASCII "0\n" if the volume is OK
 and is not corrupted and "1\n" if it is corrupted (because volume update had
-started but not finished.</P>
+started but not finished.</p>
 
-<P>Technically, it is possible to implement an "atomic" volume update
+<p>Technically, it is possible to implement an "atomic" volume update
 operation, which would mean that the contents of the volume would stay
 unchanged in case of interrupted updates. But this would require to have as
 much free space as the size of the volume to be updated. This is not currently
-implemented.</P>
+implemented.</p>
 
-<A NAME="L_volupdate_det"><H4>Implementation details</H4></A>
+<a name="L_volupdate_det"><h4>Implementation details</h4></a>
 
-<P>The volume update is implemented with help of so-called "update marker". Once
-the user has issued the <CODE>UBI_IOCVOLUP</CODE> ioctl, UBI sets the update
+<p>The volume update is implemented with help of so-called "update marker". Once
+the user has issued the <code>UBI_IOCVOLUP</code> ioctl, UBI sets the update
 marker flag for the volume in the corresponding record of the UBI volume table.
 Then the volume is wiped out and UBI waits for the the user to pass the data.
 Once all the data arrived and has been written to the flash, the update marker
 is cleaned. But in case of an interruption (e.g., unclean reboot, crash of the
 update application, etc.), the update marker is not cleaned and the volume is
 treated as "corrupted". Only a new successful update operation may clean the
-update marker.</P>
+update marker.</p>
 
 
 
-<A NAME="L_lebchange"><H2>Atomic LEB change operation</H2></A>
+<a name="L_lebchange"><h2>Atomic LEB change operation</h2></a>
 
-<P>UBI also has an atomic LEB change operation which means that the contents of
+<p>UBI also has an atomic LEB change operation which means that the contents of
 the LEB stays unchanged if the operation gets interrupted. In other words, the
 result of the operation is that the LEB either has the old contents or the new
-contents.</P>
+contents.</p>
 
-<P>The operation is available via the <CODE>ubi_leb_change()</CODE> kernel API
+<p>The operation is available via the <code>ubi_leb_change()</code> kernel API
 call. The user-space interface for this operation does not exist in the
 main-line kernel so far, but it was recently implemented and may be found in the
-<A HREF="ubi.html#L_source">UBI git tree</A>. It should be
-available in the main-line kernels starting from version 2.6.25.</P>
+<a href="ubi.html#L_source">UBI git tree</a>. It should be
+available in the main-line kernels starting from version 2.6.25.</p>
 
-<P>The user-space atomic LEB change operation is run via the
-<CODE>UBI_IOCEBCH</CODE> ioctl command. One has to pass a pointer to a properly
-filled request object of <CODE>struct ubi_leb_change_req</CODE> type. The
+<p>The user-space atomic LEB change operation is run via the
+<code>UBI_IOCEBCH</code> ioctl command. One has to pass a pointer to a properly
+filled request object of <code>struct ubi_leb_change_req</code> type. The
 object stores the LEB number to change and the length of the new contents. Then
 the user has to write the specified amount of bytes to the volume character
 device. Notice some similarity to the user-space interface of the volume update
-operation. Schematically, the sequence is:</P>
+operation. Schematically, the sequence is:</p>
 
-<PRE>
+<pre>
 struct ubi_leb_change_req req;
 
 req.lnum = lnum_to_change;
@@ -545,85 +545,85 @@ fd = open("/dev/my_volume");
 ioctl(fd, UBI_IOCEBCH, &amp;req);
 write(fd, data_buf, data_len);
 close(fd);
-</PRE>
+</pre>
 
-<P>If for some reason the user does not write the declared amount of bytes
+<p>If for some reason the user does not write the declared amount of bytes
 and closes the file, the operation is canceled and the old contents of the LEB
-is preserved.</P>
+is preserved.</p>
 
-<P>Similarly tho the volume update operation it does not matter how many times
-the <CODE>write()</CODE> function is called and how much data it passes to the
+<p>Similarly tho the volume update operation it does not matter how many times
+the <code>write()</code> function is called and how much data it passes to the
 UBI volume each time. The atomic LEB change operation finishes once the last
-data byte arrives.</P>
+data byte arrives.</p>
 
-<P>The atomic LEB change operation might be very useful for file-systems, for
-example <A HREF="ubifs.html#">UBIFS</A> uses this operation as a last resort
+<p>The atomic LEB change operation might be very useful for file-systems, for
+example <a href="ubifs.html#">UBIFS</a> uses this operation as a last resort
 when it commits the file-system index. This operation may also be exploited
-to create an FTL layer on top of UBI (see <A
-HREF="http://lists.infradead.org/pipermail/linux-mtd/2008-January/020381.html">
-here</A> for the description of the idea).</P>
+to create an FTL layer on top of UBI (see <a
+href="http://lists.infradead.org/pipermail/linux-mtd/2008-January/020381.html">
+here</a> for the description of the idea).</p>
 
-<P>Keep in mind that the atomic LEB change operation calculates CRC32 checksum
+<p>Keep in mind that the atomic LEB change operation calculates CRC32 checksum
 of the new data, so it has some overhead comparing to the LEB erase plus LEB
 write sequence. The volume update operation does not calculate data CRC, so it
 is faster to update the volume than to atomically change all its eraseblocks.
 This additional overhead has to be remembered about and the operation should
-not be used if the atomicity is not really needed.</P>
+not be used if the atomicity is not really needed.</p>
 
-<A NAME="L_lebchange_det"><H4>Implementation details</H4></A>
+<a name="L_lebchange_det"><h4>Implementation details</h4></a>
 
-<P>Suppose UBI has to change a logical eraseblock <I>L</I> which is mapped to a
-physical eraseblock <I>P<SUB>1</SUB></I>. First of all, UBI always has one free
+<p>Suppose UBI has to change a logical eraseblock <i>L</i> which is mapped to a
+physical eraseblock <i>P<sub>1</sub></i>. First of all, UBI always has one free
 PEB reserved for the atomic LEB change operation, let it be
-<I>P<SUB>2</SUB></I>. Before the operation, <I>P<SUB>1</SUB></I> stores the
-contents of the LEB <I>L</I> and <I>P<SUB>2</SUB></I> is free (it contains only
-the EC header and <CODE>OxFF</CODE> bytes). The new data is written to
-<I>P<SUB>2</SUB></I>, not to <I>P<SUB>1</SUB></I>, so should anything go wrong,
-the old contents of the LEB is always there.</P>
+<i>P<sub>2</sub></i>. Before the operation, <i>P<sub>1</sub></i> stores the
+contents of the LEB <i>L</i> and <i>P<sub>2</sub></i> is free (it contains only
+the EC header and <code>OxFF</code> bytes). The new data is written to
+<i>P<sub>2</sub></i>, not to <i>P<sub>1</sub></i>, so should anything go wrong,
+the old contents of the LEB is always there.</p>
 
-<P>When the operation finishes, UBI un-maps <I>L</I> from <I>P<SUB>1</SUB></I>,
-maps in to <I>P<SUB>2</SUB></I>, and schedules <I>P<SUB>1</SUB></I> for erasure.
-If the operation is interrupted, <I>L</I> stays being mapped to
-<I>P<SUB>1</SUB></I> and <I>P<SUB>2</SUB></I> is scheduled for erasure.</P>
+<p>When the operation finishes, UBI un-maps <i>L</i> from <i>P<sub>1</sub></i>,
+maps in to <i>P<sub>2</sub></i>, and schedules <i>P<sub>1</sub></i> for erasure.
+If the operation is interrupted, <i>L</i> stays being mapped to
+<i>P<sub>1</sub></i> and <i>P<sub>2</sub></i> is scheduled for erasure.</p>
 
-<P>If an unclean reboot happens half way through the atomic LEB change
+<p>If an unclean reboot happens half way through the atomic LEB change
 operation, it is obvious that UBI has to preserve the
-<I>L -> P<SUB>1</SUB></I> mapping and erase <I>P<SUB>2</SUB></I> when it is
+<i>L -> P<sub>1</sub></i> mapping and erase <i>P<sub>2</sub></i> when it is
 attaches the MTD device next time. But if the unclean reboot happens just after
-the atomic LEB change operation finishes, but before <I>P<SUB>1</SUB></I> is
+the atomic LEB change operation finishes, but before <i>P<sub>1</sub></i> is
 physically erased, it is obvious that UBI has to preserve
-<I>L -> P<SUB>2</SUB></I> mapping and erase <I>P<SUB>1</SUB></I>.</P>
+<i>L -> P<sub>2</sub></i> mapping and erase <i>P<sub>1</sub></i>.</p>
 
-<P>To resolve situations like that, UBI calculates CRC checksum of the new
+<p>To resolve situations like that, UBI calculates CRC checksum of the new
 contents of the LEB before it is written to flash, and stores it in the VID
-header (together with data length). When UBI finds 2 PEBs <I>P<SUB>1</SUB></I>
-and <I>P<SUB>2</SUB></I> mapped to the same LEB <I>L</I> during the
+header (together with data length). When UBI finds 2 PEBs <i>P<sub>1</sub></i>
+and <i>P<sub>2</sub></i> mapped to the same LEB <i>L</i> during the
 initialization, it selects the one with higher sequence number
-(<I>P<SUB>2</SUB></I>) only if the data CRC is correct (which means all that
+(<i>P<sub>2</sub></i>) only if the data CRC is correct (which means all that
 the data has been written to the flash media), otherwise it selects the PEB
-with lower sequence number(<I>P<SUB>1</SUB></I>). Of course, UBI has to read
-the LEB contents in order to check the CRC checksum.</P>
+with lower sequence number(<i>P<sub>1</sub></i>). Of course, UBI has to read
+the LEB contents in order to check the CRC checksum.</p>
 
 
 
-<A NAME="L_autoresize"><H2>Volume auto-resize</H2></A>
+<a name="L_autoresize"><h2>Volume auto-resize</h2></a>
 
-<P>It is well-known that NAND chips have some amount of physical eraseblocks
+<p>It is well-known that NAND chips have some amount of physical eraseblocks
 marked as bad by the manufacturer. The bad PEBs are distributed randomly
 and their number is different, although manufacturers usually guarantee that
 the first few physical eraseblocks are not bad and the total amount of bad PEBs
 does not exceed certain number. For example, a new 256MiB Samsung OneNAND chip
 is guaranteed to have not larger than 40 128KiB PEBs (but of course, more
 physical eraseblock will become bad over time). This is about 2% of the whole
-flash size.</P>
+flash size.</p>
 
-<P>When it is needed to create an UBI image which will be flashed to the end
+<p>When it is needed to create an UBI image which will be flashed to the end
 user devices in production line, one have to define exact sizes of all volumes
 (the sizes are stored in the UBI volume table). But it is difficult to do
 because total flash chip may vary depending on the amount of initially bad
-PEBs.</P>
+PEBs.</p>
 
-<P>One obvious way to solve the problem is to assume the worst case, when all
+<p>One obvious way to solve the problem is to assume the worst case, when all
 chips would have maximum amount of bad PEBs. But in practice, most of the chips
 will have only few bad PEBs which is far less than the maximum. In general, it
 is fine, this will increase reliability, because UBI anyway uses all PEBs of
@@ -631,70 +631,70 @@ the device. On the other hand UBI anyway reserves some amount of physical
 eraseblocks for bad PEB handling which is 1% of PEBs by default. So in case of
 the above mentioned OneNAND chip the result would be that 1% of PEBs would be
 reserved by UBI, and 0-2% would be available for new volumes (they would be
-seen as available LEBs for UBI users).</P>
+seen as available LEBs for UBI users).</p>
 
-<P>But there is an alternative approach - one of the volume may be marked as
+<p>But there is an alternative approach - one of the volume may be marked as
 auto-resized, which means that its size is enlarged when UBI is run for the
 first time. After the volume size is adjusted, UBI removes the auto-resize
 mark and the volume is not resized anymore. The auto-resize flag is stored in
 the volume table and only one volume may be marked as auto-resize. For example,
 if there is a volume which is intended to have the root file-system, it may be
-reasonable to mark it as auto-resize.</P>
+reasonable to mark it as auto-resize.</p>
 
-<P>In the example with OneNAND chip, if one of the UBI volumes is be marked
+<p>In the example with OneNAND chip, if one of the UBI volumes is be marked
 as auto-resized, it will be enlarged by 0-2% on the first UBI boot, but 1% of
-PEBs will anyway be reserved for bad PEB handling.</P>
+PEBs will anyway be reserved for bad PEB handling.</p>
 
-<P>Note, the auto-resize feature was added very recently and it is not in the
+<p>Note, the auto-resize feature was added very recently and it is not in the
 main-line kernel yet, but it should appear in version 2.6.25. Use
-<A HREF="ubi.html#L_source">UBI git tree</A> to find the implementation of the
-feature.</P>
+<a href="ubi.html#L_source">UBI git tree</a> to find the implementation of the
+feature.</p>
 
 
 
-<A NAME="L_ubidoc"><H2>More documentation</H2></A>
+<a name="L_ubidoc"><h2>More documentation</h2></a>
 
-<P>Unfortunately, there are no thorough and sctrict UBI documents. But there is
+<p>Unfortunately, there are no thorough and sctrict UBI documents. But there is
 an old UBI design document which has some out-of-date information, but is still
-useful: <A HREF="ubidesign/ubidesign.pdf">ubidesign.pdf</A>.</P>
+useful: <a href="ubidesign/ubidesign.pdf">ubidesign.pdf</a>.</p>
 
-<P>There is also a PowerPoint UBI presentation available:
-<A HREF="ubi.ppt">ubi.ppt</A>. Note, this document has to be looked at
+<p>There is also a PowerPoint UBI presentation available:
+<a href="ubi.ppt">ubi.ppt</a>. Note, this document has to be looked at
 in Windows, because it contains a lot of animation and Open Office cannot
-properly show it. Use slide show (<CODE>F5</CODE> key) when you look, because
-otherwise the animation is not shown.</P>
+properly show it. Use slide show (<code>F5</code> key) when you look, because
+otherwise the animation is not shown.</p>
 
-<P>Many useful information may be found at the
-<A HREF="../faq/ubi.html">FAQ</A> section.</P>
+<p>Many useful information may be found at the
+<a href="../faq/ubi.html">FAQ</a> section.</p>
 
-<P>And of course just reading the UBI interface C header files which contains
-quite a few commentaries may help: <CODE>include/mtd/ubi-user.h</CODE>
+<p>And of course just reading the UBI interface C header files which contains
+quite a few commentaries may help: <code>include/mtd/ubi-user.h</code>
 contains the user-space interface definition (namely, it defines UBI ioctl
 commands and the involved data structures),
-<CODE>include/linux/mtd/ubi.h</CODE> defines the kernel API and the
-<CODE>drivers/mtd/ubi/kapi.c</CODE> file contains comments for each kernel API
-function (just above the body of the function).</P>
+<code>include/linux/mtd/ubi.h</code> defines the kernel API and the
+<code>drivers/mtd/ubi/kapi.c</code> file contains comments for each kernel API
+function (just above the body of the function).</p>
 
 
 
-<A NAME="L_how_send_bugreport">
-<H2>How to send an UBI bugreport?</H2>
-</A>
+<a name="L_how_send_bugreport">
+<h2>How to send an UBI bugreport?</h2>
+</a>
 
-<P>Before sending a bug report:</P>
-<UL>
-	<LI>make sure you have compiled kernel symbols in
-	(<CODE>CONFIG_KALLSYMS_ALL=y</CODE> in <CODE>.config</CODE>);</LI>
+<p>Before sending a bug report:</p>
+<ul>
+	<li>make sure you have compiled kernel symbols in
+	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
 
-	<LI>enable UBI debugging (<CODE>CONFIG_MTD_UBI_DEBUG=y</CODE>
-	in <CODE>.config</CODE>).</LI>
-</UL>
+	<li>enable UBI debugging (<code>CONFIG_MTD_UBI_DEBUG=y</code>
+	in <code>.config</code>).</li>
+</ul>
 
-<P>Please, attach all the bug-related messages including the UBI messages from
-the kernel ring buffer, which may be collected using the <CODE>dmesg</CODE>
-utility or using <CODE>minicom</CODE> with serial console capturing. And of
+<p>Please, attach all the bug-related messages including the UBI messages from
+the kernel ring buffer, which may be collected using the <code>dmesg</code>
+utility or using <code>minicom</code> with serial console capturing. And of
 course, it is wise to describe how the problem can be reproduced. The bugreport
-should be sent to the <A HREF="../mail.html">MTD mailing list</A>.</P>
+should be sent to the <a href="../mail.html">MTD mailing list</a>.</p>
 
 
 <INCLUDE file="../inc/footer.tmpl" />
