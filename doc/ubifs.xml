@@ -27,9 +27,7 @@
 
 
 
-<a name="L_rednote">
-<h2><font color="red">Big red note</font></h2>
-</a>
+<h2><a name="L_rednote"><font color="red">Big red note</font></a></h2>
 
 <p>One thing people have to understand when dealing with UBIFS is that UBIFS is
 very different to any traditional file-system - it <b>does not</b> work on top
@@ -44,7 +42,7 @@ difference between block devices and flash chips.</p>
 
 
 
-<a name="L_overview"><h2>Overview</h2></a>
+<h2><a name="L_overview">Overview</a></h2>
 
 <p>UBIFS is a new flash file system which is designed to work on top
 of UBI. The file system is developed by Nokia engineers with help of
@@ -130,7 +128,7 @@ sections.</p>
 
 
 
-<a name="L_status"><h2>Current status</h2></a>
+<h2><a name="L_status">Current status</a></h2>
 
 <p>UBIFS has proved to be fairly stable, however it needs more testing, review,
 and tuning (e.g., finding optimal journal size, etc).  It also needs some
@@ -138,7 +136,7 @@ profiling and bottleneck hunting.</p>
 
 
 
-<a name="L_source"><h2>Source code</h2></a>
+<h2><a name="L_source">Source code</a></h2>
 
 <p>The UBIFS development git tree is:</p>
 
@@ -163,14 +161,14 @@ file-system is large enough.</p>
 
 
 
-<a name="L_ml"><h2>Mailing list</h2></a>
+<h2><a name="L_ml">Mailing list</a></h2>
 
 <p>You are welcome to send feed-back, bug-reports, patches, etc to the
 <a href="../mail.html">MTD mailing list</a>. Feel free to ask questions.</p>
 
 
 
-<a name="L_usptools"><h2>User-space tools</h2></a>
+<h2><a name="L_usptools">User-space tools</a></h2>
 
 <p>There is only one UBIFS user-space tool at the moment -
 <b>mkfs.ubifs</b>, which creates UBIFS images. The tool may be found at</p>
@@ -185,7 +183,7 @@ tool to create an UBI image which may be put to the MTD device.</p>
 
 
 
-<a name="L_scalability"><h2>Scalability</h2></a>
+<h2><a name="L_scalability">Scalability</a></h2>
 
 <p>All the data structures UBIFS is using are trees, so it scales
 logarithmically in terms of flash size. However, UBI scales linearly
@@ -309,7 +307,7 @@ describes the issues in more details.</p>
 
 
 
-<a name="L_xattr"><h2>Extended attributes</h2></a>
+<h2><a name="L_xattr">Extended attributes</a></h2>
 
 <p>UBIFS supports extended attributes if the corresponding configuration option
 is enabled (no additional mount options are required). It supports
@@ -318,7 +316,7 @@ Access control list (ACL) support is not implemented.</p>
 
 
 
-<a name="L_documentation"><h2>Documentation</h2></a>
+<h2><a name="L_documentation">Documentation</a></h2>
 
 <p>The UBIFS white-paper which briefly describes main UBIFS design aspects is
 available here: <a href="ubifs_whitepaper.pdf">ubifs_whitepaper.pdf</a>. There is
@@ -328,9 +326,7 @@ it has a lot of out-of-date information.</p>
 
 
 
-<a name="L_how_send_bugreport">
-<h2>How to send an UBI bugreport?</h2>
-</a>
+<h2><a name="L_how_send_bugreport">How to send an UBI bugreport?</a></h2>
 
 <p>Before sending a bug report:</p>
 <ul>

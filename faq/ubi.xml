@@ -31,7 +31,7 @@
 
 
 
-<a name="L_enable_ubi"><h2>How to enable UBI?</h2></a>
+<h2><a name="L_enable_ubi">How to enable UBI?</a></h2>
 
 <p>In the Linux configuration menu, go to "<b>Device Drivers</b>" ->
 "<b>Memory Technology Devices (MTD)</b>" -> "<b>UBI - Unsorted block images</b>",
@@ -40,7 +40,7 @@ kernel or built as a kernel module.</p>
 
 
 
-<a name="L_attachmtd"><h2>How to attach an MTD device?</h2></a>
+<h2><a name="L_attachmtd">How to attach an MTD device?</a></h2>
 
 <p>If UBI is compiled as a kernel module, it is enough to specify the MTD
 device to attach in the module arguments, e.g.</p>
@@ -89,7 +89,7 @@ available in the main-line kernels starting from version 2.6.25.</p>
 
 
 
-<a name="L_mkvol"><h2>How to create/delete UBI volumes?</h2></a>
+<h2><a name="L_mkvol">How to create/delete UBI volumes?</a></h2>
 
 <p>Use <code>ubimkvol</code> and <code>ubirmvol</code> tools (see
 <a href="../doc/ubi.html#L_usptools">here</a>). For example, the below command
@@ -110,7 +110,7 @@ $ ubirmvol /dev/ubi0 -n 0
 
 
 
-<a name="L_run_jffs2"><h2>How to run JFFS2 on top of an UBI volume?</h2></a>
+<h2><a name="L_run_jffs2">How to run JFFS2 on top of an UBI volume?</a></h2>
 
 <p>Although it may sound weird, UBI can emulate MTD devices for UBI volumes and
 JFFS2 can be mounted on these emulated MTD devices. Enable the
@@ -120,9 +120,7 @@ MLC NAND flash (see <a href="ubi.html#L_mlc">this</a> section).</p>
 
 
 
-<a name="L_ext2_over_ubi">
-<h2>Can I run ext2 on top of UBI?</h2>
-</a>
+<h2><a name="L_ext2_over_ubi">Can I run ext2 on top of UBI?</a></h2>
 
 <p>UBI is not a block device emulation layer, it is not an FTL. Neither ext2
 nor other "traditional" file systems can be run on top of an UBI device.
@@ -141,9 +139,9 @@ This</a> e-mail describes an idea of a simple FTL layer on top of UBI.</p>
 
 
 
-<a name="L_format_mtd">
-<h2>Do I have to format my empty flash before running UBI on top of it?</h2>
-</a>
+<h2><a name="L_format_mtd">
+	Do I have to format my empty flash before running UBI on top of it?
+</a></h2>
 
 <p>No, you don't have to. Although UBI stores some internal information,
 you may feed it an empty MTD device and UBI will format it automatically.
@@ -156,9 +154,7 @@ MTD utility to wipe out MTD devices.</p>
 
 
 
-<a name="L_restrict">
-<h2>Can logical eraseblocks be written randomly?</h2>
-</a>
+<h2><a name="L_restrict">Can logical eraseblocks be written randomly?</a></h2>
 
 <p>No, the flash chip restrictions have to be taken into account. This is
 because UBI logical eraseblocks (LEB) are mapped to physical eraseblocks (PEB),
@@ -194,9 +190,9 @@ so a write operation to before the furthest data offset causes a CRC error;</p>
 
 
 
-<a name="L_why_headers">
-<h2>What for does UBI need headers in physical eraseblocks?</h2>
-</a>
+<h2><a name="L_why_headers">
+	What for does UBI need headers in physical eraseblocks?
+</a></h2>
 
 <p>The headers are needed to keep track of erase counters and
 physical-to-logical eraseblock associations. There are two UBI headers stored
@@ -214,9 +210,7 @@ in each PEB:</p>
 
 
 
-<a name="L_why_2_hdrs">
-<h2>Why does UBI need two headers, not just one?</h2>
-</a>
+<h2><a name="L_why_2_hdrs">Why does UBI need two headers, not just one?</a></h2>
 
 <p>UBI maintains two per-eraseblock headers because it needs to write different
 information on flash at different moments of time:</p>
@@ -235,9 +229,9 @@ two separate write operations and to have two separate headers.</p>
 
 
 
-<a name="L_why_no_oob">
-<h2>Why UBI does not use OOB area of NAND flashes?</h2>
-</a>
+<h2><a name="L_why_no_oob">
+	Why UBI does not use OOB area of NAND flashes?
+</a></h2>
 
 <p>Because many flashes (e.g., NOR) do not have OOB and UBI was designed to be
 a <i>generic</i> wear-leveling layer. Also, modern MLC NAND flashes use whole
@@ -245,9 +239,7 @@ OOB area for ECC checksum, so there is no room for application data.</p>
 
 
 
-<a name="L_volume_table">
-<h2>What is volume table?</h2>
-</a>
+<h2><a name="L_volume_table">What is volume table?</a></h2>
 
 <p><b>Volume table</b> is an on-flash data structure containing information
 about each user volume on this UBI device (e.g., volume size, name,
@@ -257,18 +249,14 @@ table for reliability reasons.</p>
 
 
 
-<a name="L_crash_safe">
-<h2>Is UBI tolerant of power failures?</h2>
-</a>
+<h2><a name="L_crash_safe">Is UBI tolerant of power failures?</a></h2>
 
 <p>Yes, UBI is designed to be tolerant of power failures and unclean
 reboots.</p>
 
 
 
-<a name="L_mlc">
-<h2>May UBI be used on MLC flash?</h2>
-</a>
+<h2><a name="L_mlc">May UBI be used on MLC flash?</a></h2>
 
 <p>Yes, it may, as long as the flash is supported by the MTD layer. UBI does
 not use OOB and it requires data to be written sequentially (see
@@ -288,7 +276,7 @@ section) to improve wear-leveling.</p>
 
 
 
-<a name="L_how_debug"><h2>How to debug UBI?</h2></a>
+<h2><a name="L_how_debug">How to debug UBI?</a></h2>
 
 <h3>Use fake MTD device</h3>
 

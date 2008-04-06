@@ -18,15 +18,15 @@
 	<li><a href="ubi.html#L_source">Source code</a></li>
 	<li><a href="ubi.html#L_ml">Mailing list</a></li>
 	<li><a href="ubi.html#L_usptools">User-space tools</a></li>
-	<li><a href="ubi.html#L_scalability">Scalability issues</a></li>
-	<ol><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ol>
+	<li><a href="ubi.html#L_scalability">Scalability issues</a>
+		<ul><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ul></li>
 	<li><a href="ubi.html#L_overhead">Flash space overhead</a></li>
-	<li><a href="ubi.html#L_unmap">LEB un-map operation</a></li>
-	<ol><li><a href="ubi.html#L_unmap_det">Implementation details</a></li></ol>
-	<li><a href="ubi.html#L_volupdate">Volume update operation</a></li>
-	<ol><li><a href="ubi.html#L_volupdate_det">Implementation details</a></li></ol>
-	<li><a href="ubi.html#L_lebchange">Atomic LEB change operation</a></li>
-	<ol><li><a href="ubi.html#L_lebchange_det">Implementation details</a></li></ol>
+	<li><a href="ubi.html#L_unmap">LEB un-map operation</a>
+		<ul><li><a href="ubi.html#L_unmap_det">Implementation details</a></li></ul></li>
+	<li><a href="ubi.html#L_volupdate">Volume update operation</a>
+		<ul><li><a href="ubi.html#L_volupdate_det">Implementation details</a></li></ul></li>
+	<li><a href="ubi.html#L_lebchange">Atomic LEB change operation</a>
+		<ul><li><a href="ubi.html#L_lebchange_det">Implementation details</a></li></ul></li>
 	<li><a href="ubi.html#L_autoresize">Volume auto-resize</a></li>
 	<li><a href="ubi.html#L_ubidoc">More documentation</a></li>
 	<li><a href="ubi.html#L_how_send_bugreport">How to send a bugreport?</a></li>
@@ -34,9 +34,7 @@
 
 
 
-<a name="L_rednote">
-<h2><font color="red">Big red note</font></h2>
-</a>
+<h2><a name="L_rednote"><font color="red">Big red note</font></a></h2>
 
 <p>People are often confused and treat UBI as a block device emulation layer
 (also known as FTL - flash translation layer). But this is not true - <b>UBI
@@ -47,7 +45,7 @@ incorrect, <b>UBI is not a flash file-system</b>.</p>
 
 
 
-<a name="L_overview"><h2>Overview</h2></a>
+<h2><a name="L_overview">Overview</a></h2>
 
 <p>UBI (Latin: "where?") stands for "Unsorted Block Images". It is a
 volume management system for flash devices which manages multiple logical
@@ -136,7 +134,7 @@ which the flash technology imposes.</p>
 
 
 
-<a name="L_source"><h2>Source code</h2></a>
+<h2><a name="L_source">Source code</a></h2>
 
 <p>UBI is in the main-line Linux kernel starting from version 2.6.22. But it is
 recommended to use the latest UBI which can be found in the UBI git tree:</p>
@@ -149,14 +147,14 @@ git tree and to apply them to your tree.</p>
 
 
 
-<a name="L_ml"><h2>Mailing list</h2></a>
+<h2><a name="L_ml">Mailing list</a></h2>
 
 <p>You are welcome to send feed-back, bug-reports, patches, etc to the
 <a href="../mail.html">MTD mailing list</a>.</p>
 
 
 
-<a name="L_usptools"><h2>User-space tools</h2></a>
+<h2><a name="L_usptools">User-space tools</a></h2>
 
 <p>UBI user-space tools are available from the the
 <code>git://git.infradead.org/mtd-utils.git</code>
@@ -205,7 +203,7 @@ main-line kernel starting from version 2.6.25.</p>
 
 
 
-<a name="L_scalability"><h2>Scalability issues</h2></a>
+<h2><a name="L_scalability">Scalability issues</a></h2>
 
 <p>Unfortunately, UBI scales linearly in terms of flash size. UBI
 initialization time linearly depends on the number of physical eraseblocks on
@@ -244,7 +242,7 @@ to us via the <a href="../mail.html">MTD mailing list</a>.</p>
 
 
 
-<a name="L_scalability_det"><h4>Implementation details</h4></a>
+<h4><a name="L_scalability_det">Implementation details</a></h4>
 
 <p>In general, UBI needs three tables for operation:</p>
 
@@ -313,7 +311,7 @@ UBI.</p>
 
 
 
-<a name="L_overhead"><h2>Flash space overhead</h2></a>
+<h2><a name="L_overhead">Flash space overhead</a></h2>
 
 <p>UBI uses some amount of flash space for its own purposes thus, reducing the
 amount of flash space available for UBI users. Namely:</p>
@@ -368,7 +366,7 @@ different for different flashes:</p>
 
 
 
-<a name="L_unmap"><h2>LEB un-map operation</h2></a>
+<h2><a name="L_unmap">LEB un-map operation</a></h2>
 
 <p>The LEB un-map operation is available via the <code>ubi_leb_unmap()</code>
 call of the UBI kernel API. The operation is not available via the
@@ -410,7 +408,7 @@ more LEB to re-map to another PEB if the erase counter of the current PEB
 becomes too low (then the LEB is re-mapped to a PEB with higher erase counter
 and the old PEB is used for other operations).</p>
 
-<a name="L_unmap_det"><h4>Implementation details</h4></a>
+<h4><a name="L_unmap_det">Implementation details</a></h4>
 
 <p>This section describes how UBI distinguishes between older and newer
 versions of an LEB in case of an unclean reboot. Suppose one un-maps LEB
@@ -442,7 +440,7 @@ necessary to make sure all the date was written, not just part of it.</p>
 
 
 
-<a name="L_volupdate"><h2>Volume update operation</h2></a>
+<h2><a name="L_volupdate">Volume update operation</a></h2>
 
 <p>Unlike raw MTD devices, UBI devices support the volume update operation
 which may be useful to implement software updates in end-user devices. The
@@ -499,7 +497,7 @@ unchanged in case of interrupted updates. But this would require to have as
 much free space as the size of the volume to be updated. This is not currently
 implemented.</p>
 
-<a name="L_volupdate_det"><h4>Implementation details</h4></a>
+<h4><a name="L_volupdate_det">Implementation details</a></h4>
 
 <p>The volume update is implemented with help of so-called "update marker". Once
 the user has issued the <code>UBI_IOCVOLUP</code> ioctl, UBI sets the update
@@ -513,7 +511,7 @@ update marker.</p>
 
 
 
-<a name="L_lebchange"><h2>Atomic LEB change operation</h2></a>
+<h2><a name="L_lebchange">Atomic LEB change operation</a></h2>
 
 <p>UBI also has an atomic LEB change operation which means that the contents of
 the LEB stays unchanged if the operation gets interrupted. In other words, the
@@ -570,7 +568,7 @@ is faster to update the volume than to atomically change all its eraseblocks.
 This additional overhead has to be remembered about and the operation should
 not be used if the atomicity is not really needed.</p>
 
-<a name="L_lebchange_det"><h4>Implementation details</h4></a>
+<h4><a name="L_lebchange_det">Implementation details</a></h4>
 
 <p>Suppose UBI has to change a logical eraseblock <i>L</i> which is mapped to a
 physical eraseblock <i>P<sub>1</sub></i>. First of all, UBI always has one free
@@ -606,7 +604,7 @@ the LEB contents in order to check the CRC checksum.</p>
 
 
 
-<a name="L_autoresize"><h2>Volume auto-resize</h2></a>
+<h2><a name="L_autoresize">Volume auto-resize</a></h2>
 
 <p>It is well-known that NAND chips have some amount of physical eraseblocks
 marked as bad by the manufacturer. The bad PEBs are distributed randomly
@@ -652,7 +650,7 @@ feature.</p>
 
 
 
-<a name="L_ubidoc"><h2>More documentation</h2></a>
+<h2><a name="L_ubidoc">More documentation</a></h2>
 
 <p>Unfortunately, there are no thorough and sctrict UBI documents. But there is
 an old UBI design document which has some out-of-date information, but is still
@@ -677,9 +675,7 @@ function (just above the body of the function).</p>
 
 
 
-<a name="L_how_send_bugreport">
-<h2>How to send an UBI bugreport?</h2>
-</a>
+<h2><a name="L_how_send_bugreport">How to send an UBI bugreport?</a></h2>
 
 <p>Before sending a bug report:</p>
 <ul>

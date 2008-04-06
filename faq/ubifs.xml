@@ -22,7 +22,7 @@
 
 
 
-<a name="L_ubifs_mlc"><h2>May UBIFS be used on MLC flash?</h2></a>
+<h2><a name="L_ubifs_mlc">May UBIFS be used on MLC flash?</a></h2>
 
 <p>The authors did not test it, but they belive it should run fine.
 Consider the main specific aspects of MLC flashes:</p>
@@ -45,7 +45,7 @@ Consider the main specific aspects of MLC flashes:</p>
 
 
 
-<a name="L_mount_ubifs"><h2>How to mount UBIFS?</h2></a>
+<h2><a name="L_mount_ubifs">How to mount UBIFS?</a></h2>
 
 <p>UBIFS mounts UBI volumes, not UBI devices, not MTD devices. There are no
 block device nodes corresponding to UBI volumes exist in <code>/dev</code>,
@@ -97,7 +97,7 @@ UBI volumes.</p>
 
 
 
-<a name="L_mkfubifs"><h2>How to create an UBIFS image?</h2></a>
+<h2><a name="L_mkfubifs">How to create an UBIFS image?</a></h2>
 
 <p>UBIFS images are created by the
 <a href="../doc/ubifs.html#L_usptools"><code>mkfs.ubifs</code></a> utility.
@@ -182,7 +182,7 @@ is the auto-resize trick.</p>
 information and for more possibilities to tweak images.</p>
 
 
-<a name="L_emptyflash"><h2>Is it OK to mount empty UBI volumes?</h2></a>
+<h2><a name="L_emptyflash">Is it OK to mount empty UBI volumes?</a></h2>
 
 <p>Yes, it is OK to mount empty UBI volumes, which are volumes which
 contain only 0xFF bytes. In this case UBIFS formats the media automatically
@@ -223,7 +223,7 @@ ubiupdatevol /dev/ubi0_0 -t
 
 
 
-<a name="L_ubifs_nandsim"><h2>How to use UBIFS with nandsim?</h2></a>
+<h2><a name="L_ubifs_nandsim">How to use UBIFS with nandsim?</a></h2>
 
 <p>The same way as with any MTD device. Here is an example of how to load
 <code>nandsim</code>, create an UBI volume and mount it.</p>
