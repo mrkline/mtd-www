@@ -1,6 +1,6 @@
 <PAGE>
 	<VAR match="VAR_ORIGIN" replace="" />
-	<VAR match="VAR_CVSID" replace="Last updated: 04 Apr 2008, dedekind"/>
+	<VAR match="VAR_CVSID" replace="Last updated: 12 Apr 2008, dedekind"/>
 	<INCLUDE file="inc/header.tmpl" />
 
 	<VAR match="VAR_SEL_INDEX" replace="selected" />
@@ -10,8 +10,7 @@
 
 	<h2>Design aims</h2>
 	<p>We're working on a generic Linux subsystem for memory devices,
- 		especially Flash devices.
-	</p>
+	especially Flash devices.</p>
 	<p>The aim of the system is to make it simple to provide a driver for new
 	hardware, by providing a generic interface between the hardware drivers
 	and the upper layers of the system.
@@ -25,8 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
-	<li>04 Apr 2008: UBIFS on-flash format changed, UBIFS and mkfs.ubifs
-	    v0.4 hav been tagged</li>
+	<li>12 Apr 2008: UBIFS on-flash format changed, UBIFS and mkfs.ubifs
+	    v0.5 have been tagged</li>
 	<li>27 Mar 2008: <a href="doc/ubifs_whitepaper.pdf">UBIFS white-paper</a>
 	    is available</li>
 	<li>13 Mar 2008: 2.6.21 UBIFS back-port is now available</li>
