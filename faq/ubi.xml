@@ -19,6 +19,8 @@
 	<li><a href="ubi.html#L_run_jffs2">How to run JFFS2 on top of an UBI volume?</a></li>
 	<li><a href="ubi.html#L_ext2_over_ubi">Can I run ext2 on top of UBI?</a></li>
 	<li><a href="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</a></li>
+	<li><a href="ubi.html#L_ubierase">How to erase flash and preserve erase counters?</a></li>
+	<li><a href="ubi.html#L_flash_img">How to flash UBI images and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_restrict">Can UBI logical eraseblocks be written randomly?</a></li>
 	<li><a href="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</a></li>
 	<li><a href="ubi.html#L_why_2_hdrs">Why does UBI need two headers, not just one?</a></li>
@@ -144,16 +146,75 @@ This</a> e-mail describes an idea of a simple FTL layer on top of UBI.</p>
 	Do I have to format my empty flash before running UBI on top of it?
 </a></h2>
 
-<p>No, you don't have to. Although UBI stores some internal information,
-you may feed it an empty MTD device and UBI will format it automatically.
-The resulting MTD device will have all the internal data in place and no
-user volumes.</p>
+<p>Generally speaking, the flash should be formatted into UBI format before
+using it. This means, each eraseblock should be erased and the erase counter
+header should be written to it. This is an ideal situation for UBI. However,
+it is not always possible because most embedded platforms may only wipe out
+the flash and flash images to it. This is we toughed UBI to deal with empty
+flash or empty eraseblocks perfectly well - it puts zero EC header to them
+automatically.</p>
 
-<p>"Empty flash" means that it has to contain only <code>0xFF</code>
-bytes, i.e., to be fully erased. You may use the <code>flash_eraseall</code>
-MTD utility to wipe out MTD devices.</p>
+<p>So the answer is no, you do not have to. For example, if you wipe out the
+flash and try to attach it to UBI - it will work. UBI will just automatically
+format the flash (which however, will take some time). Or it is perfectly fine
+if you wipe out your flash, and write an UBI image to it (which will probably
+be shorter than the flash). In this case UBI will just format the empty
+physical eraseblocks at the end of the flash.</p>
 
-<p>TODO: skazat' ob ubiformat</p>
+<p>However, it is not recommended to do this often, because when erasing you
+loose erase counters, so you loose wearing information. Doing this over and
+over again may wear out some eraseblocks. This is especially dangerous on MLC
+NAND flashes which have very low eraseblock life-cycle. The proper way to deal
+with flash which is used for UBI is to preserve the erase-counters. Please, use
+the <a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a> utility
+for these purposes. This utility may wipe out the flash and preserve erase
+counters as well as properly write UBI images. Or refer
+<a href="../doc/ubi.html#L_format">this</a> section for some hints what
+the flasher should do to be UBI-aware.</p>
+
+
+
+<h2><a name="L_ubierase">
+	How to erase flash and preserve erase counters?
+</a></h2>
+
+<p>Use the <a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a>
+utility. Example:</p>
+
+<pre>
+$ ubiformat /dev/mtd0
+ubiformat: mtd0 (NAND), size 536870912 bytes (512.0 MiB), 131072 eraseblocks of 131072 bytes (128.0 KiB), min. I/O size 2048 bytes
+libscan: scanning eraseblock 4095 -- 100 % complete
+ubiformat: 4094 eraseblocks have valid erase counter, mean value is 104
+ubiformat: bad eraseblocks: 13, 666
+ubiformat: formatting eraseblock 4095 -- 100 % complete
+</pre>
+
+<p>Note, <a href="../doc/ubi.html#L_format">this</a> has some hints for those
+who implement a flasher program.</p>
+
+
+
+<h2><a name="L_flash_img">
+	How to flash UBI images and preserve erase counters?
+</a></h2>
+
+<p>Use the <a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a>
+utility. Example:</p>
+
+<pre>
+$ ubiformat /dev/mtd0 -f ubi.img
+ubiformat: mtd0 (NAND), size 536870912 bytes (512.0 MiB), 131072 eraseblocks of 131072 bytes (128.0 KiB), min. I/O size 2048 bytes
+libscan: scanning eraseblock 4095 -- 100 % complete
+ubiformat: 4094 eraseblocks have valid erase counter, mean value is 105
+ubiformat: bad eraseblocks: 13, 666
+ubiformat: flashing eraseblock 50 -- 102 % complete
+ubiformat: formatting eraseblock 4095 -- 100 % complete
+</pre>
+
+<p>Note, <a href="../doc/ubi.html#L_format">this</a> has some hints for those
+who implement a flasher program.</p>
+
 
 
 <h2><a name="L_restrict">
