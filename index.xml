@@ -1,6 +1,6 @@
 <PAGE>
 	<VAR match="VAR_ORIGIN" replace="" />
-	<VAR match="VAR_CVSID" replace="Last updated: 12 Apr 2008, dedekind"/>
+	<VAR match="VAR_CVSID" replace="Last updated: 21 Apr 2008, dedekind"/>
 	<INCLUDE file="inc/header.tmpl" />
 
 	<VAR match="VAR_SEL_INDEX" replace="selected" />
@@ -24,8 +24,7 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
-	<li>12 Apr 2008: UBIFS on-flash format changed, UBIFS and mkfs.ubifs
-	    v0.5 have been tagged</li>
+	<li>21 Apr 2008: <code>ubiformat</code> utility has been added</li>
 	<li>27 Mar 2008: <a href="doc/ubifs_whitepaper.pdf">UBIFS white-paper</a>
 	    is available</li>
 	<li>13 Mar 2008: 2.6.21 UBIFS back-port is now available</li>

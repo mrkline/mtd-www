@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 04 Apr 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 21 Apr 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -18,6 +18,8 @@
 	<li><a href="ubi.html#L_source">Source code</a></li>
 	<li><a href="ubi.html#L_ml">Mailing list</a></li>
 	<li><a href="ubi.html#L_usptools">User-space tools</a></li>
+	<li><a href="ubi.html#L_format">Saving erase counters</a>
+		<ul><li><a href="ubi.html#L_format_det">Some details for flasher programs</a></li></ul></li>
 	<li><a href="ubi.html#L_scalability">Scalability issues</a>
 		<ul><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ul></li>
 	<li><a href="ubi.html#L_overhead">Flash space overhead</a></li>
@@ -40,8 +42,9 @@
 (also known as FTL - flash translation layer). But this is not true - <b>UBI
 is not an FTL.</b></p>
 
-<p>Also, sometimes people think that UBI is a flash file-system. This is
-incorrect, <b>UBI is not a flash file-system</b>.</p>
+<p>UBI was <b>not</b> designed for flash devices like MMC/SD/mini-SD/micro-SD
+cards, USB sticks, CompactFlash, and so on. UBI was designed for bare flashes
+which may be found in embedded systems. Please, do not be confused.</p>
 
 
 
@@ -90,7 +93,7 @@ layers.</p>
 <ul>
 	<li>UBI provides volumes which may be dynamically created, removed, or
 	re-sized;</li>
-	<li>UBI implements wear-leveling across whole flash device (i.e., one
+	<li>UBI implements wear-leveling across whole flash device (i.e., you
 	may continuously write/erase only the first logical eraseblock
 	of an UBI volume, but UBI will spread this to all physical
 	eraseblocks of the flash chip);</li>
@@ -141,9 +144,12 @@ recommended to use the latest UBI which can be found in the UBI git tree:</p>
 
 <code>git://git.infradead.org/~dedekind/ubi-2.6.git</code>
 
-<p>The UBI git tree is usually based on top of the latest release of the linux
+<p>The UBI git tree is usually based on top of the latest release of the Linux
 kernel and it should not be too difficult to fetch all UBI patches from the UBI
-git tree and to apply them to your tree.</p>
+git tree and to apply them to your tree. In fact, this work has already been
+done in UBIFS back-ports (see <a href="../doc/ubifs.html#L_source">here</a>).
+The back-port trees contain all UBI patches from the main-line. Just pick the
+UBI patches and apply them to your tree.</p>
 
 
 
@@ -154,13 +160,116 @@ git tree and to apply them to your tree.</p>
 
 
 
+<h2><a name="L_format">Saving erase counters</a></h2>
+
+<p>When working with UBI, it is important to realize that UBI stores erase
+counters on the flash media. Namely, each physical eraseblock has so-called
+erase counter header which stores the amount of times this physical eraseblock
+has been erased. And of course, it is important not to loose the erase counters,
+which means the tools you use to erase the flash and flash UBI images have to
+be UBI-aware. For example, you may use the <code>ubiformat</code> utility (see
+<a href="ubi.html#L_usptools">here</a>) which is doing the things right.</p>
+
+<h4><a name="L_format_det">Some details for flasher programs</a></h4>
+
+<p>This section privides information about what the program which flashes UBI
+images has to do. Please, skip this if you are not going to implement a
+flasher.</p>
+
+<p>The following is a rough lists of things the flasher program has to do when
+flashing UBI images.</p>
+
+<ul>
+	<li>first of all, the flasher has to scan the flash to collect the
+	erase counters and calculate the average erase counter value in case one
+	of the eraseblocks has a corrupted EC header;</li>
+	<li>if the intention is to just erase a physical eraseblock, then after
+	the erasure the flasher has to form valid EC header, increment the old
+	value of the erase counter and write the EC header back to the
+	flash;</li>
+	<li>if the intention is to write some data to the eraseblock, which
+	should be part of a valid UBI image, the flasher also has to form a
+	valid ED header with incremented erase counter value, erase the
+	physical eraseblock, and write the data with the formed header;</li>
+	<li>if one or few physical eraseblocks do not have EC header or the EC
+	header is corrupted, the flasher should use the average erase counter
+	value;</li>
+</ul>
+
+<p>Besides preserving the erase counter, there is one more important
+thing which should be done - the flasher should drop <code>0xFF</code> bytes at
+the end of eraseblocks. Well, this is actually only relevant for some NAND
+flashes, but if your flasher does not do this, you may face very unpleasant
+problems which might be difficult to debug later. And this is relevant to JFFS2
+images, not just UBI images. In other words, it is not UBI-specific.</p>
+
+<p>Let's take an UBIFS image which is wrapped to an UBI image which has to be
+flashed (say, <code>ubi.img</code>) to NAND flash. Suppose one of the physical
+eraseblocks in the <code>ubi.img</code> image file contains just an erase
+counter and the rest are <code>0xFF</code> bytes. What happen if the flasher
+writes these <code>0xFF</code> bytes is that the ECC bytes are written to OOB
+area of the corresponding NAND pages. Depending on the algorithm, the resulting
+ECC may be <code>0xFF</code> or something else. Later, when UBIFS is mounted it
+treats that space as empty and tries to write data there, but fails (in the
+best case, or you find the data corrupted later and have hard time figuring out
+what is goint wrong). So basically what happens is that NAND pages are
+programmed twice - first by the flasher (only <code>0xFF</code> bytes) and
+then by UBIFS. For some NAND flashes this might work fine, for some
+not.</p>
+
+<p>By the way, we experienced the same problem with JFFS2. The JFFS2 images
+generated by the <code>mkfs.jffs2</code> program were padded to the physical
+eraseblock size and were later flashed to our NAND. The flasher did not bother
+to drop NAND pages containing only <code>0xFF</code> bytes and just flashed
+them. Later, when JFFS2 was mounted, it tried to append more data to that last
+physical eraseblock which lead to various ECC errors later on. It took a while
+to recognize the problem.</p>
+
+<p>Thus, what the flasher has to do is to drop all the empty NAND pages from
+the end of the physical eraseblock buffer before writing it. Below is example
+code from UBI which is doing this.</p>
+
+<pre>
+/**
+ * calc_data_len - calculate how much real data is stored in a buffer.
+ * @ubi: UBI device description object
+ * @buf: a buffer with the contents of the physical eraseblock
+ * @length: the buffer length
+ *
+ * This function calculates how much "real data" is stored in @buf and returns
+ * the length. Continuous 0xFF bytes at the end of the buffer are not
+ * considered as "real data".
+ */
+int ubi_calc_data_len(const struct ubi_device *ubi, const void *buf,
+                      int length)
+{
+        int i;
+
+        for (i = length - 1; i >= 0; i--)
+                if (((const uint8_t *)buf)[i] != 0xFF)
+                        break;
+
+        /* The resulting length must be aligned to the minimum flash I/O size */
+        length = ALIGN(i + 1, ubi->min_io_size);
+        return length;
+}
+</pre>
+
+<p>This function is called before writing <code>buf</code> to a physical
+eraseblock. The purpose of this function is to drop <code>0xFF</code>s from
+the end and prevent the situation described above.
+<code>ubi->min_io_size</code> it the minimal input/output unit size which is
+NAND page size for NAND flashes.</p>
+
+
+
 <h2><a name="L_usptools">User-space tools</a></h2>
 
 <p>UBI user-space tools are available from the the
 <code>git://git.infradead.org/mtd-utils.git</code>
 repository (<code>ubi-utils/new-utils</code> sub-directory). One should
 download the source codes and compile them. Please, download the latest
-version of the tools as they were recently changed quite a lot:</p>
+version of the tools:</p>
 
 <code>git-clone git://git.infradead.org/mtd-utils.git</code>
 
@@ -173,11 +282,11 @@ version of the tools as they were recently changed quite a lot:</p>
 	MTD device; this is an alternative method to specifying MTD devices on
 	module load or in kernel boot command line;</li>
 	<li><b>ubidetach</b> - a tool to detach MTD devices from UBI
-	devices, which deletes the UBI device; in other words, this tool
-	does the opposite to what <b>ubiattach</b> does;</li>
+	devices; in other words, this tool does the opposite to what
+	<b>ubiattach</b> does;</li>
 	<li><b>ubimkvol</b> - a tool to create UBI volumes on UBI
 	devices;</li>
-	<li><b>ubirmvol</b> - a tool to remove UBI volumes on UBI
+	<li><b>ubirmvol</b> - a tool to remove UBI volumes from UBI
 	devices;</li>
 	<li><b>ubiupdatevol</b> - a tool to update UBI volumes, which means to
 	write new volume contents; this tool uses the
@@ -186,19 +295,20 @@ version of the tools as they were recently changed quite a lot:</p>
 	additionally, this tool may be used to wipe out UBI volumes;</li>
 	<li><b>ubicrc32</b> - calculate CRC32 checksum of a file with the same
 	initial seed as UBI would use;</li>
-	<li><b>ubinize</b> - a tool to generate UBI images.</li>
+	<li><b>ubinize</b> - a tool to generate UBI images;</li>
+	<li><b>ubiformat</b> - a tool to format empty flash, to erase flash
+	preserving erase counters, and to flash UBI images to MTD devices.</li>
 </ul>
 
 <p>All UBI tools support "-h" option and print sufficient usage
 information.</p>
 
-<p>Note, <code>ubiattach</code> and <code>ubidetach</code> won't work unless
-one has ported UBI patches from the
-<a href="ubi.html#L_source">UBI git tree</a>, because the dynamic
-UBI devices support was implemented quite recently. It should be in the
-main-line kernel starting from version 2.6.25.</p>
+<p>Note, <code>ubiattach</code> and <code>ubidetach</code> won't work on
+if the kernel version is less than 2.6.25, because corresponding UBI feature
+did not exist in older kernels. However, it is possible to back-port UBI
+patches from the <a href="ubi.html#L_source">UBI git tree</a>.</p>
 
-<p>Also note, there are older UBI tools which might be useful (e.g.,
+<p>Also note, there are old UBI tools which might be useful (e.g.,
 <b>unubi</b>).</p>
 
 
@@ -277,9 +387,9 @@ impossible to add complex journal scanning and replay code to the
 boot-loader.</p>
 
 <p>UBI does not maintain the EBA and EC tables on flash, but instead, it builds
-them in RAM each time it attaches an MTD device. Instead of maintaining
-separate tables, UBI maintains erase counter and LEB mapping of each
-physical eraseblock in the physical eraseblock itself. This means, that:</p>
+them in RAM each time it attaches an MTD device. UBI keeps and maintains erase
+counter and LEB mapping of each physical eraseblock in the physical eraseblock
+itself. This means, that:</p>
 
 <ul>
 	<li>the erase counter of a PEB is stored at the beginning of the PEB in
@@ -318,12 +428,12 @@ amount of flash space available for UBI users. Namely:</p>
 
 <ul>
 	<li>2 PEBs are used to store the volume table;</li>
-	<li>1 PEB is reserved for wear-levelling purposes;</li>
+	<li>1 PEB is reserved for wear-leveling purposes;</li>
 	<li>1 PEB is reserved for the
 	<a href="ubi.html#L_lebchange">atomic LEB change</a> operation;</li>
 	<li>some percent of PEBs is reserved for bad PEB handling if the flash
 	may have bad PEBs; this is applicable for NAND flash, but not for NOR
-	flash; the percentage is configurable and is 1% by dafault;</li>
+	flash; the percentage is configurable and is 1% by default;</li>
 	<li>UBI stores the erase counter (EC) and volume ID (VID) headers at
 	the beginning of each PEB; the amount of bytes used for these purposes
 	depends on the flash type and is explained below;</li>
@@ -343,7 +453,8 @@ amount of flash space available for UBI users. Namely:</p>
 	bytes, i.e. <i>O</i> = <i>S<sub>P</sub></i> - <i>S<sub>L</sub></i>.</li>
 </ul>
 
-<p>The UBI overhead is (<i>B</i> + 4 + <i>O</i>) * <i>S<sub>P</sub></i>,
+<p>The UBI overhead is
+(<i>B</i> + 4) * <i>S<sub>P</sub></i> + <i>O</i> * (<i>P</i> - <i>B</i> - 4)
 i.e., this amount of bytes will not be accessible for users. <i>O</i> is
 different for different flashes:</p>
 
@@ -355,13 +466,13 @@ different for different flashes:</p>
 	and 1KiB in case of 512 bytes NAND page;</li>
 	<li>if the NAND flash, NAND flash controller, and NAND flash driver
 	support sub-page writes (e.g., SLC NANDs and most of their Linux
-	driverso, OneNAND), UBI optimises its on-flash layout and puts the
+	drivers, OneNAND), UBI optimizes its on-flash layout and puts the
 	EC and VID headers to the same NAND page, but different sub-pages; in
 	this case <i>O</i> is only one NAND page;</li>
 	<li>for other flashes with different min. I/O unit size, the overhead
-	should be 2 min. I/O untis if min. I/O unit size is greater or
-	equivalent than 64, and 128 aligned on the min. I/O unit size if min.
-	I/O unit size is less than 64.</li>
+	should be 2 min. I/O units if min. I/O unit size is greater or
+	equivalent than 64, and 128 aligned to the min. I/O unit size if the
+	min. I/O unit size is less than 64.</li>
 </ul>
 
 
@@ -384,7 +495,7 @@ the un-map operation is very similar to the erase operation (a very fast erase
 operation). But there is a difference UBI programmers have to be well aware
 of.</p>
 
-<p>Suppose one un-maps LEB <i>L</i> which is mapped to PEB <i>P</i>. Since
+<p>Suppose you un-map LEB <i>L</i> which is mapped to PEB <i>P</i>. Since
 <i>P</i> is not synchronously erased, but just scheduled for erasure, there
 might be "surprises" in case of unclean reboots: if the reboot happens before
 <i>P</i> has been physically erased, <i>L</i> will be mapped to <i>P</i> again
@@ -392,11 +503,11 @@ when UBI attaches the MTD device after the unclean reboot. Indeed, UBI will
 scan the MTD device and find <i>P</i> which refers <i>L</i>, and it will
 add this mapping information to the EBA table.</p>
 
-<p>But once one writes any data to <i>L</i>, it gets mapped to a new empty PEB,
+<p>But once you write any data to <i>L</i>, it gets mapped to a new PEB,
 and the old contents goes forever, because even in case of an unclean reboot UBI
 would pick the newer mapping for <i>L</i>.</p>
 
-<p>One may use the <code>ubi_leb_map()</code> call which maps the LEB to an
+<p>You may use the <code>ubi_leb_map()</code> call which maps the LEB to an
 empty PEB, so the LEB would always contain only 0xFF bytes, even in case of
 an unclean reboot. But do not use this unless it is really needed, because this
 puts additional overhead on the UBI wear-leveling sub-system, comparing to
@@ -411,9 +522,9 @@ and the old PEB is used for other operations).</p>
 <h4><a name="L_unmap_det">Implementation details</a></h4>
 
 <p>This section describes how UBI distinguishes between older and newer
-versions of an LEB in case of an unclean reboot. Suppose one un-maps LEB
+versions of an LEB in case of an unclean reboot. Suppose we un-map LEB
 <i>L</i> which is mapped to PEB <i>P<sub>1</sub></i>, which means UBI schedules
-<i>P<sub>1</sub></i> for erasure. Then one writes some data to <i>L</i>, which
+<i>P<sub>1</sub></i> for erasure. Then we write some data to <i>L</i>, which
 means that UBI finds another PEB <i>P<sub>2</sub></i>, maps <i>L</i> to
 <i>P<sub>2</sub></i>, and writes the data to <i>P<sub>2</sub></i>. If an
 unclean reboot happens before <i>P<sub>1</sub></i> is physically erased, but
@@ -436,7 +547,7 @@ in existing VID headers plus one.</p>
 moves the contents of one PEB to another for a wear-leveling purposes, or when
 it happens during the <a href="ubi.html#L_lebchange">atomic LEB change</a>
 operation. In this case it is not enough to just pick the newer PEB, it is also
-necessary to make sure all the date was written, not just part of it.</p>
+necessary to make sure all the data were written, not just part of them.</p>
 
 
 
@@ -460,7 +571,7 @@ detect interrupted updates in case of raw MTD devices.</p>
 
 <p>The volume update operation is available only via the user-space UBI
 interface and it is not available via the UBI kernel API. To update a
-volume, one first has to call the <code>UBI_IOCVOLUP</code> ioctl of the
+volume, you first have to call the <code>UBI_IOCVOLUP</code> ioctl of the
 corresponding volume character device and to pass a pointer to a 64-bit value
 containing the length of the new volume contents in bytes. Then this amount of
 bytes has to be written to the volume character device. Once the last byte has
@@ -616,7 +727,7 @@ physical eraseblock will become bad over time). This is about 2% of the whole
 flash size.</p>
 
 <p>When it is needed to create an UBI image which will be flashed to the end
-user devices in production line, one have to define exact sizes of all volumes
+user devices in production line, you to define exact sizes of all volumes
 (the sizes are stored in the UBI volume table). But it is difficult to do
 because total flash chip may vary depending on the amount of initially bad
 PEBs.</p>
@@ -652,7 +763,7 @@ feature.</p>
 
 <h2><a name="L_ubidoc">More documentation</a></h2>
 
-<p>Unfortunately, there are no thorough and sctrict UBI documents. But there is
+<p>Unfortunately, there are no thorough and strict UBI documents. But there is
 an old UBI design document which has some out-of-date information, but is still
 useful: <a href="ubidesign/ubidesign.pdf">ubidesign.pdf</a>.</p>
 
@@ -683,7 +794,9 @@ function (just above the body of the function).</p>
 	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
 
 	<li>enable UBI debugging (<code>CONFIG_MTD_UBI_DEBUG=y</code>
-	in <code>.config</code>).</li>
+	in <code>.config</code>); enable just UBI debugging in general, not UBI
+	debugging messages (unless you are an experienced kernel hacker and
+	know what you do).</li>
 </ul>
 
 <p>Please, attach all the bug-related messages including the UBI messages from

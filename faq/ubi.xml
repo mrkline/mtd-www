@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 04 Apr 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 21 Apr 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -19,7 +19,7 @@
 	<li><a href="ubi.html#L_run_jffs2">How to run JFFS2 on top of an UBI volume?</a></li>
 	<li><a href="ubi.html#L_ext2_over_ubi">Can I run ext2 on top of UBI?</a></li>
 	<li><a href="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</a></li>
-	<li><a href="ubi.html#L_restrict">Can logical eraseblocks be written randomly?</a></li>
+	<li><a href="ubi.html#L_restrict">Can UBI logical eraseblocks be written randomly?</a></li>
 	<li><a href="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</a></li>
 	<li><a href="ubi.html#L_why_2_hdrs">Why does UBI need two headers, not just one?</a></li>
 	<li><a href="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</a></li>
@@ -55,7 +55,7 @@ $ modprobe ubi mtd=3
 $ modprobe ubi mtd=3 mtd=5
 </pre>
 
-<p>command loads UBI kernel module and attaches MTD devices <code>mtd3</code>
+<p>command loads UBI kernel module and attaches <code>mtd3</code>
 and <code>mtd5</code>.</p>
 
 <p>If UBI is compiled into the kernel, the mtd device to attach may be
@@ -74,7 +74,7 @@ ubi.mtd=3 ubi.mtd=3
 
 <p>command makes UBI attach <code>mtd3</code> and <code>mtd6</code>.</p>
 
-<p>And finally, MTD devices may be attached or detached any time with the
+<p>And finally, MTD devices may be attached or detached at any time with the
 <code>ubiattach</code> and <code>ubidetach</code> utilities
 (see <a href="../doc/ubi.html#L_usptools">here</a>); For example,</p>
 
@@ -83,9 +83,9 @@ $ ubiattach /dev/ubi_ctrl -m 3
 </pre>
 
 <p>attaches <code>mtd3</code>. But this "run-time attach" UBI capability was
-added very recently and has not yet reached the main-line kernel, but may be
-found in the <a href="ubi.html#L_source">UBI git tree</a>. It should be
-available in the main-line kernels starting from version 2.6.25.</p>
+added recently and it is in the main-line kernels starting from version
+2.6.25. Note, it is anyway recommended to back-port UBI patches from the latest
+kernel or even better from the <a href="ubi.html#L_source">UBI git tree</a>.</p>
 
 
 
@@ -105,7 +105,7 @@ $ ubimkvol /dev/ubi0 -N rootfs -s 128MiB
 $ ubirmvol /dev/ubi0 -n 0
 </pre>
 
-<p>For more usage information, use <code>ubimkvol -h</code> and
+<p>For additional information, use <code>ubimkvol -h</code> and
 <code>ubirmvol -h</code>.</p>
 
 
@@ -116,7 +116,8 @@ $ ubirmvol /dev/ubi0 -n 0
 JFFS2 can be mounted on these emulated MTD devices. Enable the
 "Emulate MTD devices" UBI configuration menu check-box to make UBI create one
 MTD device for each UBI volume. One of the reasons to do this might be using of
-MLC NAND flash (see <a href="ubi.html#L_mlc">this</a> section).</p>
+MLC NAND flash (see <a href="ubi.html#L_mlc">this</a> section) or legacy
+software.</p>
 
 
 
@@ -148,13 +149,16 @@ you may feed it an empty MTD device and UBI will format it automatically.
 The resulting MTD device will have all the internal data in place and no
 user volumes.</p>
 
-<p>Note, "empty flash" means that it has to contain only <code>0xFF</code>
+<p>"Empty flash" means that it has to contain only <code>0xFF</code>
 bytes, i.e., to be fully erased. You may use the <code>flash_eraseall</code>
 MTD utility to wipe out MTD devices.</p>
 
+<p>TODO: skazat' ob ubiformat</p>
 
 
-<h2><a name="L_restrict">Can logical eraseblocks be written randomly?</a></h2>
+<h2><a name="L_restrict">
+	Can UBI logical eraseblocks be written randomly?
+</a></h2>
 
 <p>No, the flash chip restrictions have to be taken into account. This is
 because UBI logical eraseblocks (LEB) are mapped to physical eraseblocks (PEB),
@@ -174,15 +178,15 @@ for few more details). The important flash restrictions are:</p>
 	offset;</li>
 
 	<li>many NAND flashes (specifically, MLC NAND flashes) require NAND
-	pages to be written consecutively from the beginning of a physical
+	pages to be written sequentially from the beginning of the physical
 	eraseblock, to the end of the physical eraseblock; for example, it is
 	prohibited to write first to offset 2048, then to offset 0; once offset
 	2048 has been written to, it is possible to write only to further
-	offsets;</li>
+	offsets.</li>
 </ol>
 
 <p>Even if the flash chip is devoid of the last restriction, UBI anyway
-requires logical eraseblocks to be written to sequentially from the beginning
+requires logical eraseblocks to be written sequentially from the beginning
 to the end; this is needed because UBI calculates data CRC when moving logical
 eraseblocks to other physical eraseblocks (see
 <a href="../doc/ubi.html#L_lebchange_det">here</a> to realize why),
@@ -219,7 +223,7 @@ information on flash at different moments of time:</p>
 	which minimizes the probability of losing the erase counter due to an
 	unclean reboot;</li>
 
-	<li>when UBI associates a PEB with to a LEB, the VID header is written
+	<li>when UBI associates a PEB with a LEB, the VID header is written
 	to the PEB.</li>
 </ul>
 
@@ -235,17 +239,17 @@ two separate write operations and to have two separate headers.</p>
 
 <p>Because many flashes (e.g., NOR) do not have OOB and UBI was designed to be
 a <i>generic</i> wear-leveling layer. Also, modern MLC NAND flashes use whole
-OOB area for ECC checksum, so there is no room for application data.</p>
+OOB area for the ECC checksum, so there is no room for application data.</p>
 
 
 
 <h2><a name="L_volume_table">What is volume table?</a></h2>
 
-<p><b>Volume table</b> is an on-flash data structure containing information
-about each user volume on this UBI device (e.g., volume size, name,
+<p><b>Volume table</b> is an on-flash internal UBI data structure containing
+information about each volume on this UBI device (e.g., volume size, name,
 type, etc.). Each time a volume is created, removed or re-sized, or
 updated, the volume table is altered. UBI maintains two copies of the volume
-table for reliability reasons.</p>
+table for reliability and power-off tolerance reasons.</p>
 
 
 
@@ -264,7 +268,7 @@ not use OOB and it requires data to be written sequentially (see
 between maximum and minimum erase-counters is withing certain threshold,
 which is 4096 by default. Since MLC flashes have quite low eraseblock
 life-cycle (about 1000-10000, unlike 100000-1000000 for SLC NAND and NOR
-flashes), the threshold has to be set to a lower value (e.g., 128). This may be
+flashes), the threshold has to be set to a lower value (e.g., 256). This may be
 done via the Linux kernel configuration menu.</p>
 
 <p>Note, unlike UBI, JFFS2 uses random wear-leveling algorithm, which is in
@@ -282,13 +286,15 @@ section) to improve wear-leveling.</p>
 
 <p>When debugging UBI one doesn't have to use a real embedded platform with real
 flash. In many cases, it is easier to use a PC with an MTD device emulator and
-run UBI on top of this emulated MTD device.</p>
+run UBI on top of this emulated MTD device. In fact, this is how most of the
+UBI development was done.</p>
 
 <p>There are 3 MTD device emulators in Linux kernel available:</p>
 <ul>
 	<li><b>mtdram</b> which simulates NOR flash in RAM;</li>
 	<li><b>nandsim</b> which simulates NAND flash in RAM;</li>
-	<li><b>block2mtd</b> which simulates NOR flash on top of a block device;</li>
+	<li><b>block2mtd</b> which simulates NOR flash on top of a block
+	device;</li>
 </ul>
 
 <p>For example, to get a 32MiB fake NOR flash, run</p>
@@ -324,28 +330,55 @@ mtd1: 04000000 00004000 "NAND simulator partition"
 <p>Enable UBI debugging support in the configuration menu
 (the "<b>UBI debugging</b>" check-box). When debugging is enabled, UBI
 prints more information about errors, and adds extra assertions in the code
-which may help to catch bugs. For deeper debugging, enable debugging prints
-and extra self-checks. The prints help to realize what UBI is doing, and the
-extra self-checks make sure internal data structures are consistent and may
-catch the problem much earlier then it would have been noticed otherwise.
-However, the debugging messages and the extra self-checks makes UBI
-considerably slower.</p>
+which may help to catch bugs.</p>
 
-<p>When UBI debugging messages are enabled, UBI prints a lot and the kernel
-ring buffer will likely not fit all the messages, so the fair part of them will
-be lost. One way to solve this issue is to make all the messages to go to the
-serial console (configure the serial console and run <code>dmesg -n 8</code> to
-make all the messages go there). Then they may be captured, for example with
-help of <code>minicom</code>. However, the system will become really slow
-because printing to the serial console is synchronous and slow. Also, UBI makes
-it possible to enable/disable debugging messages from various subsystems
-separately. This may help to lessen the amount of them (e.g., I/O messages are
-rarely needed). And finally, it is possible to enlarge the ring buffer and make
-it, say, 64MiB by adding <code>log_buf_len=64M</code> kernel boot argument. In
-this case the ring buffer will likely have enough messages. The big advantage
-of this approach is that the system does not become too slow because it does
-not send the output to slow serial console.</p>
+<p>In many cases, it is enough to just enable debugging. But sometimes it is
+also useful to enable extra-self checks, which make sure internal data
+structures are consistent and may catch the problem much earlier then it would
+have been noticed otherwise. But the checks make UBI much slower.</p>
 
+<h3>Debugging messages</h3>
+
+<p>Sometimes it is necessary to make UBI print about what it is doing. This is
+where UBI messages may be enabled. When they are enabled, UBI prints a lot and
+the kernel ring buffer and this makes it slower. This section describes few
+tricks and techniques which might be useful when debugging using the
+messages.</p>
+
+<p>The Linux kernel has internal ring buffer where all the debugging prints go.
+User-space applications like <code>syslogd</code> usually read data from the
+ring buffer, do further processing and the prints usually end up in the system
+log file. When the UBI debugging messages are enabled, it prints huge amount of
+messages. What happens is that the user-space processes are unable to fetch
+them from the ring buffer with this pace so most of the messages are just lost.
+Namely, they are just over-written with newer message (the buffer is a "ring").
+There are 2 ways to gather all the messages:</p>
+
+<ol>
+	<li>use serial console;</li>
+	<li>use very large ring buffer.</li>
+</ol>
+
+<p>The first method is usually appropriate when debugging on an small embedded
+platform connected to a PC via serial line. What you have to be aware of is
+that the messages are printed to the serial console synchronously, which means
+that the system is blocked and waiting for the print operation to be finished.
+So if there are many prints, the system speed becomes limited to the serial
+console baud rate. And obviously, it is recommended to use higher baud rates,
+e.g. 115200.</p>
+
+<p>The UBI debugging messages have "debugging" level 7 and they are usually not
+printed to the console. You may use <code>dmesg -n8</code> command to make all
+kernel messages to go to the console. One useful trick is to boot the kernel
+with <code>ignore_loglevel</code> option, in which case it will print all
+messages to the console unconditionally.</p>
+
+<p>The second method is more appropriate when debugging on a machine with a lot
+of RAM, for example on a desktop PC with a flash emulator. Just make your ring
+buffer large, e.g. 64MiB by booting the kernel with <code>log_buf_len=64M</code>
+option. This will make the ring buffer fit enough messages to identify the
+problem. And because the messages are printed to RAM, this is way quicker than
+the first method.</p>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
