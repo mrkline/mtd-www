@@ -208,7 +208,7 @@ ubiformat: mtd0 (NAND), size 536870912 bytes (512.0 MiB), 131072 eraseblocks of 
 libscan: scanning eraseblock 4095 -- 100 % complete
 ubiformat: 4094 eraseblocks have valid erase counter, mean value is 105
 ubiformat: bad eraseblocks: 13, 666
-ubiformat: flashing eraseblock 50 -- 102 % complete
+ubiformat: flashing eraseblock 50 -- 100 % complete
 ubiformat: formatting eraseblock 4095 -- 100 % complete
 </pre>
 
