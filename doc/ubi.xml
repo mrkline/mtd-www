@@ -30,6 +30,7 @@
 	<li><a href="ubi.html#L_lebchange">Atomic LEB change operation</a>
 		<ul><li><a href="ubi.html#L_lebchange_det">Implementation details</a></li></ul></li>
 	<li><a href="ubi.html#L_autoresize">Volume auto-resize</a></li>
+	<li><a href="ubi.html#L_torturing">Marking eraseblocks as bad</a></li>
 	<li><a href="ubi.html#L_ubidoc">More documentation</a></li>
 	<li><a href="ubi.html#L_how_send_bugreport">How to send a bugreport?</a></li>
 </ol>
@@ -172,7 +173,7 @@ be UBI-aware. For example, you may use the <code>ubiformat</code> utility (see
 
 <h4><a name="L_format_det">Some details for flasher programs</a></h4>
 
-<p>This section privides information about what the program which flashes UBI
+<p>This section provides information about what the program which flashes UBI
 images has to do. Please, skip this if you are not going to implement a
 flasher.</p>
 
@@ -212,7 +213,7 @@ area of the corresponding NAND pages. Depending on the algorithm, the resulting
 ECC may be <code>0xFF</code> or something else. Later, when UBIFS is mounted it
 treats that space as empty and tries to write data there, but fails (in the
 best case, or you find the data corrupted later and have hard time figuring out
-what is goint wrong). So basically what happens is that NAND pages are
+what is going wrong). So basically what happens is that NAND pages are
 programmed twice - first by the flasher (only <code>0xFF</code> bytes) and
 then by UBIFS. For some NAND flashes this might work fine, for some
 not.</p>
@@ -758,6 +759,41 @@ PEBs will anyway be reserved for bad PEB handling.</p>
 main-line kernel yet, but it should appear in version 2.6.25. Use
 <a href="ubi.html#L_source">UBI git tree</a> to find the implementation of the
 feature.</p>
+
+
+
+<h2><a name="L_torturing">Marking eraseblocks as bad</a></h2>
+
+<p>This section is relevant for NAND flashes and other flashes which admit of
+bad eraseblocks. UBI marks physical eraseblocks as bad on 2 occasions:</p>
+
+<ol>
+	<li>eraseblock write operation failed, in which case UBI moves the
+	data from this PEB to some other PEB (data recovery) and schedules this
+	PEB for torturing;</li>
+	<li>erase operation failed with <code>EIO</code> error, in which case
+	the eraseblock s marked as bad straight away.</li>
+</ol>
+
+<p>The torturing is done in background with the purpose to detect whether the
+physical eraseblock is bad or not. The write failure may have happened because
+of many reasons, including bugs in the driver, or in the upper level stuff like
+file system (e.g., the FS mistakenly writes many times to the same NAND
+page). During eraseblock torturing UBI does the following:</p>
+
+<ul>
+	<li>erase the eraseblock;</li>
+	<li>read it back and make sure it contains only 0xFF bytes;</li>
+	<li>write test pattern bytes;</li>
+	<li>read the eraseblock back and check the pattern;</li>
+	<li>and so on for several patterns (<code>0xA5</code>,
+	<code>0x5A</code>, <code>0x00</code>).</li>
+</ul>
+
+<p>The eraseblock is not marked as bad if it survives the torture test. Note, a
+bit-flip during the torture test is treated as a good reason to mark the
+eraseblock bad as well. Please, refer the <code>torture_peb()</code> function
+for detailed information.</p>
 
 
 
