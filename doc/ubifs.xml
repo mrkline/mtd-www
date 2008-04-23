@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 04 Apr 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 22 Apr 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -22,7 +22,7 @@
 	<li><a href="ubifs.html#L_scalability">Scalability</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
 	<li><a href="ubifs.html#L_documentation">Documentation</a></li>
-	<li><a href="ubifs.html#L_how_send_bugreport">How to send a bugreport?</a></li>
+	<li><a href="ubifs.html#L_how_send_bugreport">How to send an UBIFS bugreport?</a></li>
 </ol>
 
 
@@ -55,13 +55,13 @@ devices. In other words, there are 3 subsystems involved:</p>
 <ul>
 	<li><i>MTD subsystem</i>, which provides a uniform interface to access
 	flash chips. MTD provides a notion of MTD devices (e.g.,
-	<code>/dev/mtd0</code>) which basically provide access to the raw
+	<code>/dev/mtd0</code>) which basically provides access to the raw
 	flash;</li>
 	<li><i>UBI subsystem</i>, which is a volume management system for flash
 	devices; UBI works on top of MTD devices and provides a notion of
-	UBI volumes; UBI volumes are more "high level" entities than MTD
+	UBI volumes; UBI volumes are higher level entities than MTD
 	devices and they are devoid of many unpleasant issues MTD devices have
-	(e.g., wearing and bad blocks); See <a href="ubi.html">here</a> for more
+	(e.g., wearing and bad blocks); see <a href="ubi.html">here</a> for more
 	information;</li>
 	<li><i>UBIFS file-system</i>, which works on top of UBI volumes.</li>
 </ul>
@@ -88,19 +88,18 @@ sections.</p>
 	the file-system comparing to JFFS2, which is write-through;</li>
 
 	<li>fast mount time - unlike JFFS2, UBIFS does not have to scan whole
-	media when mounting, it takes few milliseconds for UBIFS to mount
-	the media, and this does not depend on flash size; the reason is that
-	however, UBI
+	media when mounting, it takes milliseconds for UBIFS to mount the
+	media, and this does not depend on flash size; however, UBI
 	initialization time depends on flash size and has to be taken into
-	account (see
-	<a href="ubi.html#L_scalability">here</a> for more details);</li>
+	account (see <a href="ubi.html#L_scalability">here</a> for more
+	details);</li>
 
 	<li>tolerance to unclean reboots - UBIFS is a journaling file system
 	and it tolerates sudden crashes and unclean reboots; UBIFS just replays
-	the journal and recovers from the unclean reboot automatically; mount
-	time is a little bit slower in this case, because of the need to read
-	the journal, but UBIFS does not need to scan whole media, so it anyway
-	takes fractions of second;</li>
+	the journal and recovers from the unclean reboot; mount time is a
+	little bit slower in this case, because of the need to replay the
+	journal, but UBIFS does not need to scan whole media, so it anyway
+	takes fractions of a second;</li>
 
 	<li>fast I/O - even with write-back disabled (e.g., if UBIFS is mounted
 	with <code>-o sync</code> mount flag UBIFS shows good performance
@@ -116,14 +115,14 @@ sections.</p>
 
 	<li>on-the-flight compression - the data is stored in compressed form
 	on the flash media, which makes it possible to put considerably more
-	data to the flash as if the data would not be compressed; this is
-	similar to what JFFS2 has; UBIFS also allows to switch the
-	compression on/off on per-inode basis, which very flexible; for
-	example, one may switch the compression off by default and enable it
-	only for certain files which are supposed to compress well; or one may
-	switch compression on by default but disable it for supposedly
-	uncompressible data like multimedia files; at the moment UBIFS supports
-	only Zlib and LZO compressors and it is not difficult to add more;</li>
+	data to the flash than if the data was not compressed; this is very
+	similar to what JFFS2 has; UBIFS also allows to switch the compression
+	on/off on per-inode basis, which is very flexible; for example, one may
+	switch the compression off by default and enable it only for certain
+	files which are supposed to compress well; or one may switch
+	compression on by default but disable it for supposedly uncompressible
+	data like multimedia files; at the moment UBIFS supports only Zlib and
+	LZO compressors and it is not difficult to add more;</li>
 </ul>
 
 
@@ -131,7 +130,7 @@ sections.</p>
 <h2><a name="L_status">Current status</a></h2>
 
 <p>UBIFS has proved to be fairly stable, however it needs more testing, review,
-and tuning (e.g., finding optimal journal size, etc).  It also needs some
+and tuning (e.g., finding optimal journal size, etc). It also needs some
 profiling and bottleneck hunting.</p>
 
 
@@ -155,9 +154,9 @@ git-trees:</p>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.21.git</code>
 
 <p>Note, since it is impossible to register memory shrinker in kernel versions
-2.6.21/2.6.22, the UBIFS shrinker does not work there, which means the UBIFS TNC
-cache never gets shrinked and the system may run out of memory if the
-file-system is large enough.</p>
+2.6.21 and 2.6.22, the UBIFS shrinker does not work there, which means the
+UBIFS TNC cache never gets shrinked and the system may run out of memory if
+the file-system is large enough.</p>
 
 
 
@@ -193,8 +192,8 @@ always possible to create logarithmically scalable UBI2 and to improve the
 situation. Current UBI should be OK for 2-16GiB flashes, depending on the
 I/O speed and requirements.</p>
 
-<p>Note, although the UBI scalability is linear, it anyway scales better
-then JFFS2, which was originally designed for small ~32MiB NOR flashes. JFFS2
+<p>Note, although the UBI scalability is linear, it anyway scales better much
+than JFFS2, which was originally designed for small ~32MiB NOR flashes. JFFS2
 has scalability issues on the "file-system level", while UBI/UBIFS stack has
 scalability issues only on lower "raw flash level". The following table
 describes the issues in more details.</p>
@@ -211,15 +210,15 @@ describes the issues in more details.</p>
 	    flash media when mounting.</td>
 	<td>UBIFS mount time does not depend on the flash size. But UBI needs
 	    to scan the flash media, which is actually quicker than JFFS2
-	    scanning. So overall, UBI/UBIFS has the linear dependency.</td>
+	    scanning. So overall, UBI/UBIFS has this linear dependency.</td>
 </tr>
 
 <tr>
 	<td>Memory consumption linearly depends on the flash size</td>
 	<td>True, the dependency is linear.</td>
-	<td>UBIFS memory does depend on the flash size in the current implementation,
-	    because the LPT shrinker is not implemented. But it is not
-	    difficult to implement the LPT shrinker and get rid of the
+	<td>UBIFS memory does depend on the flash size in the current
+	    implementation, because the LPT shrinker is not implemented. But it
+	    is not difficult to implement the LPT shrinker and get rid of the
 	    dependency. It is not implemented only because the memory
 	    consumption is too small to make the coding work worth it. UBI
 	    memory consumption linearly depends on flash size. Thus, overall
@@ -278,7 +277,7 @@ describes the issues in more details.</p>
 	    the indexing B-tree. Whenever a piece of data has to be read from
 	    the file-system, the B-tree is looked-up and the corresponding
 	    flash address to read is found. There is a TNC cache which caches
-	    the B-tree nodes whin the B-tree is looked-up, and the cache is
+	    the B-tree nodes when the B-tree is looked-up, and the cache is
 	    shrinkable, which means it might be shrunk when the kernel needs
 	    more memory.</td>
 </tr>
@@ -295,13 +294,13 @@ describes the issues in more details.</p>
 	    during garbage collection and at random time, because JFFS2
 	    wear-leveling algorithm is based on random eraseblock selection. So
 	    if there were a lot of small writes, JFFS2 becomes slower some time
-	    later - the performance just drops out of the blue which makes the
-	    system less predictable.</td>
+	    later - the performance just goes down out of the blue which makes
+	    the system less predictable.</td>
 	<td>False. UBIFS always writes in 4KiB chunks. This does not hurt the
-	    performance because of write-back support: the data changes do not
-	    go to the flash straight away - they are instead deferred and are
-	    done later, when (hopefully) more data is changed at the same data
-	    page and usually in background.</td>
+	    performance much because of the write-back support: the data
+	    changes do not go to the flash straight away - they are instead
+	    deferred and are done later, when (hopefully) more data is changed
+	    at the same data page and usually in background.</td>
 </tr>
 </table>
 
@@ -312,7 +311,7 @@ describes the issues in more details.</p>
 <p>UBIFS supports extended attributes if the corresponding configuration option
 is enabled (no additional mount options are required). It supports
 <code>user</code>, <code>trusted</code>, and <code>security</code> name-spaces.
-Access control list (ACL) support is not implemented.</p>
+However, access control list (ACL) support is not implemented.</p>
 
 
 
@@ -326,18 +325,18 @@ it has a lot of out-of-date information.</p>
 
 
 
-<h2><a name="L_how_send_bugreport">How to send an UBI bugreport?</a></h2>
+<h2><a name="L_how_send_bugreport">How to send an UBIFS bugreport?</a></h2>
 
 <p>Before sending a bug report:</p>
 <ul>
 	<li>make sure you have compiled kernel symbols in
 	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
 
-	<li>enable UBI debugging (<code>CONFIG_UBIFS_FS_DEBUG=y</code>
+	<li>enable UBIFS debugging (<code>CONFIG_UBIFS_FS_DEBUG=y</code>
 	in <code>.config</code>).</li>
 </ul>
 
-<p>Please, attach all the bug-related messages including the UBI messages from
+<p>Please, attach all the bug-related messages including the UBIFS messages from
 the kernel ring buffer, which may be collected using the <code>dmesg</code>
 utility or using <code>minicom</code> with serial console capturing. And of
 course, it is wise to describe how the problem can be reproduced. The bugreport
