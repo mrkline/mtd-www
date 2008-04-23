@@ -107,10 +107,10 @@ you need to create an image which would be flashed to the raw flash, you should
 first create an UBIFS image, than UBI image. In other words, the process has 2
 steps.</p>
 
-<p>However, as you may know from <a href="../doc/ubi.html#L_volupdate">here</a>,
-UBI allows to update volumes and there is an
+<p>However, as described <a href="../doc/ubi.html#L_volupdate">here</a>,
+UBI has a volume update facility and there is an
 <a href="../doc/ubi.html#L_usptools"><code>ubiupdatevol</code></a> utility
-which may be used for this purposes. So you may update UBI volumes on your
+which for this. So you may update UBI volumes straight form your
 running system as well. In this case, you only need UBIFS image, and you do not
 have to make the UBI image, i.e., the process has only 1 step in this case.</p>
 
@@ -139,6 +139,9 @@ before creating images:</p>
 	<li>for NAND flashes, sub-page size;</li>
 	<li>logical eraseblock size.</li>
 </ul>
+
+<p><a href="ubifs.html#L_find_lebsz">This</a> section explains the above
+parameters and gives some hints about how to find them out.</p>
 
 <p>And optionally, you should decide which compression algorithm you would want
 to use for this file-system. UBIFS supports zlib and LZO (default) at the
