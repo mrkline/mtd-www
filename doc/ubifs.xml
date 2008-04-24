@@ -21,6 +21,7 @@
 	<li><a href="ubifs.html#L_usptools">User-space tools</a></li>
 	<li><a href="ubifs.html#L_scalability">Scalability</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
+	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
 	<li><a href="ubifs.html#L_documentation">Documentation</a></li>
 	<li><a href="ubifs.html#L_how_send_bugreport">How to send an UBIFS bugreport?</a></li>
 </ol>
@@ -312,6 +313,27 @@ describes the issues in more details.</p>
 is enabled (no additional mount options are required). It supports
 <code>user</code>, <code>trusted</code>, and <code>security</code> name-spaces.
 However, access control list (ACL) support is not implemented.</p>
+
+
+
+<h2><a name="L_mountopts">Mount options</a></h2>
+
+<p>The following are UBIFS-specific mount options.</p>
+
+<ul>
+	<li><code>norm_unmount</code> (default) - commit on unmount; the
+	journal is committed when the file-system is unmounted so that the next
+	mount does not have to replay the journal and it becomes very
+	fast;</li>
+
+	<li><code>fast_umount</code> - do not commit on unmount; this option
+	makes unmount faster, but the next mount slower because of the need to
+	replay the journal.</li>
+</ul>
+
+<p>Besides, UBIFS supports the standard <code>sync</code> mount option which
+may be used to disable UBIFS write-back and write-buffer caching and make it
+fully synchronous.</p>
 
 
 
