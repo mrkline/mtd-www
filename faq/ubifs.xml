@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 23 Apr 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 07 May 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -19,6 +19,7 @@
 	<li><a href="ubifs.html#L_mkfubifs">How to create an UBIFS image?</a></li>
 	<li><a href="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
+	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of --max-leb-cnt mkfs.ubifs option?</a></li>
 </ol>
 
 
@@ -418,6 +419,41 @@ mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
 
 <p>For more information about nandsim see
 <a href="nand.html#L_nand_nandsim">here</a>.</p>
+
+
+
+<h2>
+<a name="L_max_leb_cnt">What is the purpose of --max-leb-cnt mkfs.ubifs option?</a>
+</h2>
+
+<p>It is a form of specifying file-system size. But instead of specifying the
+exact file-system size, this option defines the <i>maximum</i> file-system
+size (more strictly, maximum UBI volume size). For example, if you use
+<code>--max-leb-cnt=200</code> <code>mkfs.ubifs</code> option, than it will be
+possible to put the resulting image to smaller UBI volume and mount it. But if
+the image is put to a larger UBI volume, the file-system will anyway take only
+first 200 LEBs, and the rest of the volume will be wasted.</p>
+
+<p>Note, the <code>--max-leb-cnt</code> option does not affect the size of the
+resulting image file, which depends only on the amount of data in the
+file-system. <code>mkfs.ubifs</code> just writes the <code>--max-leb-cnt</code>
+value to the file-system superblocks.</p>
+
+<p>This feature is quite handy on NAND flashes, because they have random amount
+of initial bad eraseblocks (marked as bad in production). This means, that
+different devices may have slightly different volume sizes (especially if the
+UBI <a href="../doc/ubi.html#L_autoresize">auto-resize</a> feature is used). So
+you may specify the maximum possible volume size and this will guarantee that
+the image will work on all devices, irrespectively on the amount of initial bad
+eraseblocks.</p>
+
+<p>Fundamentally, <code>mkfs.ubifs</code> has to know file-system size because
+UBIFS maintains and stores per-LEB information (like amount of dirty and free
+space in each LEB) in so-called LPT area on the media. So obviously, the size of
+this area depends on the total amount of LEBs, i.e. on the volume size. Note,
+various characteristics of the LPT B-tree depend on the LPT area size, e.g., we
+use less bits in LPT tree keys of smaller LPT area. So do not use unnecessarily
+large <code>--max-leb-cnt</code> value to achieve better performance.</p>
 
 
 <INCLUDE file="../inc/footer.tmpl" />
