@@ -144,11 +144,12 @@ profiling and bottleneck hunting.</p>
 
 <p>The git tree is usually based on top of the latest main-line Linux kernel
 release candidate and it is re-based often. But there are also 2.6.21, 2.6.22,
-2.6.23, and 2.6.24 back-ports, although they are not always up-to-date and one
-may want to pick up additional patches from the main development tree to utilize
-the latest UBIFS version. The back-ports may be found at the following
-git-trees:</p>
+2.6.23, 2.6.24, and 2.6.25 back-ports, although they are not always up-to-date
+and one may want to pick up additional patches from the main development tree
+to utilize the latest UBIFS version. The back-ports may be found at the
+following git-trees:</p>
 
+<code>git://git.infradead.org/~dedekind/ubifs-v2.6.25.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.24.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.23.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.22.git</code><br/>
