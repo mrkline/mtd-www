@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 21 Apr 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 16 May 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -20,6 +20,8 @@
 	<li><a href="ubi.html#L_ext2_over_ubi">Can I run ext2 on top of UBI?</a></li>
 	<li><a href="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</a></li>
 	<li><a href="ubi.html#L_ubierase">How to erase flash and preserve erase counters?</a></li>
+	<li><a href="ubi.html#L_ubi_mkimg">How to create UBI images?</a></li>
+	<li><a href="ubi.html#L_find_min_io_size">How to find out min. I/O unit size, sub-page size, etc?</a></li>
 	<li><a href="ubi.html#L_flash_img">How to flash UBI images and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_restrict">Can UBI logical eraseblocks be written randomly?</a></li>
 	<li><a href="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</a></li>
@@ -183,7 +185,8 @@ utility. Example:</p>
 
 <pre>
 $ ubiformat /dev/mtd0
-ubiformat: mtd0 (NAND), size 536870912 bytes (512.0 MiB), 131072 eraseblocks of 131072 bytes (128.0 KiB), min. I/O size 2048 bytes
+ubiformat: mtd0 (NAND), size 536870912 bytes (512.0 MiB), 131072 eraseblocks of
+131072 bytes (128.0 KiB), min. I/O size 2048 bytes
 libscan: scanning eraseblock 4095 -- 100 % complete
 ubiformat: 4094 eraseblocks have valid erase counter, mean value is 104
 ubiformat: bad eraseblocks: 13, 666
@@ -192,6 +195,161 @@ ubiformat: formatting eraseblock 4095 -- 100 % complete
 
 <p>Note, <a href="../doc/ubi.html#L_format">this</a> has some hints for those
 who implement a flasher program.</p>
+
+
+
+<h2><a name="L_ubi_mkimg">How to create UBI images?</a></h2>
+
+<p>UBI images may be created using the <code>ubinize</code> utility
+(see <a	href="../doc/ubi.html#L_usptools">here</a>). This utility takes the
+configuration file on input and generates an UBI image. The input configuration
+file describes all UBI volumes which the resulting UBI image have to contain.
+The configuration file has <code>ini</code>-file syntax. Here is an example:</p>
+
+<pre>
+$ cat config.ini
+[configuration-data-volume]
+mode=ubi
+image=config_data.img
+vol_id=0
+vol_size=512KiB
+vol_type=static
+vol_name=configuration
+
+[rootfs-volume]
+mode=ubi
+image=rootfs.img
+vol_id=1
+vol_size=220MiB
+vol_type=dynamic
+vol_name=rootfs
+vol_flags=autoresize
+
+$ ./ubinize -o ubi.img -p 128KiB -m 512 -s 256 config.ini
+</pre>
+
+<p>The <code>config.ini</code> file tells UBIFS to create 2 volumes:</p>
+<ul>
+	<li>static configuration volume of 512KiB in size, assign it ID 0 and
+	name "configuration"; the contents of the volume should be taken from
+	the <code>config_data.img</code> file;</li>
+	<li>dynamic root file-system volume of 220MiB in size, assign it ID 1
+	and name "rootfs"; the contents of the volume should be taken from
+	the <code>rootfs.img</code> file; this volume should also have
+	"auto-resize" flag which means the size of this volume will be amended
+	when UBI runs for the first time; namely, UBI will make this volume
+	larger by giving available eraseblocks; this may be very useful in case
+	of NAND flash (see <a href="../doc/ubi.html#L_autoresize">here</a> for
+	more details).</li>
+</ul>
+
+<p>So in the above example, <code>ubinize</code> basically reads 3 input
+files:</p>
+<ul>
+	<li>The <code>config.ini</code> file which describes how many volumes
+	should the resulting <code>ubi.img</code> file contain, their sizes,
+	names, and so on; it also refers the files containing the data which
+	should be put to the volumes; note, if the volume is supposed to be
+	empty, just do not specify the image file;</li>
+	<li>the <code>config_data.img</code> image file for the first
+	volume;</li>
+	<li>the <code>rootfs.img</code> image file for the second volume.</li>
+</ul>
+
+<p>Users often wonder why <code>ubinize</code> needs a configuration file. The
+answer is that one UBI image may contain many UBI volumes with different
+characteristics and it is difficult to invent a nice command-line interface for
+specifying all those characteristics. Thus a configuration file is used.</p>
+
+<p>Note, UBI reserves <i>physical</i> flash space for volumes. Namely, UBI
+reserves a physical eraseblock for each logical eraseblock. The suze if LEB
+130560 bytes in out example (found out by running <code>ubinize</code>
+with <code>-v</code> option), which means the configuration volume will have 5
+LEBs ([512 * 1024] / 130560 rounded up) and the root file-system
+volume will have at least 1767 LEBs (or more because of the auto-resize flag).
+This means that the MTD device have to have at least 1772
+physical eraseblocks, which is about 221MiB. But because of the UBI overhead
+(see <a href="../doc/ubi.html#L_overhead">this</a> section), the MTD device
+has to be at least 225MiB in size. Of course it may be larger, in which
+case the "rootfs" volume will be re-sized and take the rest of the flash space
+(because of the auto-resize flag).</p>
+
+<p>Also, the <code>config_data.img</code> and <code>rootfs.img</code> input
+files do not have to be 512KiB and 220MiB respectively, but may be smaller if
+needed. And the resulting <code>ubi.img</code> file may be smaller than 221MiB.
+All <code>ubinize</code> is doing is it takes the image files, splits them to
+LEB-sized chunks, forms PEB data by adding UBI headers to these LEB chunks, and
+writes the result to the output file. It also writes the volume table (2
+physical eraseblocks). Thus, <code>ubi.img</code> file size will be small if
+the input volume images are small. And <code>ubinize</code> does not do any
+further padding.</p>
+
+<p>Before flashing the <code>ubi.img</code> file, the flash has to
+be erased, so that the physical eraseblocks which are not covered by
+<code>ubi.img</code> would be empty. And it is good idea to preserve erase
+counters if they exist. The
+<a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a> utility may be
+used for this.</p>
+
+
+
+<h2><a name="L_find_min_io_size">
+	How to find out min. I/O unit size, sub-page size, etc?
+</a></h2>
+
+<p>When creating UBI images it is necessary to know:</p>
+<ul>
+	<li>physical eraseblock size;</li>
+	<li>minimum input/output unit size;</li>
+	<li>sub-page size.</li>
+</ul>
+
+<p>Physical eraseblock (PEB) size should probably be found out in the flash
+manual.</p>
+
+<p>Minimum I/O unit size is NAND page size in case of NAND flash and should
+also be found out in the flash manual (it is usually 512, 2048 or even 4096 at
+some modern NANDs). For NOR flashes it is 1, unless you have a (rare) ECC-NOR
+flash which may have 8 or 16 byte minimal I/O unit size.</p>
+
+<p>Sub-page size is relevant only for some NAND flashes which allow several
+(usually 2 or 4) writes to the same NAND page. For example, many SLC NAND
+flashes have this. UBI utilizes this feature if it is available to waste less
+flash space. Typically, sub-page size if 256 in case of 512 bytes NAND page and
+512 in case of 2048 bytes NAND pages. MLC NAND flashes typically have no
+sub-pages. SLC OneNAND chips with 2048 bytes NAND page size support 512 byte
+sub-pages.</p>
+
+<p>Note, sub-page is an MTD term, but this is also referred to as "NOP" which
+stands for "number of partial programs". So NOP1 NAND flashes have no sub-pages
+(or you may treat this as sub-page size is equivalent to NAND page size),
+NOP 2 NAND flashes have 2 sub-pages (half a NAND page each), NOP 4 flashes
+have 4 sub-pages (quarter of a NAND page each).</p>
+
+<p>Unfortunately, MTD does not expose information via sysfs and it is a bit
+tricky to find the above characteristics out for an existing MTD device (one
+would need to use an <code>ioctl</code>). Moreover, the sub-page size is not
+exposed to the user-space at all (just because nobody implemented this).</p>
+
+<p>The easiest way to find this out is to attach your MTD device to UBI and
+glance to the syslog/dmesg output (erase the MTD device before doing this -
+see <a href="ubi.html#L_ubierase">this</a> section). The newest UBI prints
+something like this:</p>
+
+<pre>
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    129024 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: sub-page size:              512
+</pre>
+
+<p>Note, if sup-page size was not printed, it does not exist. Older UBI
+implementation do not print sub-page size, but they print VID header
+offset, which is by default equivalent to sub-page size:</p>
+
+<pre>
+UBI: VID header offset:          512 (aligned 512)
+</pre>
 
 
 
