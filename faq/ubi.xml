@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 16 May 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 19 May 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -262,8 +262,8 @@ characteristics and it is difficult to invent a nice command-line interface for
 specifying all those characteristics. Thus a configuration file is used.</p>
 
 <p>Note, UBI reserves <i>physical</i> flash space for volumes. Namely, UBI
-reserves a physical eraseblock for each logical eraseblock. The suze if LEB
-130560 bytes in out example (found out by running <code>ubinize</code>
+reserves a physical eraseblock for each logical eraseblock. The size if LEB
+130560 bytes in our example (found out by running <code>ubinize</code>
 with <code>-v</code> option), which means the configuration volume will have 5
 LEBs ([512 * 1024] / 130560 rounded up) and the root file-system
 volume will have at least 1767 LEBs (or more because of the auto-resize flag).
