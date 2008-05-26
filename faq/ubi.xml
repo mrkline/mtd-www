@@ -559,9 +559,9 @@ have been noticed otherwise. But the checks make UBI much slower.</p>
 <h3>Debugging messages</h3>
 
 <p>Sometimes it is necessary to make UBI print about what it is doing. This is
-where UBI messages may be enabled. When they are enabled, UBI prints a lot and
+where UBI messages may be enabled. When they are enabled, UBI prints a lot to
 the kernel ring buffer and this makes it slower. This section describes few
-tricks and techniques which might be useful when debugging using the
+tricks and techniques which might be useful when debugging with kernel
 messages.</p>
 
 <p>The Linux kernel has internal ring buffer where all the debugging prints go.
