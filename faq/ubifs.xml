@@ -389,8 +389,8 @@ large <code>--max-leb-cnt</code> value to achieve better performance.</p>
 
 <h2><a name="L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></h2>
 
-<p>Ths <code>mkfs.ubifs</code> utility requires <i>zlib</i> and <i>lzo</i>
-libraries, because it has to copress data for UBIFS, which supports
+<p>The <code>mkfs.ubifs</code> utility requires <i>zlib</i> and <i>lzo</i>
+libraries, because it has to compress data for UBIFS, which supports
 compression. If Fedora install <code>zlib-devel</code> and
 <code>lzo-devel</code> packages, in Debian install <code>zlib1g-dev</code> and
 <code>liblzo2-dev</code> packages.</p>

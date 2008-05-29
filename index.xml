@@ -25,7 +25,9 @@
 	<h2>News</h2>
 	<ul>
 	<li>29 May 2008: UBIFS on-flash format changed, update UBIFS and
-	    <code>mkfs.ubifs</code></li>
+	    <code>mkfs.ubifs</code> (see <a
+	    href="http://lists.infradead.org/pipermail/linux-mtd/2008-May/021785.html">
+	    here</a>)</li>
 	<li>21 Apr 2008: <code>ubiformat</code> utility has been added</li>
 	<li>27 Mar 2008: <a href="doc/ubifs_whitepaper.pdf">UBIFS white-paper</a>
 	    is available</li>
