@@ -19,6 +19,7 @@
 	<li><a href="ubifs.html#L_find_lebsz">How to find out LEB size?</a></li>
 	<li><a href="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</a></li>
 	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of -c (--max-leb-cnt) mkfs.ubifs option?</a></li>
+	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 </ol>
 
@@ -383,6 +384,16 @@ this area depends on the total amount of LEBs, i.e. on the volume size. Note,
 various characteristics of the LPT B-tree depend on the LPT area size, e.g., we
 use less bits in LPT tree keys of smaller LPT area. So do not use unnecessarily
 large <code>--max-leb-cnt</code> value to achieve better performance.</p>
+
+
+
+<h2><a name="L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></h2>
+
+<p>Ths <code>mkfs.ubifs</code> utility requires <i>zlib</i> and <i>lzo</i>
+libraries, because it has to copress data for UBIFS, which supports
+compression. If Fedora install <code>zlib-devel</code> and
+<code>lzo-devel</code> packages, in Debian install <code>zlib1g-dev</code> and
+<code>liblzo2-dev</code> packages.</p>
 
 
 
