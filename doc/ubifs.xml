@@ -160,6 +160,10 @@ following git-trees:</p>
 UBIFS TNC cache never gets shrinked and the system may run out of memory if
 the file-system is large enough.</p>
 
+<p>Also note, 2.6.21 back-port will not support writable (shared) memory maps,
+just like JFFS2. So some applications like apt-get won't always work. However,
+it should not be very difficult to backport this from newer kernel.</p>
+
 
 
 <h2><a name="L_ml">Mailing list</a></h2>
