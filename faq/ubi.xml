@@ -193,8 +193,8 @@ ubiformat: bad eraseblocks: 13, 666
 ubiformat: formatting eraseblock 4095 -- 100 % complete
 </pre>
 
-<p>Note, <a href="../doc/ubi.html#L_format">this</a> has some hints for those
-who implement a flasher program.</p>
+<p>Note, <a href="../doc/ubi.html#L_format">this</a> section has some hints
+for those who implement an UBI flasher program.</p>
 
 
 

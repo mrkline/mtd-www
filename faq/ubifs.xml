@@ -20,6 +20,7 @@
 	<li><a href="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</a></li>
 	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of -c (--max-leb-cnt) mkfs.ubifs option?</a></li>
 	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></li>
+	<li><a href="ubifs.html#L_loop_mount">Can UBIFS mount loop-back devices?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 </ol>
 
@@ -387,10 +388,38 @@ large <code>--max-leb-cnt</code> value to achieve better performance.</p>
 
 
 
+<h2><a name="L_loop_mount">Can UBIFS mount loop-back devices?</a></h2>
+
+<p>Unfortunately not, because loop-back devices are block devices (backed by
+regular files), while UBIFS works on top of UBI devices
+(see <a href="../doc/ubifs.html#L_rednote">here</a>).</p>
+
+<p>However, there is a very hacky way to make UBIFS work with a file-backed
+image using NAND simulator (see <a href="nand.html#L_nand_nandsim">here</a>).
+Originally <code>nandsim</code> has been created to emulate NAND flashes in
+RAM, but there is a
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2008-May/021810.html">patch</a>
+which teaches <code>nandsim</code> to use a file instead of memory. Try
+something like</p>
+
+<pre>
+# Create a 1GiB emulated MTD device backed by regular file "my_image"
+$ modprobe nandsim cache_file=my_image first_id_byte=0xec second_id_byte=0xd3 third_id_byte=0x51 fourth_id_byte=0x95
+</pre>
+
+<p>See <a href="ubifs.html#L_ubifs_nandsim">here</a> for more instructions
+about using UBIFS with nandsim.</p>
+
+<p>But be warned that this patch has not been well tested, it is not in
+mainline yet, and it has been created for development and debugging purposes,
+but not for production use.</p>
+
+
+
 <h2><a name="L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></h2>
 
 <p>The <code>mkfs.ubifs</code> utility requires <i>zlib</i>, <i>lzo</i> and
-<i>uuid</i>libraries. The former two are used for compressing the data, and the
+<i>uuid</i> libraries. The former two are used for compressing the data, and the
 latter one is used for generating <i>universally unique ID number</i> for the
 file-system. In Fedora install <code>zlib-devel</code>, <code>lzo-devel</code>,
 and <code>e2fsprogs-devel</code> (<code>libuuid</code> is provided
