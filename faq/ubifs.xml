@@ -21,6 +21,7 @@
 	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of -c (--max-leb-cnt) mkfs.ubifs option?</a></li>
 	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></li>
 	<li><a href="ubifs.html#L_loop_mount">Can UBIFS mount loop-back devices?</a></li>
+	<li><a href="ubifs.html#L_atime">Does UBIFS support atime?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 </ol>
 
@@ -425,6 +426,14 @@ file-system. In Fedora install <code>zlib-devel</code>, <code>lzo-devel</code>,
 and <code>e2fsprogs-devel</code> (<code>libuuid</code> is provided
 there, strangely) packages, in Debian install <code>zlib1g-dev</code>,
 <code>liblzo2-dev</code> and <code>uuid-dev</code> packages.</p>
+
+
+
+<h2><a name="L_atime">Does UBIFS support atime?</a></h2>
+
+<p>No, it does not supprte atime. The authors think it is not very useful in
+ebmedded and did not implement this. Indeed most of the users do not provably
+want the file-system doing inode updates every time it is read.</p>
 
 
 

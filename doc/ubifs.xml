@@ -338,7 +338,8 @@ However, access control list (ACL) support is not implemented.</p>
 
 <p>Besides, UBIFS supports the standard <code>sync</code> mount option which
 may be used to disable UBIFS write-back and write-buffer caching and make it
-fully synchronous.</p>
+fully synchronous. Note, UBIFS does not support atime, so the <code>atime</code>
+mount option has no effect.</p>
 
 
 
