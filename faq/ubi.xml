@@ -30,6 +30,8 @@
 	<li><a href="ubi.html#L_volume_table">What is volume table?</a></li>
 	<li><a href="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</a></li>
 	<li><a href="ubi.html#L_mlc">May UBI be used on MLC flash?</a></li>
+	<li><a href="ubi.html#L_vid_offset_mismatch">Why does ubiattach on a freshly formatted device fail with "Invalid argument"?</a></li>
+	<li><a href="ubi.html#L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></li>
 	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
 </ol>
 
@@ -496,6 +498,77 @@ garbage collect eraseblocks with more dirty data. This means that JFFS2 is not
 really appropriate for MLC flashes. However, it is possible to use JFFS2
 file-system on top of UBI (see <a href="ubi.html#L_run_jffs2">this</a>
 section) to improve wear-leveling.</p>
+
+
+
+<h2><a name="L_vid_offset_mismatch">
+Why does ubiattach on a freshly formatted device fail with "Invalid argument"?
+</a></h2>
+
+<p>On NAND devices that support sub-page accesses, <code>ubiformat</code>
+may choose a different location for the VID header to the kernel UBI driver
+This can result in the following error when attaching to a UBI device:</p>
+
+<pre>
+$ ubiformat /dev/mtd0
+ubiformat: mtd0 (NAND), size 260046848 bytes (248.0 MiB), 131072 eraseblocks of 131072 bytes (128.0 KiB), min. I/O size 2048 bytes
+[...]
+$ ubiattach /dev/ubi_ctrl -m 0
+ubiattach: error!: cannot attach mtd0
+           error 22 (Invalid argument)
+</pre>
+
+<p>and in <code>dmesg</code> you will see:</p>
+
+<pre>
+UBI error: validate_ec_hdr: bad VID header offset 2048, expected 512
+UBI error: validate_ec_hdr: bad EC header
+UBI error: ubi_io_read_ec_hdr: validation failed for PEB 0
+</pre>
+
+<p>This happens because <code>ubiformat</code> assumes the flash does not
+support sub-pages, because the kernel does not expose sub-page information
+to user-space (which should be fixed when sysfs support is added to MTD).
+However, the kernel UBI driver assumes sub-pages are supported and sub-page
+size is 512 bytes in our example. To fix this, you should override the default
+sub-page size that <code>ubiformat</code> uses to what the kernel expects using
+the <code>-s</code> option of <code>ubiformat</code>. For example, if you see
+the error above in dmesg, you can tell <code>ubiformat</code> to assume
+512-byte sub-page by executing:</p>
+
+<pre>
+$ ubiformat /dev/mtd0 -s 512
+</pre>
+
+<p>Or you may pass "<code>-O 512</code>" would have the same effect as
+"<code>-s 512</code>" - the VID header would be put at offset 512.</p>
+
+<p>Alternately, you may wish to actually attach to the UBI device by forcing
+VID header offset to be 2048 bytes. In other words, you may ask UBI to avoid
+using sub-pages. This is not recommended since this will require more storage
+overhead, but may be useful if your NAND driver incorrectly reports that it can
+handle sub-page accesses when it should not. To do this with
+<code>ubiattach</code>, use:</p>
+
+<pre>
+$ ubiattach /dev/ubi_ctrl -m 0 -O 2048
+</pre>
+
+<p>or on the kernel command-line, pass:</p>
+
+<pre>
+ubi.mtd=0,2048
+</pre>
+
+
+
+<h2><a name="L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></h2>
+
+<p>If you have a 2048 bytes per NAND page device, and have
+<code>CONFIG_MTD_NAND_VERIFY_WRITE</code> enabled in your kernel, you will need
+to turn it off. The code does not currently (as of 2.6.26) perform verification
+of sub-page writes correctly. As UBI is one of the few users of sub-page
+writes, not much else seems to be affected by this bug.</p>
 
 
 
