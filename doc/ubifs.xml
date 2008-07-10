@@ -403,10 +403,10 @@ sub-tree of synchronous files and directories, or to make all new children
 of some directory to be synchronous by default (e.g., <code>/etc</code>).</p>
 
 <p>The <code>fdatasync()</code> call for directories is "no-op" in UBIFS and
-all operations which change directory entries are synchronous in UBIFS.
+all UBIFS operations which change directory entries are synchronous.
 However, it might be a good idea not to assume this for better portability
 (e.g., this is not true for <code>ext2</code>). Similarly, the "<i>dirsync</i>"
-has no effect in UBIFS.</p>
+inode flag has no effect in UBIFS.</p>
 
 
 
