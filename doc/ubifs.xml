@@ -416,7 +416,7 @@ inode flag has no effect in UBIFS.</p>
 <p>UBIFS supports extended attributes if the corresponding configuration option
 is enabled (no additional mount options are required). It supports
 <code>user</code>, <code>trusted</code>, and <code>security</code> name-spaces.
-However, access control list (ACL) support is not implemented.</p>
+However, access control lists (ACL) support is not implemented.</p>
 
 
 
