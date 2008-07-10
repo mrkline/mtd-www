@@ -349,7 +349,7 @@ NOTES
 </pre>
 
 <p>This is true for UBIFS (except of the "some buggy implementations" part,
-because UBIFS does reserved space for cached dirty data). Very often, people
+because UBIFS does reserves space for cached dirty data). Very often, people
 who are accustomed to JFFS2 do not take this aspect into account and got
 confused when unclean reboots corrupt their files. The following is a list
 of useful hints and advices.</p>
