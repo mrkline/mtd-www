@@ -373,7 +373,8 @@ of useful hints and advices.</p>
 	a loop; otherwise just stick with  <code>fsync()</code>;</li>
 
 	<li>In shell, the <code>sync</code> command may be used, but it
-	synchronizes whole file-system which might be not very optimal;</li>
+	synchronizes whole file-system which might be not very optimal; and
+	there is a symilar <i>libc</i> <code>sync()</code> function;</li>
 
 	<li>Alternatively to <code>fdatasync()</code> you may use
 	<code>O_SYNC</code> flag of the <code>open()</code> call; this will
