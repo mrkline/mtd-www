@@ -20,6 +20,7 @@
 	<li><a href="ubifs.html#L_ml">Mailing list</a></li>
 	<li><a href="ubifs.html#L_usptools">User-space tools</a></li>
 	<li><a href="ubifs.html#L_scalability">Scalability</a></li>
+	<li><a href="ubifs.html#L_writeback">Write-back support</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
 	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
 	<li><a href="ubifs.html#L_documentation">Documentation</a></li>
@@ -103,16 +104,16 @@ sections.</p>
 	takes fractions of a second;</li>
 
 	<li>fast I/O - even with write-back disabled (e.g., if UBIFS is mounted
-	with <code>-o sync</code> mount flag UBIFS shows good performance
+	with <code>-o sync</code> mount flag) UBIFS shows good performance
 	which is close to JFFS2 performance; bear in mind, it is extremely
 	difficult to compete with JFFS2 in synchronous I/O, because JFFS2 does
 	not maintain indexing data structures on flash, so it does not have the
-	maintenance overhead, while UBIFS does have it; the main UBIFS write
-	speed booster is the write-back support; the other one is the way UBIFS
-	commits the journal - it does not move the data physically from one
-	place to another but instead, it just adds corresponding information to
-	the file-system index and picks different eraseblocks for the new
-	journal (i.e., UBIFS has sort of "wandering" journal);</li>
+	maintenance overhead, while UBIFS does have it; this is because of the
+	way UBIFS commits the journal - it does not move the data physically
+	from one place to another but instead, it just adds corresponding
+	information to the file-system index and picks different eraseblocks
+	for the new journal (i.e., UBIFS has sort of "wandering"
+	journal);</li>
 
 	<li>on-the-flight compression - the data is stored in compressed form
 	on the flash media, which makes it possible to put considerably more
@@ -155,14 +156,18 @@ following git-trees:</p>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.22.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.21.git</code>
 
-<p>Note, since it is impossible to register memory shrinker in kernel versions
-2.6.21 and 2.6.22, the UBIFS shrinker does not work there, which means the
-UBIFS TNC cache never gets shrinked and the system may run out of memory if
-the file-system is large enough.</p>
+<p>Since it is impossible to register memory shrinker in kernel versions 2.6.21
+and 2.6.22, the UBIFS shrinker does not work there, which means the UBIFS TNC
+cache never gets shrinked and the system may run out of memory if the
+file-system is large enough.</p>
 
-<p>Also note, 2.6.21 back-port will not support writable (shared) memory maps,
+<p>The 2.6.21 back-port will not support writable (shared) memory maps,
 just like JFFS2. So some applications like apt-get won't always work. However,
-it should not be very difficult to backport this from newer kernel.</p>
+it should not be very difficult to back-port this from newer kernel if it is
+really needed.</p>
+
+<p>All the back-port trees also have many MTD patches back-ported, and they
+have all the UBI changes back-ported as well.</p>
 
 
 
@@ -312,6 +317,99 @@ describes the issues in more details.</p>
 
 
 
+<h2><a name="L_writeback">Write-back support</a></h2>
+
+<p>UBIFS supports write-back, which means that file changes do not go to the
+flash media straight away, but they are cached and go to the flash later, when
+it is absolutely necessary. This helps to greatly reduce the amount of I/O
+which results in better performance. Write-back caching is standard technique
+which exists in many modern file-systems like <code>ext3</code> or
+<code>XFS</code>.</p>
+
+<p>In contrast, <code>JFFS2</code> does not have write-back support and all the
+JFFS2 file-system changes go the flash synchronously. Well, this is not
+completely true and JFFS2 does have a small buffer of a NAND page size, but it
+is small and we may treat JFFS2 as completely synchronous.</p>
+
+<p>Write-back support requires the application programmers to take extra care
+about synchronizing important files in time. Otherwise the file contents and
+meta-data may corrupt or disappear in case of power-cuts, which happen very
+often in many embedded devices. Let's look at what Linux manual pages say:</p>
+
+<pre>
+$ man 2 write
+....
+NOTES
+       A  successful return from write() does not make any guarantee that data
+       has been committed to disk.  In fact, on some buggy implementations, it
+       does  not  even guarantee that space has successfully been reserved for
+       the data.  The only way to be sure is to call fsync(2)  after  you  are
+       done writing all your data.
+...
+</pre>
+
+<p>This is true for UBIFS (except of the "some buggy implementations" part,
+because UBIFS does reserved space for cached dirty data). Very often, people
+who are accustomed to JFFS2 do not take this aspect into account and got
+confused when unclean reboots corrupt their files. The following is a list
+of useful hints and advices.</p>
+
+<ul>
+	<li>If you want to switch into "JFFS2 mode" and have a synchronous
+	file-system, use <code>-o sync</code> option when mounting UBIFS;
+	however, the file-system performance will drop, so this is not
+	recommended unless you absolutely have to have a synchronous FS;</li>
+
+	<li>Always keep in mind the above statement from the manual pages and
+	run <code>fsync()</code> for all the important files you change; of
+	course, there is no need to synchronize "throw-away" temporary files;
+	Just think how important is the file data and decide;</li>
+
+	<li>If you want to be more accurate, you may use
+	<code>fdatasync()</code>, in which cases only data changes will be
+	flushed, but not inode meta-data changes (e.g., "<i>mtime</i>"
+	or permissions); this might be more optimal than using
+	<code>fsync()</code> if the synchronization is done often, e.g., in
+	a loop; otherwise just stick with  <code>fsync()</code>;</li>
+
+	<li>In shell, the <code>sync</code> command may be used, but it
+	synchronizes whole file-system which might be not very optimal;</li>
+
+	<li>Alternatively to <code>fdatasync()</code> you may use
+	<code>O_SYNC</code> flag of the <code>open()</code> call; this will
+	make sure all the data (but not meta-data) changes go to the media
+	before the <code>write()</code> operation returns;</li>
+
+	<li>It is possible to make certain inodes to be synchronous by
+	default by setting the "<i>sync</i>" flag; in a shell, the
+	<code>chattr +S</code> command may be used; in <i>C</i> programs,
+	use the <code>FS_IOC_SETFLAGS</code> <code>ioctl</code> command;
+	Note, the <a href="ubifs.html#L_usptools"><code>mkfs.ubifs</code></a>
+	tool checks for the "<i>sync</i>" flag in the original FS tree, so
+	the synchronous files in the original FS tree will be synchronous in
+	the resulting UBIFS image.</li>
+</ul>
+
+<p>The above items are actually true for other file systems like
+<code>ext3</code>, and may even be applied to <code>JFFS2</code>.</p>
+
+<p><code>fsync()</code> may be called for directories - it synchronizes
+the directory inode meta-data. The "<i>sync</i>" flag may also be set for
+directories to make the directory inode synchronous. But the flag is inherited,
+which means all new children of this directory will also have this flag. New
+sub-directories of this directory will also be synchronous, and their children,
+and so forth. This feature is very useful if one needs to create a whole
+sub-tree of synchronous files and directories, or to make all new children
+of some directory to be synchronous by default (e.g., <code>/etc</code>).</p>
+
+<p>The <code>fdatasync()</code> call for directories is "no-op" in UBIFS and
+all operations which change directory entries are synchronous in UBIFS.
+However, it might be a good idea not to assume this for better portability
+(e.g., this is not true for <code>ext2</code>). Similarly, the "<i>dirsync</i>"
+has no effect in UBIFS.</p>
+
+
+
 <h2><a name="L_xattr">Extended attributes</a></h2>
 
 <p>UBIFS supports extended attributes if the corresponding configuration option
@@ -338,8 +436,8 @@ However, access control list (ACL) support is not implemented.</p>
 
 <p>Besides, UBIFS supports the standard <code>sync</code> mount option which
 may be used to disable UBIFS write-back and write-buffer caching and make it
-fully synchronous. Note, UBIFS does not support atime, so the <code>atime</code>
-mount option has no effect.</p>
+fully synchronous. Note, UBIFS does not support "<i>atime</i>", so the
+<code>atime</code> mount option has no effect.</p>
 
 
 
