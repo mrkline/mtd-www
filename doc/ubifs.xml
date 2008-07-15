@@ -374,7 +374,7 @@ of useful hints and advices.</p>
 
 	<li>In shell, the <code>sync</code> command may be used, but it
 	synchronizes whole file-system which might be not very optimal; and
-	there is a symilar <i>libc</i> <code>sync()</code> function;</li>
+	there is a similar <i>libc</i> <code>sync()</code> function;</li>
 
 	<li>Alternatively to <code>fdatasync()</code> you may use
 	<code>O_SYNC</code> flag of the <code>open()</code> call; this will
@@ -408,6 +408,16 @@ all UBIFS operations which change directory entries are synchronous.
 However, it might be a good idea not to assume this for better portability
 (e.g., this is not true for <code>ext2</code>). Similarly, the "<i>dirsync</i>"
 inode flag has no effect in UBIFS.</p>
+
+<p>The functions mentioned above work on file-descriptors, not on streams
+(<code>FILE *</code>). To synchronize a stream, you should first get its file
+descriptor using the <code>fileno()</code> <i>libc</i> function, then flush the
+stream using <code>fflush()</code>, and then synchronize the file using
+<code>fsync()</code> or <code>fdatasync()</code>. You may use different
+synchronization methods, but remember to flush the stream before synchronizing.
+The <code>fflush()</code> function flushes the <i>libc</i>-level buffers, while
+<code>sync()</code>, <code>fsync()</code>, etc flush <i>kernel</i>-level
+buffers.</p>
 
 
 

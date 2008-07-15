@@ -21,6 +21,7 @@
 	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of -c (--max-leb-cnt) mkfs.ubifs option?</a></li>
 	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></li>
 	<li><a href="ubifs.html#L_loop_mount">Can UBIFS mount loop-back devices?</a></li>
+	<li><a href="ubifs.html#L_atomic_change">How to change a file atomically?</a></li>
 	<li><a href="ubifs.html#L_atime">Does UBIFS support atime?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 </ol>
@@ -429,10 +430,31 @@ there, strangely) packages, in Debian install <code>zlib1g-dev</code>,
 
 
 
+<h2><a name="L_atomic_change">How to change a file atomically?</a></h2>
+
+<p>Changing a file atomically means changing the contents in a way that unclean
+reboots could not lead to any corruption or inconsistency in the file. The only
+reliable way to do this in UBIFS (and in most of other file-systems, e.g. JFFS2
+or ext3) is the following:</p>
+
+<ul>
+	<li>make a copy of the file;</li>
+	<li>change the copy;</li>
+	<li>synchronize the copy (see
+	<a href="../doc/ubifs.html#L_writeback">here</a>);</li>
+	<li>re-name the copy to the file (using the <code>rename()</code>
+	<i>libc</i> function or <code>mv</code> utility).</li>
+</ul>
+
+<p>Note, if power-cut happens during re-naming, the original file will be
+intact. This is <code>POSIX</code> requirement and UBIFS satisfies it.</p>
+
+
+
 <h2><a name="L_atime">Does UBIFS support atime?</a></h2>
 
-<p>No, it does not supprte atime. The authors think it is not very useful in
-ebmedded and did not implement this. Indeed most of the users do not provably
+<p>No, it does not support atime. The authors think it is not very useful in
+embedded and did not implement this. Indeed most of the users do not provably
 want the file-system doing inode updates every time it is read.</p>
 
 
