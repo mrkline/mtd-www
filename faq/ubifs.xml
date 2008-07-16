@@ -23,6 +23,7 @@
 	<li><a href="ubifs.html#L_loop_mount">Can UBIFS mount loop-back devices?</a></li>
 	<li><a href="ubifs.html#L_atomic_change">How to change a file atomically?</a></li>
 	<li><a href="ubifs.html#L_atime">Does UBIFS support atime?</a></li>
+	<li><a href="ubifs.html#L_nfs">Does UBIFS support NFS?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 </ol>
 
@@ -456,6 +457,14 @@ intact. This is <code>POSIX</code> requirement and UBIFS satisfies it.</p>
 <p>No, it does not support atime. The authors think it is not very useful in
 embedded and did not implement this. Indeed most of the users do not provably
 want the file-system doing inode updates every time it is read.</p>
+
+
+
+<h2><a name="L_nfs">Does UBIFS support NFS?</a></h2>
+
+<p>No, UBIFS does not support NFS (Network File System) at the moment. This
+means UBIFS directories cannot be exported via NFS. We are planning to add
+NFS support at some point, this just has not been a priority.</p>
 
 
 
