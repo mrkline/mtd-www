@@ -139,16 +139,19 @@ profiling and bottleneck hunting.</p>
 
 <h2><a name="L_source">Source code</a></h2>
 
-<p>The UBIFS development git tree is:</p>
+<p>UBIFS is in mainline since 17 July 2008 and will be available starting from
+kernel release 2.6.27. Since UBIFS is very new file-system, it is recommended
+to pick the latest updates and fixes from the UBIFS development tree, for which
+the git tree is at:</p>
 
 <code>git://git.infradead.org/~dedekind/ubifs-2.6.git</code>
 
-<p>The git tree is usually based on top of the latest main-line Linux kernel
-release candidate and it is re-based often. But there are also 2.6.21, 2.6.22,
-2.6.23, 2.6.24, and 2.6.25 back-ports, although they are not always up-to-date
-and one may want to pick up additional patches from the main development tree
-to utilize the latest UBIFS version. The back-ports may be found at the
-following git-trees:</p>
+<p>The development git tree is usually based on top of the latest main-line
+Linux kernel release candidate and it is re-based often. There are also
+2.6.21, 2.6.22, 2.6.23, 2.6.24, and 2.6.25 back-ports, although they are not
+always up-to-date and one may want to pick up additional patches from the
+main development tree to utilize the latest UBIFS version. The back-ports may
+be found at the following git-trees:</p>
 
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.25.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.24.git</code><br/>
@@ -156,15 +159,26 @@ following git-trees:</p>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.22.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.21.git</code>
 
-<p>Since it is impossible to register memory shrinker in kernel versions 2.6.21
-and 2.6.22, the UBIFS shrinker does not work there, which means the UBIFS TNC
-cache never gets shrinked and the system may run out of memory if the
-file-system is large enough.</p>
+<p>Note, because the Linux kernel is changing rapidly, it is rather difficult
+to make back-ports match the mainline code, and different back-ports have
+different limitations. Below are some of them.</p>
 
-<p>The 2.6.21 back-port will not support writable (shared) memory maps,
-just like JFFS2. So some applications like apt-get won't always work. However,
-it should not be very difficult to back-port this from newer kernel if it is
-really needed.</p>
+<ul>
+	<li>Since it is impossible to register memory shrinker in kernel
+	versions 2.6.21 and 2.6.22, the UBIFS shrinker does not work
+	there, which means the UBIFS TNC cache never gets shrinked and
+	the system may run out of memory if the file-system very large.</li>
+
+	<li>The 2.6.21 back-port will not support writable (shared) memory maps,
+	just like JFFS2. So some applications like apt-get won't always work.
+	However, it should not be very difficult to fix this if it is really
+	needed.</li>
+
+	<li>Because of VFS interface changes since kernel version 2.6.24
+	(<code>write_begin()</code> instead of <code>prepare_write()</code>)
+	back-ports 2.6.21, 2.6.22, and 2.6.23 may have slightly worse
+	performance comparing to the mainline code.</li>
+</ul>
 
 <p>All the back-port trees also have many MTD patches back-ported, and they
 have all the UBI changes back-ported as well.</p>
