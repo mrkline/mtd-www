@@ -24,6 +24,7 @@
 	<li><a href="ubifs.html#L_atomic_change">How to change a file atomically?</a></li>
 	<li><a href="ubifs.html#L_atime">Does UBIFS support atime?</a></li>
 	<li><a href="ubifs.html#L_nfs">Does UBIFS support NFS?</a></li>
+	<li><a href="ubifs.html#L_slow_when_full">Does UBIFS become slower when it is full?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 </ol>
 
@@ -465,6 +466,34 @@ want the file-system doing inode updates every time it is read.</p>
 <p>No, UBIFS does not support NFS (Network File System) at the moment. This
 means UBIFS directories cannot be exported via NFS. We are planning to add
 NFS support at some point, this just has not been a priority.</p>
+
+
+
+<h2><a name="L_slow_when_full">Does UBIFS become slower when it is full?</a></h2>
+
+<p>Yes, UBIFS writes (but not reads) become slower when it is full or close to
+be full. There are 2 main reasons for this:</p>
+
+<ul>
+	<li>Garbage Collection becomes slower, because the small pieces of
+	dirty space are distributed all over the media, and UBIFS Garbage
+	Collector has to move many eraseblocks to produce one free eraseblock;
+	this is a fundamental reason and it exists in JFFS2 as well;</li>
+
+	<li>The file-system becomes more synchronous; UBIFS buffers dirty data,
+	but due to compression and some other factors like wasting small pieces
+	of space at the end of eraseblocks, UBIFS does not exactly know how much
+	space the buffered dirty data would take on the flash media, so it uses
+	pessimistic calculations and assumes that the data is uncompressible.
+	In many cases this is not true, but UBIFS has to assume
+	worst-case scenario. So when all free space on the file-system is
+	reserved for the buffered dirty data, but users want to write more,
+	UBIFS forces write-back to actually write the buffered dirty data and
+	see how much space will be available after that. Then UBIFS may allow
+	new data to be written. Thus, it is obvious that the less free
+	flash space is available, the less dirty data may be buffered, and
+	the more synchronous the file-system becomes.</li>
+</ul>
 
 
 
