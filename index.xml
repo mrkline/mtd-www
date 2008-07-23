@@ -24,6 +24,7 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>23 Jul 2008: UBIFS now supports NFS</li>
 	<li>17 Jul 2008: UBIFS is merged into mainline, will show up in 2.6.27</li>
 	<li>21 Apr 2008: <code>ubiformat</code> utility has been added</li>
 	<li>27 Mar 2008: <a href="doc/ubifs_whitepaper.pdf">UBIFS white-paper</a>
