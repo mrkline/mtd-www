@@ -140,17 +140,21 @@ which the flash technology imposes.</p>
 
 <h2><a name="L_source">Source code</a></h2>
 
-<p>UBI is in the main-line Linux kernel starting from version 2.6.22. But it is
-recommended to use the latest UBI which can be found in the UBI git tree:</p>
+<p>UBI is in the main-line Linux kernel starting from version
+<code>2.6.22</code>. But it is recommended to use the latest UBI which can
+be found in the UBI git tree:</p>
 
 <code>git://git.infradead.org/~dedekind/ubi-2.6.git</code>
 
-<p>The UBI git tree is usually based on top of the latest release of the Linux
-kernel and it should not be too difficult to fetch all UBI patches from the UBI
-git tree and to apply them to your tree. In fact, this work has already been
-done in UBIFS back-ports (see <a href="../doc/ubifs.html#L_source">here</a>).
-The back-port trees contain all UBI patches from the main-line. Just pick the
-UBI patches and apply them to your tree.</p>
+<p>The git tree has <code>master</code> and <code>linux-next</code> branches.
+The <code>master</code> branch contains the most recent stuff which is often
+incomplete, buggy, or not tested very well. This branch may be re-based from
+time to time. The <code>linux-next</code> branch contains stable UBI updates
+and fixes. This branch is included to the
+<a href="http://linux.f-seidel.de/linux-next/">linux-next</a> git tree and
+goes to main-line. The <code>linux-next</code> branch is never re-based. Thus,
+unless you are an active UBI developer, use the <code>linux-next</code>
+branch.</p>
 
 
 
@@ -305,9 +309,8 @@ version of the tools:</p>
 information.</p>
 
 <p>Note, <code>ubiattach</code> and <code>ubidetach</code> won't work on
-if the kernel version is less than 2.6.25, because corresponding UBI feature
-did not exist in older kernels. However, it is possible to back-port UBI
-patches from the <a href="ubi.html#L_source">UBI git tree</a>.</p>
+if the kernel version is less than <code>2.6.25</code>, because corresponding
+UBI feature did not exist in older kernels.</p>
 
 <p>Also note, there are old UBI tools which might be useful (e.g.,
 <b>unubi</b>).</p>
@@ -631,10 +634,8 @@ result of the operation is that the LEB either has the old contents or the new
 contents.</p>
 
 <p>The operation is available via the <code>ubi_leb_change()</code> kernel API
-call. The user-space interface for this operation does not exist in the
-main-line kernel so far, but it was recently implemented and may be found in the
-<a href="ubi.html#L_source">UBI git tree</a>. It should be
-available in the main-line kernels starting from version 2.6.25.</p>
+call. The user-space interface for this operation exists starting from kernel
+version <code>2.6.25</code>.</p>
 
 <p>The user-space atomic LEB change operation is run via the
 <code>UBI_IOCEBCH</code> ioctl command. One has to pass a pointer to a properly
@@ -755,10 +756,8 @@ reasonable to mark it as auto-resize.</p>
 as auto-resized, it will be enlarged by 0-2% on the first UBI boot, but 1% of
 PEBs will anyway be reserved for bad PEB handling.</p>
 
-<p>Note, the auto-resize feature was added very recently and it is not in the
-main-line kernel yet, but it should appear in version 2.6.25. Use
-<a href="ubi.html#L_source">UBI git tree</a> to find the implementation of the
-feature.</p>
+<p>Note, the auto-resize feature exists in the Linux kernel starting from
+version <code>2.6.25</code>.</p>
 
 
 
