@@ -157,11 +157,12 @@ unless you are an active UBIFS developer, use the <code>linux-next</code>
 branch.</p>
 
 <p>There are also <code>2.6.21</code>, <code>2.6.22</code>, <code>2.6.23</code>,
-<code>2.6.24</code>, and <code>2.6.25</code> kernel back-ports, although they
-are not always up-to-date and one may want to pick up additional patches from
-the main development git tree to utilize the latest UBIFS version. The
-back-ports may be found at:</p>
+<code>2.6.24</code>, <code>2.6.25</code>, and <code>2.6.26</code> kernel
+back-ports, although they are not always up-to-date and one may want to pick up
+additional patches from the main development git tree to utilize the latest
+UBIFS version. The back-ports may be found at:</p>
 
+<code>git://git.infradead.org/~dedekind/ubifs-v2.6.26.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.25.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.24.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.23.git</code><br/>
@@ -179,11 +180,6 @@ different limitations. Below are some of them.</p>
 	gets shrinked and the system may run out of memory if the file-system
 	is very large.</li>
 
-	<li>The <code>2.6.21</code> back-port will not support writable
-	(shared) memory maps, just like in JFFS2. So some applications like
-	apt-get won't always work. However, it should not be very difficult to
-	fix this if it is really needed.</li>
-
 	<li>Because of VFS interface changes since kernel version
 	<code>2.6.24</code> (<code>write_begin()</code> instead of
 	<code>prepare_write()</code>) back-ports <code>2.6.21</code>,
@@ -198,11 +194,11 @@ different limitations. Below are some of them.</p>
 	closer at how NFS support is implemented in older kernels.</li>
 </ul>
 
-<p>Thus, only the <code>2.6.25</code> back-port has full UBIFS functionality
-and is not much different to the mainline UBIFS. Note, all the back-port trees
-also have many MTD patches back-ported, and they have most of the UBI changes
-back-ported. Also bear in mind, the back-port trees are not going to be
-maintained forever and will be deleted at some point.</p>
+<p>Thus, only <code>2.6.25</code> and <code>2.6.26</code> back-ports have full
+UBIFS functionality and are not much different to the mainline UBIFS. Note, all
+the back-port trees also have many MTD patches back-ported, and they have most
+of the UBI changes back-ported. Also bear in mind, the back-port trees are not
+going to be maintained forever and will be deleted at some point.</p>
 
 
 
