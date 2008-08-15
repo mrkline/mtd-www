@@ -463,8 +463,7 @@ want the file-system doing inode updates every time it is read.</p>
 
 <h2><a name="L_nfs">Does UBIFS support NFS?</a></h2>
 
-<p>Yes, UBIFS supports NFS (Network File System), which means it is exportable
-via NFS.</p>
+<p>Not so far, but it is planned to be implemented.</p>
 
 
 
