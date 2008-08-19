@@ -212,9 +212,10 @@ going to be maintained forever and will be deleted at some point.</p>
 <h2><a name="L_usptools">User-space tools</a></h2>
 
 <p>There is only one UBIFS user-space tool at the moment -
-<b>mkfs.ubifs</b>, which creates UBIFS images. The tool may be found at</p>
+<b>mkfs.ubifs</b>, which creates UBIFS images. The tool may be found in the
+<i>MTD utils</i> repository (<code>mkfs.ubifs</code> sub-directory):</p>
 
-<code>git://git.infradead.org/~dedekind/mkfs.ubifs.git</code>
+<code>git://git.infradead.org/mtd-utils.git</code>
 
 <p>The images produced by <code>mkfs.ubifs</code> may be written to
 UBI volumes using <a href="ubi.html#L_usptools"><code>ubiupdatevol</code></a>
