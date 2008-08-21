@@ -280,29 +280,30 @@ version of the tools:</p>
 
 <p>The repository contains the following UBI tools:</p>
 <ul>
-	<li><b>ubinfo</b> - provides information about UBI installed in the
-	system, about all UBI devices and volumes;</li>
-	<li><b>ubiattach</b> - a tool to attach MTD devices (which describe
-	raw flash) to UBI, which creates an UBI device sitting on top of the
-	MTD device; this is an alternative method to specifying MTD devices on
-	module load or in kernel boot command line;</li>
-	<li><b>ubidetach</b> - a tool to detach MTD devices from UBI
+	<li><code>ubinfo</code> - provides information about UBI installed in
+	the system, about all UBI devices and volumes;</li>
+	<li><code>ubiattach</code> - a tool to attach MTD devices (which
+	describe raw flash) to UBI, which creates an UBI device sitting on top
+	of the MTD device; this is an alternative method to specifying MTD
+	devices on module load or in kernel boot command line;</li>
+	<li><code>ubidetach</code> - a tool to detach MTD devices from UBI
 	devices; in other words, this tool does the opposite to what
-	<b>ubiattach</b> does;</li>
-	<li><b>ubimkvol</b> - a tool to create UBI volumes on UBI
+	<code>ubiattach</code> does;</li>
+	<li><code>ubimkvol</code> - a tool to create UBI volumes on UBI
 	devices;</li>
-	<li><b>ubirmvol</b> - a tool to remove UBI volumes from UBI
+	<li><code>ubirmvol</code> - a tool to remove UBI volumes from UBI
 	devices;</li>
-	<li><b>ubiupdatevol</b> - a tool to update UBI volumes, which means to
-	write new volume contents; this tool uses the
+	<li><code>ubiupdatevol</code> - a tool to update UBI volumes, which
+	means to write new volume contents; this tool uses the
 	<a href="ubi.html#L_volupdate">UBI volume update feature</a> which
 	leaves the volume in "corrupted" state if it is interrupted;
 	additionally, this tool may be used to wipe out UBI volumes;</li>
-	<li><b>ubicrc32</b> - calculate CRC32 checksum of a file with the same
-	initial seed as UBI would use;</li>
-	<li><b>ubinize</b> - a tool to generate UBI images;</li>
-	<li><b>ubiformat</b> - a tool to format empty flash, to erase flash
-	preserving erase counters, and to flash UBI images to MTD devices.</li>
+	<li><code>ubicrc32</code> - calculate CRC32 checksum of a file with the
+	same initial seed as UBI would use;</li>
+	<li><code>ubinize</code> - a tool to generate UBI images;</li>
+	<li><code>ubiformat</code> - a tool to format empty flash, to erase
+	flash preserving erase counters, and to flash UBI images to MTD
+	devices.</li>
 </ul>
 
 <p>All UBI tools support "-h" option and print sufficient usage
@@ -313,7 +314,7 @@ if the kernel version is less than <code>2.6.25</code>, because corresponding
 UBI feature did not exist in older kernels.</p>
 
 <p>Also note, there are old UBI tools which might be useful (e.g.,
-<b>unubi</b>).</p>
+<code>unubi</code>).</p>
 
 
 

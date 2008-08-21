@@ -25,6 +25,7 @@
 	<li><a href="ubifs.html#L_atime">Does UBIFS support atime?</a></li>
 	<li><a href="ubifs.html#L_nfs">Does UBIFS support NFS?</a></li>
 	<li><a href="ubifs.html#L_slow_when_full">Does UBIFS become slower when it is full?</a></li>
+	<li><a href="ubifs.html#L_df_report">Why <code>df</code> reports too few free space?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 </ol>
 
@@ -492,6 +493,25 @@ be full. There are 2 main reasons for this:</p>
 	flash space is available, the less dirty data may be buffered, and
 	the more synchronous the file-system becomes.</li>
 </ul>
+
+
+
+<h2><a name="L_df_report">
+	Why <code>df</code> reports too few free space?</a></h2>
+
+<p>UBIFS flash space accounting is quite challenging and it is not always
+possible to report accurate amount of free space. The <code>df</code> utility
+usually reports <i>less</i> free space than users may actually write to it, but
+it <i>never</i> reports more. There are several reasons for this - compression,
+write-back, space wastage at the end of logical eraseblocks,
+garbage-collection, etc. Please, refer
+<a href="../doc/ubifs.html#L_spaceacc">this</a> section for more details.</p>
+
+<p>One practical thing is to synchronize the file-system (i.e., run
+<code>sync</code> or call <code>sync()</code>) before running
+<code>df</code> or calling <code>statfs()</code>. This may result in more
+accurate free space report, because dirty data is one of the major reasons why
+UBIFS may report too few flash space.</p>
 
 
 

@@ -23,6 +23,7 @@
 	<li><a href="ubifs.html#L_writeback">Write-back support</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
 	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
+	<li><a href="ubifs.html#L_spaceacc">Flash space accounting issues</a></li>
 	<li><a href="ubifs.html#L_documentation">Documentation</a></li>
 	<li><a href="ubifs.html#L_how_send_bugreport">How to send an UBIFS bugreport?</a></li>
 </ol>
@@ -32,7 +33,7 @@
 <h2><a name="L_rednote"><font color="red">Big red note</font></a></h2>
 
 <p>One thing people have to understand when dealing with UBIFS is that UBIFS is
-very different to any traditional file-system - it <b>does not</b> work on top
+very different to any traditional file system - it <b>does not</b> work on top
 of block devices (like hard drive, an SD card, an USB stick, etc). It was
 designed to work on top of UBI volumes, which have nothing to do with block
 devices. This is why UBIFS does not work on MMC cards or USB flash sticks -
@@ -65,16 +66,16 @@ devices. In other words, there are 3 subsystems involved:</p>
 	devices and they are devoid of many unpleasant issues MTD devices have
 	(e.g., wearing and bad blocks); see <a href="ubi.html">here</a> for more
 	information;</li>
-	<li><i>UBIFS file-system</i>, which works on top of UBI volumes.</li>
+	<li><i>UBIFS file system</i>, which works on top of UBI volumes.</li>
 </ul>
 
-<p>In contrast, JFFS2 file-system works on top of raw MTD devices.</p>
+<p>In contrast, JFFS2 file system works on top of raw MTD devices.</p>
 
 <p>The main objectives of UBIFS are:</p>
 
 <ol>
 	<li>better scalability comparing to what JFFS2 provides, which is achieved
-	by storing and maintaining the indexing data structures of the file-system
+	by storing and maintaining the indexing data structures of the file system
 	on the flash media;</li>
 	<li>write-back support;</li>
 	<li>support of on-the-flight compression.</li>
@@ -87,7 +88,7 @@ sections.</p>
 
 <ul>
 	<li>write-back support - this dramatically improves the throughput of
-	the file-system comparing to JFFS2, which is write-through;</li>
+	the file system comparing to JFFS2, which is write-through;</li>
 
 	<li>fast mount time - unlike JFFS2, UBIFS does not have to scan whole
 	media when mounting, it takes milliseconds for UBIFS to mount the
@@ -111,7 +112,7 @@ sections.</p>
 	maintenance overhead, while UBIFS does have it; this is because of the
 	way UBIFS commits the journal - it does not move the data physically
 	from one place to another but instead, it just adds corresponding
-	information to the file-system index and picks different eraseblocks
+	information to the file system index and picks different eraseblocks
 	for the new journal (i.e., UBIFS has sort of "wandering"
 	journal);</li>
 
@@ -140,7 +141,7 @@ profiling and bottleneck hunting.</p>
 <h2><a name="L_source">Source code</a></h2>
 
 <p>UBIFS is in mainline since 17 July 2008 and the first kernel release it will
-show up in is <code>2.6.27</code>. But since UBIFS is a very new file-system,
+show up in is <code>2.6.27</code>. But since UBIFS is a very new file system,
 it is recommended to pick the latest updates and fixes from the UBIFS git
 tree:</p>
 
@@ -177,7 +178,7 @@ different limitations. Below are some of them.</p>
 	<li>Since it is impossible to register memory shrinker in kernel
 	versions <code>2.6.21</code> and <code>2.6.22</code>, the UBIFS
 	shrinker does not work there, which means the UBIFS TNC cache never
-	gets shrinked and the system may run out of memory if the file-system
+	gets shrinked and the system may run out of memory if the file system
 	is very large.</li>
 
 	<li>Because of VFS interface changes since kernel version
@@ -212,8 +213,8 @@ going to be maintained forever and will be deleted at some point.</p>
 <h2><a name="L_usptools">User-space tools</a></h2>
 
 <p>There is only one UBIFS user-space tool at the moment -
-<b>mkfs.ubifs</b>, which creates UBIFS images. The tool may be found in the
-<i>MTD utils</i> repository (<code>mkfs.ubifs</code> sub-directory):</p>
+<code>mkfs.ubifs</code>, which creates UBIFS images. The tool may be found in
+the <i>MTD utils</i> repository (<code>mkfs.ubifs</code> sub-directory):</p>
 
 <code>git://git.infradead.org/mtd-utils.git</code>
 
@@ -237,7 +238,7 @@ I/O speed and requirements.</p>
 
 <p>Note, although the UBI scalability is linear, it anyway scales better much
 than JFFS2, which was originally designed for small ~32MiB NOR flashes. JFFS2
-has scalability issues on the "file-system level", while UBI/UBIFS stack has
+has scalability issues on the "file system level", while UBI/UBIFS stack has
 scalability issues only on lower "raw flash level". The following table
 describes the issues in more details.</p>
 
@@ -269,16 +270,16 @@ describes the issues in more details.</p>
 </tr>
 
 <tr>
-	<td>Mount time linearly depends on the file-system contents</td>
-	<td>True, the more data is stored on the file-system, the longer it
+	<td>Mount time linearly depends on the file system contents</td>
+	<td>True, the more data is stored on the file system, the longer it
 	    takes to mount it, because JFFS2 has to do more scanning work.</td>
-	<td>False, mount time does not depend on the file-system contents. At
+	<td>False, mount time does not depend on the file system contents. At
 	    the worst case (if there was an unclean reboot), UBIFS has to scan
 	    and replay the journal which has fixed and configurable size.</td>
 </tr>
 
 <tr>
-	<td>Full file-system checking is required after each mount</td>
+	<td>Full file system checking is required after each mount</td>
 	<td>True. JFFS2 has to check whole file system just after it has been
 	    mounted in case of NAND flash. The checking involves reading all
 	    nodes for each inode and checking their CRC checksums, which
@@ -288,13 +289,13 @@ describes the issues in more details.</p>
 	    needed because JFFS2 does not store space accounting information
 	    (i.e., free/dirty space) on the flash media but instead, gathers
 	    this information by scanning the flash media.</td>
-	<td>False. UBIFS does not scan/check whole file-system because it stores
+	<td>False. UBIFS does not scan/check whole file system because it stores
 	    the space accounting information on the flash media in the so-called
 	    LPT (Logical eraseblock Properties Tree) tree.</td>
 </tr>
 
 <tr>
-	<td>Memory consumption linearly depends on file-system contents</td>
+	<td>Memory consumption linearly depends on file system contents</td>
 	<td>True. JFFS2 keeps a small data structure in RAM for each node on
 	    flash, so the more data is stored on the flash media, the more
 	    memory JFFS2 consumes.</td>
@@ -318,7 +319,7 @@ describes the issues in more details.</p>
 	    file size.</td>
 	<td>False. UBIFS stores all the indexing information on the media in
 	    the indexing B-tree. Whenever a piece of data has to be read from
-	    the file-system, the B-tree is looked-up and the corresponding
+	    the file system, the B-tree is looked-up and the corresponding
 	    flash address to read is found. There is a TNC cache which caches
 	    the B-tree nodes when the B-tree is looked-up, and the cache is
 	    shrinkable, which means it might be shrunk when the kernel needs
@@ -331,7 +332,7 @@ describes the issues in more details.</p>
 	    media as soon as the data arrives. If one changes few bytes in the
 	    middle of a file, JFFS2 writes a data node which contains those
 	    bytes to the flash. If there are many random small writes all
-	    over the place, the file-system becomes fragmented. JFFS2 merges
+	    over the place, the file system becomes fragmented. JFFS2 merges
 	    small fragments to 4KiB chunks, which involves re-compression and
 	    re-writing the data. But this "de-fragmentation" is happening
 	    during garbage collection and at random time, because JFFS2
@@ -355,11 +356,11 @@ describes the issues in more details.</p>
 flash media straight away, but they are cached and go to the flash later, when
 it is absolutely necessary. This helps to greatly reduce the amount of I/O
 which results in better performance. Write-back caching is standard technique
-which exists in many modern file-systems like <code>ext3</code> or
+which exists in many modern file systems like <code>ext3</code> or
 <code>XFS</code>.</p>
 
 <p>In contrast, <code>JFFS2</code> does not have write-back support and all the
-JFFS2 file-system changes go the flash synchronously. Well, this is not
+JFFS2 file system changes go the flash synchronously. Well, this is not
 completely true and JFFS2 does have a small buffer of a NAND page size, but it
 is small and we may treat JFFS2 as completely synchronous.</p>
 
@@ -388,8 +389,8 @@ of useful hints and advices.</p>
 
 <ul>
 	<li>If you want to switch into "JFFS2 mode" and have a synchronous
-	file-system, use <code>-o sync</code> option when mounting UBIFS;
-	however, the file-system performance will drop, so this is not
+	file system, use <code>-o sync</code> option when mounting UBIFS;
+	however, the file system performance will drop, so this is not
 	recommended unless you absolutely have to have a synchronous FS;</li>
 
 	<li>Always keep in mind the above statement from the manual pages and
@@ -405,7 +406,7 @@ of useful hints and advices.</p>
 	a loop; otherwise just stick with  <code>fsync()</code>;</li>
 
 	<li>In shell, the <code>sync</code> command may be used, but it
-	synchronizes whole file-system which might be not very optimal; and
+	synchronizes whole file system which might be not very optimal; and
 	there is a similar <i>libc</i> <code>sync()</code> function;</li>
 
 	<li>Alternatively to <code>fdatasync()</code> you may use
@@ -468,7 +469,7 @@ However, access control lists (ACL) support is not implemented.</p>
 
 <ul>
 	<li><code>norm_unmount</code> (default) - commit on unmount; the
-	journal is committed when the file-system is unmounted so that the next
+	journal is committed when the file system is unmounted so that the next
 	mount does not have to replay the journal and it becomes very
 	fast;</li>
 
@@ -481,6 +482,98 @@ However, access control lists (ACL) support is not implemented.</p>
 may be used to disable UBIFS write-back and write-buffer caching and make it
 fully synchronous. Note, UBIFS does not support "<i>atime</i>", so the
 <code>atime</code> mount option has no effect.</p>
+
+
+
+<h2><a name="L_spaceacc">Flash space accounting issues</a></h2>
+
+<p>Traditional file systems like <code>ext2</code> can easily calculate amount
+of free space. The calculation is usually quite precise and users are
+accustomed to this. However, the situation is very different in UBIFS - it
+cannot really report precise amount of free space which confuses users.
+Instead, it reports <i>minimum</i> amount of free space, which usually much
+less than the real amount. Sometimes the mistake may be very high. For example,
+UBIFS may report (via the <code>statfs()</code> system call) that there is no
+free space, but one would still be able to write quite a lot.</p>
+
+<p>To put it differently, UBIFS is often <i>lying</i> about the amount of free
+space it has. As a rule, it may fit considerably more bytes than it reports.
+However, it never reports more free space than it has. It reports less, and
+very rarely it may report the exact amount. And this is not because UBIFS
+authors are jerks, there are fundamental reasons for this, which are discussed
+below.</p>
+
+<h4>Effect of compression</h4>
+
+<p>The first factor is UBIFS on-flight compression. Users usually seem to expect
+that if file system reports <i>N</i> bytes of free space, than it is possible
+to create an <i>N</i>-byte file. And because of the compression, this is not
+quite true for UBIFS. Depending on how well the file data compresses, UBIFS may
+fit several times more than it reports.</p>
+
+<p>When UBIFS calculates free space, it does not a-priori know anything about
+the data which is going to be written, so it cannot take into account the
+compression and just always assumes the worst-case scenario when the data does
+not compress.</p>
+
+<h4>Effect of write-back</h4>
+
+<p>The other major factor is <a href="ubi.html#L_writeback">write-back</a>.
+Indeed, suppose there are <i>X</i> bytes of dirty file data in the page cache.
+They will be flushed to the flash media later, and they is in RAM so far.
+UBIFS (namely, the budgeting sub-system) has <i>reserved</i> <i>X</i> +
+<i>O</i> bytes on the flash media for this data, where <i>O</i> is file-system
+overhead (e.g., the data has to be indexed, each data node has a header,
+etc).</p>
+
+<p>The problem is that UBIFS cannot accurately calculate <i>X</i> and <i>O</i>,
+and it uses pessimistic worst-case calculations, so that when the cached data
+are flushed, they'll take considerably less flash space than the reserved
+<i>X</i> + <i>O</i>. For example, this may lead to the following
+situations.</p>
+
+<pre>
+$ df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+ubi0:ubifs               49568     49568         0 100% /mnt/ubifs $ sync
+$ df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+ubi0:ubifs               49568     39164      7428  85% /mnt/ubifs
+</pre>
+
+<p>First time <code>df</code> reported zero free space, but after
+the <code>sync</code> it reported <code>15%</code> free space. This is because
+there were a lot of cached dirty data, and UBIFS reserved all flash space
+for them. But once the data has reached the flash media, they took considerably
+less flash space.</p>
+
+<p>Here are the reasons why UBIFS reserves more space than it is needed.</p>
+
+<ul>
+	<li>One of the reasons is again related to the compression. The data is
+	stored in the uncompressed form in the cache, and UBIFS does know how
+	well it would compress, so it assumes the data wouldn't compress at all.
+	However, real-life data usually compresses quite well (unless it
+	already compressed, e.g. it belongs to a <code>.tgz</code> or
+	<code>.mp3</code> file). This leads to major over-estimation of the
+	<i>X</i> component.</li>
+
+	<li>Due to the design, UBIFS nodes never cross logical eraseblock (or
+	LEB, see <a href="ubi.html#L_overview">here</a>) boundaries, so there
+	are small spots of wasted space at the end of eraseblocks. The amount
+	of this wasted flash space depends on the data and in which order this
+	data has been written or changed (this will be explained more later).
+	And traditionally UBIFS pessimistically assumes maximum possible amount
+	of wasted space, which leads to over-estimation of the <i>O</i>
+	component.</li>
+</ul>
+
+<p>Thus, UBIFS reports <i>more accurate</i> free space value if it is
+synchronized.</p>
+
+<h4>Space consumption depends on data and history</h4>
+
+<p>TODO: to be written</p>
 
 
 
