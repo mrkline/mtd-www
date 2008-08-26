@@ -452,6 +452,22 @@ The <code>fflush()</code> function flushes the <i>libc</i>-level buffers, while
 <code>sync()</code>, <code>fsync()</code>, etc flush <i>kernel</i>-level
 buffers.</p>
 
+<h4>Updating a file atomically</h4>
+
+<p>This sub-section describes the common technique of updating the contents of
+a file atomically. This technique is applicable to many other UNIX
+file-systems, not only to UBIFS.</p>
+
+<p>To atomically update the contents of file <code>foo</code>, you have to
+first make a copy <code>bar</code> of this file, then change file
+<code>bar</code>, synchronize file <code>bar</code>, and re-name
+<code>bar</code> to <code>foo</code>. Because the re-name operation is atomic
+(this is a <code>POSIX</code> requirement) and <code>bar</code> is
+synchronized, the whole update operation is atomic as well. Indeed, if a power
+cut happens, you will end up with intact <code>foo</code> and half-updated
+<code>bar</code>, in which case the whole atomic update operation may be run
+again.</p>
+
 
 
 <h2><a name="L_xattr">Extended attributes</a></h2>
