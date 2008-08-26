@@ -1,6 +1,6 @@
 <PAGE>
 	<VAR match="VAR_ORIGIN" replace="" />
-	<VAR match="VAR_CVSID" replace="Last updated: 29 May 2008, dedekind"/>
+	<VAR match="VAR_CVSID" replace="Last updated: 26 Aug 2008, dedekind"/>
 	<INCLUDE file="inc/header.tmpl" />
 
 	<VAR match="VAR_SEL_INDEX" replace="selected" />
@@ -24,13 +24,14 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>26 Aug 2008: UBIFS <a href="doc/ubifs.html#L_spaceacc">flash space
+	    accounting issues</a> documetation section added</li>
 	<li>17 Jul 2008: UBIFS is merged into mainline, will show up in 2.6.27</li>
 	<li>21 Apr 2008: <code>ubiformat</code> utility has been added</li>
 	<li>27 Mar 2008: <a href="doc/ubifs_whitepaper.pdf">UBIFS white-paper</a>
 	    is available</li>
 	<li>13 Mar 2008: 2.6.21 UBIFS back-port is now available</li>
 	<li>06 Mar 2008: UBIFS now supports extended attributes</li>
-	<li>26 Dec 2007: <a href="doc/ubi.ppt">UBI slides</a> are available</li>
 	</ul>
 
 	<INCLUDE file="inc/footer.tmpl" />
