@@ -535,7 +535,8 @@ situations.</p>
 <pre>
 $ df
 Filesystem           1K-blocks      Used Available Use% Mounted on
-ubi0:ubifs               49568     49568         0 100% /mnt/ubifs $ sync
+ubi0:ubifs               49568     49568         0 100% /mnt/ubifs
+$ sync
 $ df
 Filesystem           1K-blocks      Used Available Use% Mounted on
 ubi0:ubifs               49568     39164      7428  85% /mnt/ubifs
@@ -571,10 +572,49 @@ less flash space.</p>
 <p>Thus, UBIFS reports <i>more accurate</i> free space value if it is
 synchronized.</p>
 
-<h4>Space consumption depends on data and history</h4>
+<h4>Wastage</h4>
+
+<p>As it was mentioned above, UBIFS nodes do not cross LEB boundaries. Consider
+the following numbers:</p>
+
+<ul>
+	<li>maximum UBIFS node size (non-compressed data node) is 4256
+	bytes;</li>
+	<li>smallest UBIFS node size (a data node with 8 bytes of data,
+	corresponding to a file tail) is  56 bytes;</li>
+	<li>depending on name length, directory entry nodes take 56-304
+	bytes;</li>
+	<li>typical LEB size in case of NAND flash with 128KiB physical
+	eraseblocks and 2048 bytes NAND page is 126KiB (or 124KiB if  the NAND
+	chip does not support sub-pages, see <a href="ubi.html">here</a>);</li>
+</ul>
+
+<p>Thus, if the vast majority of nodes on the flash were non-compressed data
+nodes, UBIFS would waste 1344 bytes at the ends of 126KiB LEBs. But real-life
+data is often compressible, so data node sizes would vary in a real-life
+situation, and the amount of wasted space at the ends of eraseblocks would vary
+from 0 to 4255.</p>
+
+<p>UBIFS is doing some job to put small nodes like directory entries to the
+ends of LEBs to lessen the amount of wasted space, but it is not ideal and
+UBIFS still may waste unnecessarily large chunks of flash space at the ends of
+eraseblocks.</p>
+
+<p>When reporting free space, UBIFS does not know which kind of data is going
+to be written to the flash media, and in which sequence. Thus, it assumes the
+maximum possible wastage of 4255 bytes per LEB. This calculation is too
+pessimistic for most real-life situations and the average real-life
+wastage is considerably less than 4255 bytes per LEB. However, UBIFS reports
+the absolute minimum amount of free space user-space applications may count
+on.</p>
+
+<p>The above means that the larger is LEB size, the better is UBIFS free space
+prediction. E.g., UBIFS is better in this respect on NANDs with 128KiB
+eraseblock size, comparing to NANDs with 16KiB eraseblock size.</p>
+
+<h4>Dirty space</h4>
 
 <p>TODO: to be written</p>
-
 
 
 <h2><a name="L_documentation">Documentation</a></h2>
