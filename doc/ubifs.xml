@@ -630,7 +630,61 @@ eraseblock size, comparing to NANDs with 16KiB eraseblock size.</p>
 
 <h4>Dirty space</h4>
 
-<p>TODO: to be written</p>
+<p>Dirty space is the flash space occupied by UBIFS nodes which were
+invalidated because they were changed or removed. For example, if the contents
+of a file is re-written, than corresponding data nodes are invalidated and new
+data nodes are written to the flash media. The invalidated nodes comprise dirty
+space. There are other mechanisms how dirty space appears as well.</p>
+
+<p>UBIFS cannot re-use dirty space straight away, because corresponding flash
+areas do not contain all 0xFF bytes. Before dirty space can be re-used, UBIFS
+has to garbage-collect corresponding LEBs. The idea of Garbage collector which
+reclaims dirty space is the same as in JFFS2. Please, refer the
+<a href="http://sources.redhat.com/jffs2/jffs2.pdf">JFFS2 design document</a>
+for more information.</p>
+
+<p>Roughly, UBIFS garbage collector picks a victim LEB which has some dirty
+space and moves the contents of the victim LEB to the LEB which is reserved for
+GC. This produces some amount of free space at the end of the reserved LEB.
+Then GC pick new victim LEB, and moves the data to the reserved LEB. When the
+reserved LEB is full, UBIFS picks another empty LEB (e.g., the old
+victim which was made free a step ago), and continues moving nodes from the
+victim LEB to the new reserved LEB. The process continues until a full empty
+LEB is produced.</p>
+
+<p>UBIFS has a notion of minimum I/O unit size, which characterizes minimum
+amount of data which may be written to the flash (see
+<a href="../faq/ubi.html#L_find_min_io_size">here</a> for more information).
+Typically, UBIFS works on large-page NAND flashes and min. I/O size is 2KiB.</p>
+
+<p>Consider a situation when GC picks eraseblocks with less than min. I/O unit
+size dirty space. When all nodes from the victim LEB have been moved to the
+reserved LEB, the last min. I/O unit of the reserved LEB has to be written to
+the flash media, which means no space would be reclaimed. The reason why the
+last min. I/O unit of the reserved LEB has to me written immediately is because
+the victim LEB cannot be erased <i>before</i> all the moved nodes have reached
+the media. Indeed, otherwise an unclean reboot would result in lost data.</p>
+
+<p>Well, things are actually not that simple and UBIFS GC actually tries not to
+waste space, but it is not always possible and UBIFS GC is far from being
+ideal.</p>
+
+<p>Anyway, what matters is that UBIFS cannot always reclaim dirty space if the
+amount of it is less than min. I/O unit size. And when UBIFS calculates the
+amount of free space in the file-system, it takes only large enough pieces of
+dirty space into account.</p>
+
+<p>Thus, the less dirty space the FS has, and the smaller is dirty space
+fragmentation, the more precise is UBIFS free space reporting. In practice this
+means that a file system which is close to be full has less accurate free
+space reporting comparing to a less full file system.</p>
+
+<p>Note, to fix this issue, UBIFS would need to run GC in
+<code>statfs()</code>, which would turn as much dirty space as possible into
+free space, which would result in more precise free space reporting. However,
+this would make <code>statfs()</code> very slow. Another possibility would be
+to implement background GC in UBIFS (just like in JFFS2).</p>
+
 
 
 <h2><a name="L_documentation">Documentation</a></h2>
@@ -640,6 +694,10 @@ available here: <a href="ubifs_whitepaper.pdf">ubifs_whitepaper.pdf</a>. There i
 <a href="../faq/ubifs.html">UBIFS FAQ</a> which might be useful. Also, there is
 <a href="http://osl.sed.hu/wiki/ubifs/index.php/Main_Page">a wiki page</a>, but
 it has a lot of out-of-date information.</p>
+
+<p>It might also be very useful to study
+<a href="http://sources.redhat.com/jffs2/jffs2.pdf">JFFS2 design</a> because
+many basic ideas are the same in UBIFS.</p>
 
 
 

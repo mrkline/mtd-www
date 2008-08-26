@@ -457,8 +457,8 @@ intact. This is <code>POSIX</code> requirement and UBIFS satisfies it.</p>
 <h2><a name="L_atime">Does UBIFS support atime?</a></h2>
 
 <p>No, it does not support atime. The authors think it is not very useful in
-embedded and did not implement this. Indeed most of the users do not provably
-want the file-system doing inode updates every time it is read.</p>
+embedded world and did not implement this. Indeed most of the users do not
+provably want the file-system doing inode updates every time it is read.</p>
 
 
 
@@ -507,11 +507,15 @@ write-back, space wastage at the end of logical eraseblocks,
 garbage-collection, etc. Please, refer
 <a href="../doc/ubifs.html#L_spaceacc">this</a> section for more details.</p>
 
-<p>One practical thing is to synchronize the file-system (i.e., run
-<code>sync</code> or call <code>sync()</code>) before running
-<code>df</code> or calling <code>statfs()</code>. This may result in more
-accurate free space report, because dirty data is one of the major reasons why
-UBIFS may report too few flash space.</p>
+<p>Few practical things:</p>
+<ul>
+	<li>synchronize the file-system (i.e., run <code>sync</code> or call
+	<code>sync()</code>) before running <code>df</code> or calling
+	<code>statfs()</code> - this may result in more accurate free space
+	reporting;</li>
+	<li>the closer is UBIFS to being full, the less accurate is free space
+	reporting.</li>
+</ul>
 
 
 
