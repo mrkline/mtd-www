@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 28 Aug 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 29 Aug 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -26,6 +26,7 @@
 	<li><a href="ubifs.html#L_nfs">Does UBIFS support NFS?</a></li>
 	<li><a href="ubifs.html#L_slow_when_full">Does UBIFS become slower when it is full?</a></li>
 	<li><a href="ubifs.html#L_df_report">Why <code>df</code> reports too few free space?</a></li>
+	<li><a href="ubifs.html#L_comproff">How to disable compression?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 </ol>
 
@@ -517,6 +518,41 @@ garbage-collection, etc. Please, refer
 	reporting.</li>
 </ul>
 
+
+
+<h2><a name="L_comproff">How to disable compression?</a></h2>
+
+<p>UBIFS compression may be disabled for whole file system in FS creation time
+using corresponding <a href="ubifs.html#L_mkfubifs"><code>mkfs.ubifs</code></a>
+options.</p>
+
+<p>However, if the compression is enabled by default, it may be disabled for
+individual files by cleaning the compression inode flag:</p>
+
+<pre>
+$ chattr -c /mnt/ubifs/file
+</pre>
+
+<p>in <code>shell</code>, or</p>
+
+<pre>
+/* Get inode flags */
+ioctl(fd, FS_IOC_GETFLAGS, &amp;flags);
+/* Set "compression" flag */
+flags &amp;= ~FS_COMPR_FL;
+/* Change inode flags */
+ioctl(fd, FS_IOC_SETFLAGS, &amp;flags);
+</pre>
+
+<p>in <code>C</code> programs.</p>
+
+<p>It might be a good idea to disable compression for say, <code>mp3</code> or
+<code>jpeg</code> files which would anyway not compress and UBIFS would just
+waste CPU time trying to compress them. The compression may also be disabled if
+one wants faster file read, because it UBIFS would not need to uncompress the
+file on read. Write speed may be faster or slower if compression is disabled.
+Indeed, in case of a very fast CPU and very slow flash compressed writes are
+faster, and vice versa.</p>
 
 
 <h2><a name="L_ubifs_nandsim">How to use UBIFS with nandsim?</a></h2>
