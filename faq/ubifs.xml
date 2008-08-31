@@ -546,6 +546,9 @@ ioctl(fd, FS_IOC_SETFLAGS, &amp;flags);
 
 <p>in <code>C</code> programs.</p>
 
+<p>Note, the code which uses this would work fine on other Linux file-systems.
+They just ignore the compression flag.</p>
+
 <p>It might be a good idea to disable compression for say, <code>mp3</code> or
 <code>jpeg</code> files which would anyway not compress and UBIFS would just
 waste CPU time trying to compress them. The compression may also be disabled if
@@ -553,6 +556,7 @@ one wants faster file read, because it UBIFS would not need to uncompress the
 file on read. Write speed may be faster or slower if compression is disabled.
 Indeed, in case of a very fast CPU and very slow flash compressed writes are
 faster, and vice versa.</p>
+
 
 
 <h2><a name="L_ubifs_nandsim">How to use UBIFS with nandsim?</a></h2>
