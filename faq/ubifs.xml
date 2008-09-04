@@ -28,6 +28,7 @@
 	<li><a href="ubifs.html#L_df_report">Why <code>df</code> reports too few free space?</a></li>
 	<li><a href="ubifs.html#L_comproff">How to disable compression?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
+	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 </ol>
 
 
@@ -586,6 +587,24 @@ mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
 <p>For more information about nandsim see
 <a href="nand.html#L_nand_nandsim">here</a>.</p>
 
+
+
+<h2><a name="L_powercut">Is UBIFS tolerant to power-cuts?</a></h2>
+
+<p>Yes, both UBI (see <a href="ubi.html#L_crash_safe">here</a>) and UBIFS are
+tolerant to power-cuts, and they were designed with this property in mind.</p>
+
+<p>UBIFS has internal debugging infrastructure to emulate power failures and
+the authors used it for extensive testing. It was tested for long time with
+power-fail emulation. The advantage of the emulation is that it emulates power
+failures even at the situations which happen not very often. For example, when the
+master node is updated, or the log is changed. The probability to interrupt the
+system at those moments is very low in real-life.</p>
+
+<p>Real power-cut tests have also been done on OneNAND flash. We used Power
+Node devices which are controlled via serial line and may switch the power of
+the connected device on and off. UBIFS survived more than 20000 power-cuts
+while running stress tests.</p>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
