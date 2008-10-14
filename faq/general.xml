@@ -14,7 +14,7 @@
 <H2>Table of contents</H2>
 <OL>
 	<LI><A HREF="general.html#L_mtd_what">Is an MTD device a block device or a char device?</A></LI>
-	<LI><A HREF="general.html#L_mtd_vs_hdd">What are the differences between flash devices and hard drives?</A></LI>
+	<LI><A HREF="general.html#L_mtd_vs_hdd">What are the differences between flash devices and block drives?</A></LI>
 	<LI><A HREF="general.html#L_ext2_mtd">Can I mount ext2 over an MTD device?</A></LI>
 	<LI><A HREF="general.html#L_point">What are the point() and unpoint() functions used for?</A></LI>
 	<LI><A HREF="general.html#L_unlock">I keep getting errors whenever I try to write or erase to my MTD device</A></LI>
@@ -56,15 +56,18 @@ original, just like translated Chinese poems.
 
 
 <A NAME="L_mtd_vs_hdd">
-<H2>What are the differences between flash devices and hard drives?</H2>
+<H2>What are the differences between flash devices and block drives?</H2>
 </A>
 
-<P>The following table describes the differences between hard drives and
-flashes.</P>
+<P>The following table describes the differences between block devices and
+raw flashes. Note, SSD, MMC, eMMC, RS-MMC, SD, mini-SD, micro-SD, USB flash
+drive, CompactFlash, MemoryStick, MemoryStick Micro, and other FTL devices
+are <b>block devices</b>, not raw flash devices. Of course, hard drives are
+also block devices.</P>
 
 <TABLE cellpadding="5" cellspacing="0" border="1">
 	<TR>
-		<TD><B>HARD drives</B></TD>
+		<TD><B>Block drives</B></TD>
 		<TD><B>MTD device</B></TD>
 	</TR>
 	<TR>
@@ -73,7 +76,7 @@ flashes.</P>
 	</TR>
 	<TR>
 		<TD>Sectors are small (512, 1024 bytes)</TD>
-		<TD>Eraseblocks are larger (32KiB, 128KiB)</TD>
+		<TD>Eraseblocks are larger (typically 128KiB)</TD>
 	</TR>
 	<TR>
 		<TD>
@@ -87,8 +90,9 @@ flashes.</P>
 	</TR>
 	<TR>
 		<TD>
-			Bad sectors are re-mapped and hidden by hardware, at
-			least at modern LBA hard drives
+			Bad sectors are re-mapped and hidden by hardware (at
+			least in modern LBA hard drives); in case of FTL
+			devices it is the resposibility of FTL to provide this
 		</TD>
 		<TD>
 			Bad eraseblocks are not hidden and should be dealt with
@@ -96,10 +100,12 @@ flashes.</P>
 		</TD>
 	</TR>
 	<TR>
-		<TD>HDD sectors are devoid of the wear-out property</TD>
+		<TD>Sectors are devoid of the wear-out property (in FTL devices
+			it is the resposibility of FTL to provide this) </TD>
 		<TD>
-			Eraseblocks get worn-out (i.e., bad and unusable) after
-			about 10<SUP>4</SUP>-10<SUP>5</SUP> erase cycles.
+			Eraseblocks wear-out and become bad and unusable after
+			about 10<SUP>3</SUP> (for MLC NAND) - 10<SUP>5</SUP>
+			(NOR, SLC NAND) erase cycles
 		</TD>
 	</TR>
 </TABLE>
@@ -123,9 +129,9 @@ and <A HREF="general.html#L_mtd_vs_hdd">this</A> FAQ entries.
 </P>
 
 <P>
-Please, do not be confused by USB sticks, MMCs and other popular removable
-devices. Although they are also called "flash", they are not MTD devices. They
-are out of MTD subsystem's scope. Please, read
+Please, do not be confused by USB stick, MMC, SD, CompactFlash and other popular
+removable devices. Although they are also called "flash", they are not MTD devices.
+They are out of MTD subsystem's scope. Please, read
 <A HREF="jffs2.html#L_hdd_jffs2">this</A> FAQ entry.
 </P>
 

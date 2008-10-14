@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 21 Apr 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 14 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -39,13 +39,22 @@
 
 <h2><a name="L_rednote"><font color="red">Big red note</font></a></h2>
 
-<p>People are often confused and treat UBI as a block device emulation layer
-(also known as FTL - flash translation layer). But this is not true - <b>UBI
-is not an FTL.</b></p>
+<p>People are often confused about what UBI is, which was the reason for
+creating this seciton. So,</p>
 
-<p>UBI was <b>not</b> designed for flash devices like MMC/SD/mini-SD/micro-SD
-cards, USB sticks, CompactFlash, and so on. UBI was designed for bare flashes
-which may be found in embedded systems. Please, do not be confused.</p>
+<ul>
+	<li>UBI is not a Flash Translation Layer (FTL), and it has nothing to
+	do with FTL;</li>
+	<li>UBI works with bare flash, and it <b>does not</b> work with
+	consumer flash media like MMC, RS-MMC, eMMC, SD, mini-SD, micro-SD,
+	CompactFlash, MemoryStick, USB flash drive, etc; instead, UBIFS works
+	with raw flash devices, which are mostly found in embedded devices like
+	mobile phones, etc.</li>
+</ul>
+
+<p>Please, do not be confused. Read <a
+href="../doc/ubifs.html#L_raw_vs_ftl">here</a> for more information about how
+raw flash devices are different to FTL devices.</p>
 
 
 

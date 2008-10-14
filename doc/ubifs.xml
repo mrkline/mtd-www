@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 29 Aug 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 14 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -14,6 +14,7 @@
 <h2>Table of contents</h2>
 <ol>
 	<li><a href="ubifs.html#L_rednote">Big red note</a></li>
+	<li><a href="ubifs.html#L_raw_vs_ftl">Raw flash vs. FTL devices</a></li>
 	<li><a href="ubifs.html#L_overview">Overview</a></li>
 	<li><a href="ubifs.html#L_status">Current status</a></li>
 	<li><a href="ubifs.html#L_source">Source code</a></li>
@@ -34,14 +35,158 @@
 
 <p>One thing people have to understand when dealing with UBIFS is that UBIFS is
 very different to any traditional file system - it <b>does not</b> work on top
-of block devices (like hard drive, an SD card, an USB stick, etc). It was
-designed to work on top of UBI volumes, which have nothing to do with block
-devices. This is why UBIFS does not work on MMC cards or USB flash sticks -
+of block devices (like hard drives, MMC/SD cards, USB flash drives, SSDs, etc).
+UBIFS was designed to work on top of raw flash, which has nothing to do with
+block devices. This is why UBIFS does not work on MMC cards or USB flash drives -
 they look like block devices to the outside world because they implement
 FTL (Flash Translation Layer) support in hardware, which simply speaking
-emulates a block device on top of the built-in flash chip.
-<a href="../faq/general.html#L_mtd_vs_hdd">This</a> FAQ entry describes the
-difference between block devices and flash chips.</p>
+emulates a block device on top of the built-in flash chip. Please, read
+<a href="L_raw_vs_ftl">the next</a> section for more information about raw
+flash devices and FTL devices.</p>
+
+
+
+<h2><a name="L_raw_vs_ftl">Raw flash vs. FTL devices</a></h2>
+
+<p>FTL stands for "Flash Translation Layer" and it is software which emulates
+a block device on top of flash hardware. At early days FTL ran on the
+host computer. For example, old PCMCIA flash devices are essentially raw flash
+devices, and the PCMCIA standard defines the media storage format for them. So
+the host computer has to run the FTL software driver which implements PCMCIA
+FTL. However, nowadays FTL is usually firmware, and it is run by the controller
+which is built intro the storage device. For example, if you look inside an USB
+flash drive, you'll find there a NAND chip (or several of them), and a
+micro-controller, which runs FTL firmware. Some USB flash drives are known to
+have quite powerful ARM processor inside. The same is true for MMC, eMMC, SD,
+and so on.</p>
+
+<p>All FTL devices have block I/O interface. The interfaces are different, e.g.
+MMC, eMMC, SD, USB mass storage, ATA, etc, but they anyway provide block-based
+access to the device. By block-based access we mean that whole device is
+represented as an linear array of (usually) 512-byte blocks. Each block may be
+read or written. Just like a Hard Drive.</p>
+
+<p>Linux has an abstraction of a block device. For example hard drives are
+block devices. Linux has many file-systems and the block I/O subsystem, which
+includes elevators and so on. This all has been created to work with block
+devices (historically - hard drives). So the idea is that the same software may
+be used with FTL devices. For example, you may use FAT file-system on your MMC
+card, or ext3 file-system or your SSD.</p>
+
+<p>Although most flashes on the commodity hardware have FTL, there are systems
+which only have bare flash and do not use FTL. Those are mostly various
+handheld devices. They usually have only bare NAND flash inside. And raw flash
+devices are actually very different to block devices. Please, refer
+<a href="../faq/general.html#L_mtd_vs_hdd">this</a> table for the details.</p>
+
+<p>UBIFS file-system was designed for raw flash. It does not assume the block
+device modes, but instead, it assumes raw flash model. For example, UBIFS takes
+care of erasing eraseblocks, writing all data out-of-place, doing
+garbage-collection and so on. UBIFS uses UBI, which is doing stuff like
+wear-leveling and bad eraseblock handling, which is not normally needed in case
+of block devices.</p>
+
+<p>Traditionally people ask questions like "why would one need to use raw
+flash and why not just use MMC, or something like this?". Well, there is no
+simple answer, and the following is what UBIFS developers think.
+We'll answer in form of a list of non-structured items and let the reader
+structure it. And because mass storage systems mostly use NAND flash, we will
+talk specifically about NAND.</p>
+
+<ul>
+	<li>Bare NAND chips are cheaper and simpler, which is very important
+	for small system. However, it seems like the industry pushes FTL
+	devices forward and the situation is not that simple and obvious
+	anymore.</li>
+
+	<li>FTL devices are "black boxes". FTL algorithms are normally vendor
+	secrets. But we know that NAND flash has issues like wear-leveling,
+	bad block handling, read-disturb and so on. And it is important to get
+	them right, especially in case of MLC flash, which may have short
+	eraseblock life-time (e.g., only 1000 erase-cycles). But because FTL
+	algorithms are closed, it is difficult to be sure whether a specific
+	FTL device gets everything right or not.</li>
+
+	<li>If you start thinking about how FTL could be implemented, you
+	realize that it must do things like garbage collection, which is
+	sometimes referred to as "reclaim process". The flash hardware also
+	pretty much requires most writes to be out-of-place. But how does FTL
+	behaves in case of sudden power-cuts, for example while it is in the
+	middle of doing garbage collection? Does the FTL device guarantee that
+	the data which was on the flash media before the power cut happens will
+	not disappear or become corrupted because of the power cut?</li>
+
+	<li>The power-cut tolerance may be tested, while it is quite difficult
+	to test stuff like wear-leveling or read-disturb handling, because it
+	may require too much time.</li>
+
+	<li>We have heard reports that some USB flash drives wear out very
+	quickly, i.e., they start reporting I/O errors after few weeks of
+	intensive use. This means that FTL does not do proper wear-leveling.
+	This does not mean that all USB flash drives are bad, but you should be
+	careful.</li>
+
+	<li>We have heard reports that MMC and SD cards corrupt and loose data
+	if power is cut during writing. Even the data which was there long time
+	before may corrupt or disappear. This means that they have bad FTL
+	which does not do things properly. But again, this does not have to be
+	true for all MMCs and SDs - there are many different vendors. But
+	again, you should be careful.</li>
+
+	<li>In general, if you glance back into the history, many FTL devices
+	were mostly used with FAT file-system for storing stuff like photo and
+	video. FAT file system is not reliable by definition, which suggests
+	that FTL may also not be very reliable, just because historically it
+	was not really required. Indeed, it is not a big deal to loose a couple
+	of photos. However, if the FTL device is used for storing the system
+	libraries, it is crucial to make sure they do not corrupt because of
+	power-cuts.</li>
+
+	<li>Good FTL, especially if it deals with MLC NAND (which is used in
+	modern mass storage devices) must be a rather complex piece of
+	software. Implementing it in firmware might be a not very simple task.
+	And rung it might require a rather powerful controller. Obviously, we may
+	suspect that vendors go for various kind of tricks or compromises to
+	keep their devices "good enough" and cheap. For example, they may
+	optimize FTL specifically for FAT, and if you start using ext3 on top
+	of it, you might face some unexpected problems. Again, FTL is closed
+	and it is often difficult to validate an FTL device.</li>
+
+	<li>SSD drives are probably very different to eMMC, MMC/SD etc. SSDs are
+	expensive and they may have powerful CPUs inside, which run complex
+	firmware which is getting things righ.</li>
+
+	<li>FTL devices are becoming more popular and better. It is just not
+	always easy to distinguish between good and bad FTL devices (of course
+	vendors will assure you their device is perfect). But there is nothing
+	bad in using a FTL device as long as you trust it, or have tested it,
+	or it simply fit your system requirements.</li>
+
+	<li>In case of raw flash we know what we are doing. UBI/UBIFS handles
+	all aspects of NAND flash like bad erase-blocks and wear-leveling. It
+	guarantees power-cut tolerance. It is open and available, so you may
+	always validate, test, and fix it. In opposite, it is not that simple
+	to fix firmware bugs.</li>
+
+	<li>Theoretically, UBIFS may do better job, because it knows much more
+	information about the files than FTL. For example, UBIFS knows about
+	deleted files, while FTL does not, so FTL may do unneeded work trying
+	to preserve the sectors belonging to deleted files. However, some FTL
+	devices which support "discard" requests may benefit from the
+	file-system hints about unused sectors. Nevertheless, in general, UBIFS
+	should do better job on a bare NAND, than a traditional FS on an FTL
+	device with a similar NAND chip. On the other hand, FTL devices may
+	include multiple NAND chips, parallelise things and provide fast I/O,
+	and SSDs are a good exampel. But probably these FTL devices would be
+	more expensive. So as usually, there are trade-offs.</li>
+
+	<li>Obviously, the advantage of FTL devices is that you use old and
+	trusted software on top of them. For example, ext3.</li>
+</ul>
+
+<p>So it is indeed difficult to give an answer. Just think about cons and pros
+and decide. Nonetheless, raw flashes are used, mostly in the embedded world, and
+this is why UBIFS has been developed.</p>
 
 
 

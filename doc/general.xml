@@ -1,6 +1,6 @@
 <PAGE>
 	<VAR match="VAR_ORIGIN" replace="../" />
-	<VAR match="VAR_CVSID" replace="$Id: general.xml,v 1.2 2005/11/03 01:54:13 jwboyer Exp $"/>
+	<VAR match="VAR_CVSID" replace="Last updated: 14 Oct 2008, dedekind"/>
 	<INCLUDE file="../inc/header.tmpl" />
 
 	<VAR match="VAR_SEL_DOC" replace="selected" />
