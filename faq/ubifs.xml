@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 29 Aug 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 15 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -29,6 +29,7 @@
 	<li><a href="ubifs.html#L_comproff">How to disable compression?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
+	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
 </ol>
 
 
@@ -553,7 +554,7 @@ They just ignore the compression flag.</p>
 <p>It might be a good idea to disable compression for say, <code>mp3</code> or
 <code>jpeg</code> files which would anyway not compress and UBIFS would just
 waste CPU time trying to compress them. The compression may also be disabled if
-one wants faster file read, because it UBIFS would not need to uncompress the
+one wants faster file read, because it UBIFS would not need to decompress the
 file on read. Write speed may be faster or slower if compression is disabled.
 Indeed, in case of a very fast CPU and very slow flash compressed writes are
 faster, and vice versa.</p>
@@ -605,6 +606,31 @@ system at those moments is very low in real-life.</p>
 Node devices which are controlled via serial line and may switch the power of
 the connected device on and off. UBIFS survived more than 20000 power-cuts
 while running stress tests.</p>
+
+
+
+<h2><a name="L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></h2>
+
+<p>UBIFS journal is very different to ext3 journal. In case of ext3, the
+journal has fixed position and size on the block device. The data is written
+copied to the journal, and then copied to the file-system. This copying is done
+during journal commit. After the commit, new data may be written to the
+journal, and so on. So in case of ext3 changing journal size would change
+file-system capacity.</p>
+
+<p>The situation is different in UBIFS. UBIFS journal is "wandering". It does
+not have fixed position in the UBI volume. When the journal is full, UBIFS is
+committing it which means it simply amends the FS index to refer the data which
+is stored in the journal. Then different LEBs are picked for the new journal,
+and so on. So the journal constantly migrates. The journal contains the same
+information as other data LEBs, but this information is just not referred from
+the index, it is not indexed. But there is flash space reserved for the
+indexing information, and this space is used during commit.</p>
+
+<p>To put it simple, the amount of available space on UBIFS does not really
+depend on the journal size. There is very weak dependency, though, because for
+bigger journal we need bigger log, but it is really something which does not
+make any noticeable difference.</p>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
