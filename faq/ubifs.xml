@@ -590,7 +590,9 @@ precize.</p>
 <p>If you want to have as precise free space prediction as possible -
 synchronize the file-system. This not only flushes dirty data to the media,
 this also commits UBIFS journal, which improves free space prediction even
-more.</p>
+more. The other possibility is to mount UBIFS in synchronous mode using
+<code>-o sync</code> mount option. However, it may perform not as well as in
+asynchronous (default) mode.</p>
 
 <p>It is also worth noting that the closer is UBIFS to being full, the less
 accurate is free space reporting.</p>
@@ -603,7 +605,8 @@ accurate is free space reporting.</p>
 	are guaranteed to be able to write at least <code>X</code> bytes
 	of data to a file, but usually more than <code>X</code> bytes;</li>
 	<li>run <code>sync</code> to get the most accurate <code>df</code>
-	report;</li>
+	report; alternatively, you may mount UBIFS in synchronous mode using
+	<code>-o sync</code> mount option;</li>
 	<li>read <a href="../doc/ubifs.html#L_spaceacc">this</a> section if you
 	are curious why UBIFS has issues with <code>df</code>.</li>
 </ul>
