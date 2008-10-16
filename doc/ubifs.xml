@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 15 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 16 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -619,20 +619,28 @@ many basic ideas are the same in UBIFS.</p>
 
 <h2><a name="L_how_send_bugreport">How to send an UBIFS bugreport?</a></h2>
 
-<p>Before sending a bug report:</p>
+<p>Before sending a bug report, please:</p>
 <ul>
 	<li>make sure you have compiled kernel symbols in
 	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
 
-	<li>enable UBIFS debugging (<code>CONFIG_UBIFS_FS_DEBUG=y</code>
-	in <code>.config</code>).</li>
+	<li>mark the <b>Enable debugging</b> check-box in the kernel
+	configuration menu(<code>CONFIG_UBIFS_FS_DEBUG=y</code> in
+	<code>.config</code>); Please, do not enable other debugging
+	sub-options like debugging messages unless you know what you are
+	doing;</li>
 </ul>
 
-<p>Please, attach all the bug-related messages including the UBIFS messages from
-the kernel ring buffer, which may be collected using the <code>dmesg</code>
-utility or using <code>minicom</code> with serial console capturing. And of
-course, it is wise to describe how the problem can be reproduced. The bugreport
-should be sent to the <a href="../mail.html">MTD mailing list</a>.</p>
+<p>Then reproduce the bug (hopefully it is reproducible). Attach all the
+bug-related messages including the UBIFS messages from the kernel ring buffer,
+which may be collected using the <code>dmesg</code> utility or using
+<code>minicom</code> with serial console capturing. And of course, it is wise
+to describe how the problem can be reproduced. The bugreport should be sent to
+the <a href="../mail.html">MTD mailing list</a>.</p>
+
+<p>Note, sometimes UBIFS bugs may appear to be UBI bugs. If you suspect
+there are UBI problems, please, also enable UBI debugging (see
+<a href="../doc/ubi.html#L_how_send_bugreport">here</a>).</p>
 
 
 

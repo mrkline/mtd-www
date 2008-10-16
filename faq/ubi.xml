@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 19 May 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 16 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -574,7 +574,7 @@ writes, not much else seems to be affected by this bug.</p>
 
 <h2><a name="L_how_debug">How to debug UBI?</a></h2>
 
-<h3>Use fake MTD device</h3>
+<h3><a name="L_how_debug_fake_mtd">Use fake MTD device</a></h3>
 
 <p>When debugging UBI one doesn't have to use a real embedded platform with real
 flash. In many cases, it is easier to use a PC with an MTD device emulator and
@@ -624,17 +624,26 @@ mtd1: 04000000 00004000 "NAND simulator partition"
 prints more information about errors, and adds extra assertions in the code
 which may help to catch bugs.</p>
 
+<p>Note, if you enable the <b>UBI debugging</b> option, UBIFS will not flood
+syslog with its messages. It will just do some light-weight self-checks, and
+it will be more verbose in case of errors. The overhead of having <b>only</b>
+debugging enabled is very low. But if you enable other UBI debugging options,
+the situation changes (see below).</p>
+
 <p>In many cases, it is enough to just enable debugging. But sometimes it is
 also useful to enable extra-self checks, which make sure internal data
 structures are consistent and may catch the problem much earlier then it would
-have been noticed otherwise. But the checks make UBI much slower.</p>
+have been noticed otherwise. Please, mark the "<b>Extra self-checks</b>"
+check-box to enable the self-checks. Self-checks make UBI considerably slower.
+For example, UBI attach time may become very long.</p>
 
 <h3>Debugging messages</h3>
 
-<p>Sometimes it is necessary to make UBI print about what it is doing. This is
-where UBI messages may be enabled. When they are enabled, UBI prints a lot to
-the kernel ring buffer and this makes it slower. This section describes few
-tricks and techniques which might be useful when debugging with kernel
+<p>Sometimes it is necessary to make UBI print about what it is doing. You may
+enable various UBI debugging messages in the "<b>Additional UBI	debugging
+messages</b> configuration menu. When the messages are enabled, UBI prints a
+lot to the kernel ring buffer and this makes it slower. This section describes
+few tricks and techniques which might be useful when debugging with kernel
 messages.</p>
 
 <p>The Linux kernel has internal ring buffer where all the debugging prints go.
@@ -651,7 +660,7 @@ There are 2 ways to gather all the messages:</p>
 	<li>use very large ring buffer.</li>
 </ol>
 
-<p>The first method is usually appropriate when debugging on an small embedded
+<p>The first method is usually appropriate when debugging on a small embedded
 platform connected to a PC via serial line. What you have to be aware of is
 that the messages are printed to the serial console synchronously, which means
 that the system is blocked and waiting for the print operation to be finished.
@@ -661,16 +670,16 @@ e.g. 115200.</p>
 
 <p>The UBI debugging messages have "debugging" level 7 and they are usually not
 printed to the console. You may use <code>dmesg -n8</code> command to make all
-kernel messages to go to the console. One useful trick is to boot the kernel
-with <code>ignore_loglevel</code> option, in which case it will print all
+kernel messages to go to the console. Another possibility is to boot the kernel
+with <code>ignore_loglevel</code> option, in which makes the kernel print all
 messages to the console unconditionally.</p>
 
 <p>The second method is more appropriate when debugging on a machine with a lot
 of RAM, for example on a desktop PC with a flash emulator. Just make your ring
 buffer large, e.g. 64MiB by booting the kernel with <code>log_buf_len=64M</code>
-option. This will make the ring buffer fit enough messages to identify the
-problem. And because the messages are printed to RAM, this is way quicker than
-the first method.</p>
+option. This will most probably make the ring buffer fit enough messages to
+identify the problem. And because the messages are printed to RAM, this is way
+quicker than the first method.</p>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

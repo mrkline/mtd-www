@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 14 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 16 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -839,15 +839,15 @@ function (just above the body of the function).</p>
 	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
 
 	<li>enable UBI debugging (<code>CONFIG_MTD_UBI_DEBUG=y</code>
-	in <code>.config</code>); enable just UBI debugging in general, not UBI
-	debugging messages (unless you are an experienced kernel hacker and
-	know what you do).</li>
+	in <code>.config</code>); please, mark only the "<b>UBI debugging</b>"
+	check-box and do not mark other debugging sub-options like "UBI
+	debugging messages" unles you know what you are doing.</li>
 </ul>
 
 <p>Please, attach all the bug-related messages including the UBI messages from
 the kernel ring buffer, which may be collected using the <code>dmesg</code>
-utility or using <code>minicom</code> with serial console capturing. And of
-course, it is wise to describe how the problem can be reproduced. The bugreport
+utility or using <code>minicom</code> with serial console capturing. Please,
+describe how the problem can be reproduced (if it can be). The bugreport
 should be sent to the <a href="../mail.html">MTD mailing list</a>.</p>
 
 

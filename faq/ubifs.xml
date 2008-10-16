@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 15 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 16 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -30,6 +30,7 @@
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
+	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
 </ol>
 
 
@@ -612,11 +613,11 @@ while running stress tests.</p>
 <h2><a name="L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></h2>
 
 <p>UBIFS journal is very different to ext3 journal. In case of ext3, the
-journal has fixed position and size on the block device. The data is written
-copied to the journal, and then copied to the file-system. This copying is done
-during journal commit. After the commit, new data may be written to the
-journal, and so on. So in case of ext3 changing journal size would change
-file-system capacity.</p>
+journal has fixed position on the block device. The data is first written
+to the journal, and then copied to the file-system. This copying is done during
+the commit. After the commit, new data may be written to the journal, and so
+on. So in case of ext3 changing journal size would change file-system
+capacity.</p>
 
 <p>The situation is different in UBIFS. UBIFS journal is "wandering". It does
 not have fixed position in the UBI volume. When the journal is full, UBIFS is
@@ -627,10 +628,31 @@ information as other data LEBs, but this information is just not referred from
 the index, it is not indexed. But there is flash space reserved for the
 indexing information, and this space is used during commit.</p>
 
+<p>In other words, if your file-system is full, the journal will also be full
+and contain data. And the situation does not really change if you vary journal
+size.</p>
+
 <p>To put it simple, the amount of available space on UBIFS does not really
 depend on the journal size. There is very weak dependency, though, because for
 bigger journal we need bigger log, but it is really something which does not
 make any noticeable difference.</p>
+
+
+
+<h2><a name="L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></h2>
+
+<p>Read-write UBIFS file-system may suddenly become read-only because of an
+error. This is how UBIFS reacts on unexpected errors which it cannot properly
+handle - it immediately switches to read-only mode in order to protect the data
+from any possible further corruption.</p>
+
+<p>If this happened, you should look at UBIFS-related <code>dmesg</code>
+messages. UBIFS usually prints error messages before switching to read-only
+mode. The messages may shed some light on what happened. Feel free to ask for
+help from the <a href="../mail.html">MTD mailing list</a>. If you think this is
+an UBIFS bug, please, send a
+<a href="../doc/ubifs.html#L_how_send_bugreport">bug report</a>.</p>
+
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
