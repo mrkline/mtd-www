@@ -500,25 +500,112 @@ be full. There are 2 main reasons for this:</p>
 
 
 
-<h2><a name="L_df_report">
-	Why <code>df</code> reports too few free space?</a></h2>
+<h2><a name="L_df_report"> Why <code>df</code> reports too few free space?</a></h2>
 
 <p>UBIFS flash space accounting is quite challenging and it is not always
 possible to report accurate amount of free space. The <code>df</code> utility
-usually reports <i>less</i> free space than users may actually write to it, but
-it <i>never</i> reports more. There are several reasons for this - compression,
-write-back, space wastage at the end of logical eraseblocks,
-garbage-collection, etc. Please, refer
-<a href="../doc/ubifs.html#L_spaceacc">this</a> section for more details.</p>
+usually reports <i>less</i> free space than users may actually write to the
+file-system, but it <i>never</i> reports more space.</p>
 
-<p>Few practical things:</p>
+<p>UBIFS cannot precisely predict how much data the user will
+be able to write to the file-system. There are several reasons for this -
+compression, write-back, space wastage at the end of logical eraseblocks,
+garbage-collection, etc. Please, refer
+<a href="../doc/ubifs.html#L_spaceacc">this</a> section for details.</p>
+
+<p>Note, JFFS2 also has problems with free space predictions, but in average,
+it reports much more accurate amount of free space. However, JFFS2 may lie and
+report more free space than it actually has. For example, we experienced
+situations when JFFS2 reported 8MiB free space, while we were able to write
+only 2 MiB of data. This makes some user-space applications very unhappy.</p>
+
+<p>UBIFS also lies, but it always report <i>less</i> space that user may
+actually write. For example, it may report 2MiB of free space, but if you
+start writing to it, may be able to write 4MiB there (even if you have
+compression disabled).</p>
+
+<p>Thus, the only way to find out <i>precise</i> amount of free space is to
+fill up the file-system and see how much has been written. Try something like
+this:</p>
+
+<pre>
+$ touch /mnt/ubifs/file
+$ chattr -c /mnt/ubifs/file # Disable compression for this file
+$ dd if=/dev/zero of=/mnt/ubifs/file bs=4096
+</pre>
+
+or
+
+<pre>
+# Presumably random data does not compress
+dd if=/dev/urandom of=/mnt/ubifs/file bs=4096
+</pre>
+
+<p>and see the size of the file.</p>
+
+<p>UBIFS users should know that the more dirty cached FS data is there, the
+less precise is the <code>df</code> report. Try to create a big file, and
+look at the <code>df</code> report. Then synchronize the file-system (using the
+<code>sync</code> command) and look at the <code>df</code> report again. You
+should notice that <code>df</code> reports more free space after the
+synchronization. Here is an example:</p>
+
+<pre>
+# Create a 64MiB uncompressible file
+$ dd if=/dev/urandom of=/mnt/ubifs/file bs=8192 count=8192
+$ df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+ubi0:ubifs              117676     68880     43736  62% /mnt/ubifs
+
+$ sync
+$ df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+ubi0:ubifs              117676     64304     48308  58% /mnt/ubifs
+</pre>
+
+<p>Notice that the amount of free space increased by 4%. However, that was an
+uncompressible file. Here is a similar example, but which uses a file which
+compresses well:</p>
+
+<pre>
+# Create a 64MiB file containing zeroes
+$ dd if=/dev/zero of=/mnt/ubifs/file bs=8192 count=8192
+$ df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+ubi0:ubifs              117676     69312     43304  62% /mnt/ubifs
+
+$ sync
+$ df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+ubi0:ubifs              117676      7052    105564   7% /mnt/ubifs
+</pre>
+
+<p>If instead of synchronizing the file-system you just watch how
+the <code>df</code> report is changing, you will notice that the amount of free
+space continuously grows until reaches its final value. This happens because the
+kernel starts writing the dirty data back by time-out (5 sec by default) and
+the amount of dirty data goes down, making the <code>df</code> report more
+precize.</p>
+
+<p>If you want to have as precise free space prediction as possible -
+synchronize the file-system. This not only flushes dirty data to the media,
+this also commits UBIFS journal, which improves free space prediction even
+more.</p>
+
+<p>It is also worth noting that the closer is UBIFS to being full, the less
+accurate is free space reporting.</p>
+
+<p>To conclude:</p>
 <ul>
-	<li>synchronize the file-system (i.e., run <code>sync</code> or call
-	<code>sync()</code>) before running <code>df</code> or calling
-	<code>statfs()</code> - this may result in more accurate free space
-	reporting;</li>
-	<li>the closer is UBIFS to being full, the less accurate is free space
-	reporting.</li>
+	<li>do not trust <code>df</code> free space reports;</li>
+	<li><code>df</code> reports <i>less</i> free space in most cases;</li>
+	<li>if <code>df</code> reports <code>X</code> bytes of free space, you
+	are guaranteed to be able to write at least <code>X</code> bytes
+	of data to a file, but usually more than <code>X</code> bytes;</li>
+	<li>run <code>sync</code> to get the most accurate <code>df</code>
+	report;</li>
+	<li>read <a href="../doc/ubifs.html#L_spaceacc">this</a> section if you
+	are curious why UBIFS has issues with <code>df</code>.</li>
 </ul>
 
 
