@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 16 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 21 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -272,18 +272,20 @@ describes the issues in more details.</p>
 flash media straight away, but they are cached and go to the flash later, when
 it is absolutely necessary. This helps to greatly reduce the amount of I/O
 which results in better performance. Write-back caching is standard technique
-which exists in many modern file systems like <code>ext3</code> or
+which is used by most file systems like <code>ext3</code> or
 <code>XFS</code>.</p>
 
 <p>In contrast, <code>JFFS2</code> does not have write-back support and all the
 JFFS2 file system changes go the flash synchronously. Well, this is not
-completely true and JFFS2 does have a small buffer of a NAND page size, but it
-is small and we may treat JFFS2 as completely synchronous.</p>
+completely true and JFFS2 does have a small buffer of a NAND page size (if the
+underlying flash is NAND). This buffer contains last written data and is
+flushed once it is full. However, because the amount of cached data is very
+small, JFFS2 is very close to a synchronous file system.</p>
 
 <p>Write-back support requires the application programmers to take extra care
-about synchronizing important files in time. Otherwise the file contents and
-meta-data may corrupt or disappear in case of power-cuts, which happen very
-often in many embedded devices. Let's look at what Linux manual pages say:</p>
+about synchronizing important files in time. Otherwise the files may corrupt or
+disappear in case of power-cuts, which happen very often in many embedded
+devices. Let's look at what Linux manual pages say:</p>
 
 <pre>
 $ man 2 write
@@ -298,19 +300,25 @@ NOTES
 </pre>
 
 <p>This is true for UBIFS (except of the "some buggy implementations" part,
-because UBIFS does reserves space for cached dirty data). Very often, people
-who are accustomed to JFFS2 do not take this aspect into account and got
-confused when unclean reboots corrupt their files. The following is a list
-of useful hints and advices.</p>
+because UBIFS does reserves space for cached dirty data). This is also true for
+JFFS2, as well as for any other Linux file system.</p>
+
+<p>However, some (perhaps not very good) user-space programmers do not take
+write-back into account. They do not read man pages carefully. And some
+applications which have been used in embedded systems which run JFFS2 worked
+fine, because JFFS2 is so close to being synchronous. Of course, the
+applications are buggy, but they appeared to work well enough with JFFS2. But
+the bugs show up when UBIFS is used. Please, be careful and check/test your
+applications with respect to power cut tolerance if you switch from JFFS2 to
+UBIFS. The following is a list of useful hints and advices.</p>
 
 <ul>
-	<li>If you want to switch into "JFFS2 mode" and have a synchronous
-	file system, use <code>-o sync</code> option when mounting UBIFS;
-	however, the file system performance will drop, so this is not
-	recommended unless you absolutely have to have a synchronous FS;</li>
+	<li>If you want to switch into synchronous mode, use
+	<code>-o sync</code> option when mounting UBIFS; however, the file
+	system performance may drop - be careful;</li>
 
 	<li>Always keep in mind the above statement from the manual pages and
-	run <code>fsync()</code> for all the important files you change; of
+	run <code>fsync()</code> for all important files you change; of
 	course, there is no need to synchronize "throw-away" temporary files;
 	Just think how important is the file data and decide;</li>
 
@@ -331,7 +339,7 @@ of useful hints and advices.</p>
 	before the <code>write()</code> operation returns;</li>
 
 	<li>It is possible to make certain inodes to be synchronous by
-	default by setting the "<i>sync</i>" flag; in a shell, the
+	default by setting the "<i>sync</i>" inode flag; in a shell, the
 	<code>chattr +S</code> command may be used; in <i>C</i> programs,
 	use the <code>FS_IOC_SETFLAGS</code> <code>ioctl</code> command;
 	Note, the <a href="ubifs.html#L_usptools"><code>mkfs.ubifs</code></a>
@@ -340,39 +348,39 @@ of useful hints and advices.</p>
 	the resulting UBIFS image.</li>
 </ul>
 
-<p>The above items are actually true for other file systems like
-<code>ext3</code>, and may even be applied to <code>JFFS2</code>.</p>
+<p>Let us stress that the above items are true for any Linux file system,
+including <code>JFFS2</code>.</p>
 
 <p><code>fsync()</code> may be called for directories - it synchronizes
 the directory inode meta-data. The "<i>sync</i>" flag may also be set for
 directories to make the directory inode synchronous. But the flag is inherited,
 which means all new children of this directory will also have this flag. New
-sub-directories of this directory will also be synchronous, and their children,
-and so forth. This feature is very useful if one needs to create a whole
-sub-tree of synchronous files and directories, or to make all new children
+files and sub-directories of this directory will also be synchronous, and their
+children, and so forth. This feature is very useful if one needs to create a
+whole sub-tree of synchronous files and directories, or to make all new children
 of some directory to be synchronous by default (e.g., <code>/etc</code>).</p>
 
 <p>The <code>fdatasync()</code> call for directories is "no-op" in UBIFS and
 all UBIFS operations which change directory entries are synchronous.
-However, it might be a good idea not to assume this for better portability
-(e.g., this is not true for <code>ext2</code>). Similarly, the "<i>dirsync</i>"
-inode flag has no effect in UBIFS.</p>
+However, you should not to assume this for portability (e.g., this is not
+true for <code>ext2</code>). Similarly, the "<i>dirsync</i>" inode flag has
+no effect in UBIFS.</p>
 
 <p>The functions mentioned above work on file-descriptors, not on streams
 (<code>FILE *</code>). To synchronize a stream, you should first get its file
 descriptor using the <code>fileno()</code> <i>libc</i> function, then flush the
 stream using <code>fflush()</code>, and then synchronize the file using
-<code>fsync()</code> or <code>fdatasync()</code>. You may use different
-synchronization methods, but remember to flush the stream before synchronizing.
-The <code>fflush()</code> function flushes the <i>libc</i>-level buffers, while
-<code>sync()</code>, <code>fsync()</code>, etc flush <i>kernel</i>-level
-buffers.</p>
+<code>fsync()</code> or <code>fdatasync()</code>. You may use other
+synchronization methods, but remember to flush the stream before synchronizing
+the file. The <code>fflush()</code> function flushes the <i>libc</i>-level
+buffers, while <code>sync()</code>, <code>fsync()</code>, etc flush
+<i>kernel</i>-level buffers.</p>
 
 <h4>Updating a file atomically</h4>
 
-<p>This sub-section describes the common technique of updating the contents of
-a file atomically. This technique is applicable to many other UNIX
-file-systems, not only to UBIFS.</p>
+<p>This sub-section describes common technique of updating the contents of
+a file atomically. This technique is applicable to other all POSIX-compatible
+file systems, not only to UBIFS.</p>
 
 <p>To atomically update the contents of file <code>foo</code>, you have to
 first make a copy <code>bar</code> of this file, then change file
@@ -459,7 +467,7 @@ to actually compress it. See below.</p>
 <p>Suppose there are <i>X</i> bytes of dirty file data in the page cache. They
 will be flushed to the flash media later, but they are in RAM so far. UBIFS
 (namely, the budgeting sub-system) has <i>reserved</i> <i>X</i> + <i>O</i>
-bytes on the flash media for this data, where <i>O</i> is file-system overhead
+bytes on the flash media for this data, where <i>O</i> is file system overhead
 (e.g., the data has to be indexed, each data node has a header, etc).</p>
 
 <p>The problem is that UBIFS cannot accurately calculate <i>X</i> and <i>O</i>,
@@ -599,7 +607,7 @@ much dirty space it can reclaim. So it again uses pessimistic calculations.</p>
 <p>Thus, the less dirty space the FS has, and the smaller is dirty space
 fragmentation, the more precise is UBIFS free space reporting. In practice this
 means that a file system which is close to be full has less accurate free
-space reporting comparing to a less full file system, because this file-system
+space reporting comparing to a less full file system, because this file system
 presumably has more dirty space.</p>
 
 <p>Note, to fix this issue, UBIFS would need to run GC in
@@ -615,8 +623,8 @@ effect of dirty space with time.</p>
 some flash space. There also UBIFS journal, which contain FS data. The FS data
 in the journal is not indexed, which means that on-flash index does not refer
 it. Instead, UBIFS keeps indexing information for the journal in RAM. When the
-file-system is mounted, UBIFS has to scan the journal and build this part of
-the index in RAM. So the journal is like a small JFFS2 file-system inside
+file system is mounted, UBIFS has to scan the journal and build this part of
+the index in RAM. So the journal is like a small JFFS2 file system inside
 UBIFS.</p>
 
 <p>The journal becomes indexed as the result of the commit operation. During
@@ -706,11 +714,11 @@ device is represented as an linear array of (usually 512-byte) blocks. Each
 block may be read or written.</p>
 
 <p>Linux has an abstraction of a block device. For example hard drives are
-block devices. Linux has many file-systems and the block I/O subsystem, which
+block devices. Linux has many file systems and the block I/O subsystem, which
 includes elevators and so on which have been created to work with block
 devices (historically - hard drives). So the idea is that the same software may
-be used with FTL devices. For example, you may use FAT file-system on your MMC
-card, or ext3 file-system or your SSD.</p>
+be used with FTL devices. For example, you may use FAT file system on your MMC
+card, or ext3 file system or your SSD.</p>
 
 <p>Although most flashes on the commodity hardware have FTL, there are systems
 which have bare flashes and do not use FTL. Those are mostly various handheld
@@ -721,7 +729,7 @@ are hidden, but in case of raw flash the software has to deal with them. Please,
 refer <a href="../faq/general.html#L_mtd_vs_hdd">this</a> table for the some
 more details about the difference between block devices and raw flashes.</p>
 
-<p>UBIFS file-system has been designed for raw flash. It does work with block
+<p>UBIFS file system has been designed for raw flash. It does work with block
 devices and it assumes the raw flash device model. In other words, it assumes
 the device has eraseblocks, which may be written to, read from, or erased.
 UBIFS takes care of writing all data out-of-place, doing garbage-collection
@@ -755,7 +763,7 @@ recommendations and everything depends on system requirements.</p>
 	wear-leveling. We believe the good brand FTL devices do it well.</li>
 
 	<li>The other situation is when you are going to use your FTL device
-	for system storage (e.g. for rootfs) and use a more robust file-system
+	for system storage (e.g. for rootfs) and use a more robust file system
 	like ext3. In this situation you should take into account various
 	system requirements like tolerance to sudden power cuts. The following
 	items are mostly related to system storage situations.</li>
@@ -795,7 +803,7 @@ recommendations and everything depends on system requirements.</p>
 	again, you should be careful.</li>
 
 	<li>In general, if you glance back into the history, many FTL devices
-	were mostly used with FAT file-system for storing stuff like photo and
+	were mostly used with FAT file system for storing stuff like photo and
 	video. FAT file system is not reliable by definition, which suggests
 	that FTL devices may also not be very reliable, just because
 	historically this was not really required. Indeed, it is not a big deal
@@ -834,7 +842,7 @@ recommendations and everything depends on system requirements.</p>
 	information about the files than FTL. For example, UBIFS knows about
 	deleted files, while FTL does not, so FTL may do unneeded work trying
 	to preserve the sectors belonging to deleted files. However, some FTL
-	devices support "discard" requests and may benefit from the file-system
+	devices support "discard" requests and may benefit from the file system
 	hints about unused sectors. Nevertheless, in general, UBIFS should do
 	better job on a bare NAND, than a traditional FS on an FTL device with
 	a similar NAND chip. On the other hand, FTL devices may	include
