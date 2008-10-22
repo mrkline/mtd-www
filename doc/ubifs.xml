@@ -15,7 +15,6 @@
 <ol>
 	<li><a href="ubifs.html#L_rednote">Big red note</a></li>
 	<li><a href="ubifs.html#L_overview">Overview</a></li>
-	<li><a href="ubifs.html#L_status">Current status</a></li>
 	<li><a href="ubifs.html#L_source">Source code</a></li>
 	<li><a href="ubifs.html#L_ml">Mailing list</a></li>
 	<li><a href="ubifs.html#L_usptools">User-space tools</a></li>
@@ -46,11 +45,95 @@ reading about UBIFS. <a href="L_raw_vs_ftl">This</a> section should help.</p>
 
 
 
-<h2><a name="L_status">Current status</a></h2>
+<h2><a name="L_overview">Overview</a></h2>
 
-<p>UBIFS has proved to be fairly stable, however it needs more testing, review,
-and tuning (e.g., finding optimal journal size, etc). It also needs some
-profiling and bottleneck hunting.</p>
+<p>UBIFS is a new flash file system developed by Nokia engineers with help of
+<a href="http://www.inf.u-szeged.hu/tanszekek/szoftverfejlesztes/starten.xml">
+the University of Szeged</a>. In a way, UBIFS may be considered as the next
+generation of the JFFS2 file-system.</p>
+
+<p>JFFS2 file system works on top of MTD devices, but UBIFS works on top of UBI
+volumes and cannot operate on top of MTD devices. In other words, there are 3
+subsystems involved:</p>
+
+<ul>
+	<li><i>MTD subsystem</i>, which provides uniform interface to access
+	flash chips. MTD provides an notion of MTD devices (e.g.,
+	<code>/dev/mtd0</code>) which basically represent raw flash;</li>
+	<li><i>UBI subsystem</i>, which is a wear-leveling and volume management
+	system for flash devices; UBI works on top of MTD devices and provides
+	a notion of UBI volumes; UBI volumes are higher level entities than MTD
+	devices and they are devoid of many unpleasant issues MTD devices have
+	(e.g., wearing and bad blocks); see <a href="ubi.html">here</a> for more
+	information;</li>
+	<li><i>UBIFS file system</i>, which works on top of UBI volumes.</li>
+</ul>
+
+<p>Here is a list of some of UBIFS features:</p>
+
+<ul>
+	<li>scalability - UBIFS scales well with respect to flash size; namely,
+	mount time, memory consumption and I/O speed does not depend on flash
+	size (it is not 100% true for memory consumtion, but the dependency is
+	very weak); UBIFS (not UBI!) should work fine for hundreds of GiB
+	flashes; however, UBIFS depends on UBI which has scalability
+	limitations (see <a href="ubi.html#L_scalability">here</a>);
+	nonetheless, UBI/UBIFS stack scales much better than JFFS2, and if UBI
+	becomes a bottleneck, it is always possible to implement UBI2 without
+	changing UBIFS;</li>
+
+	<li>fast mount time - unlike JFFS2, UBIFS does not have to scan whole
+	media when mounting, it takes milliseconds for UBIFS to mount the
+	media, and this does not depend on flash size; however, UBI
+	initialization time depends on flash size and has to be taken into
+	account (see <a href="ubi.html#L_scalability">here</a> for more
+	details);</li>
+
+	<li>write-back support - this dramatically improves the throughput of
+	the file system comparing to JFFS2, which is write-through; see
+	<a href="ubi.html#L_writeback">here</a> for more details;</li>
+
+	<li>tolerance to unclean reboots - UBIFS is a journaling file system
+	and it tolerates sudden crashes and unclean reboots; UBIFS just replays
+	the journal and recovers from the unclean reboot; mount time is a
+	little bit slower in this case, because of the need to replay the
+	journal, but UBIFS does not need to scan whole media, so it anyway
+	takes fractions of a second to mount UBIFS;</li>
+
+	<li>fast I/O - even with write-back disabled (e.g., if UBIFS is mounted
+	with <code>-o sync</code> mount flag) UBIFS shows good performance
+	which is close to JFFS2 performance; bear in mind, it is extremely
+	difficult to compete with JFFS2 in synchronous I/O, because JFFS2 does
+	not maintain indexing data structures on flash, so it does not have the
+	maintenance overhead, while UBIFS does have it; this is because of the
+	way UBIFS commits the journal - it does not move the data physically
+	from one place to another but instead, it just adds corresponding
+	information to the file system index and picks different eraseblocks
+	for the new journal (i.e., UBIFS has sort of "wandering"
+	journal); there are other tricks like multi-headed journal which make
+	UBIFS perform well;</li>
+
+	<li>on-the-flight compression - the data is stored in compressed form
+	on the flash media, which makes it possible to put considerably more
+	data to the flash than if the data was not compressed; this is very
+	similar to what JFFS2 has; UBIFS also allows to switch the compression
+	on/off on per-inode basis, which is very flexible; for example, one may
+	switch the compression off by default and enable it only for certain
+	files which are supposed to compress well; or one may switch
+	compression on by default but disable it for supposedly uncompressible
+	data like multimedia files; at the moment UBIFS supports only zlib and
+	LZO compressors and it is not difficult to add more;</li>
+
+	<li>recoverability - UBIFS may be fully recovered if the indexing
+	information gets corrupted; each piece of information in UBIFS has a
+	header which describes this piece of information, and it is possible to
+	fully reconstruct the file system index by scanning the flash media; to
+	make it more clear, imaging you wiped out the FAT table on your FAT
+	file system (FAT table is the index of the FS); for FAT FS it is fatal;
+	but if you similarly wipe out UBIFS index, you still may re-construct
+	it, although a special user-space tool would be required to do
+	this;</li>
+</ul>
 
 
 
