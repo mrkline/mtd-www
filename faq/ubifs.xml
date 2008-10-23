@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 16 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 23 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -31,6 +31,7 @@
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
+	<li><a href="ubifs.html#L_study_ubifs">I want to study UBIFS - any recommendations?</a></li>
 </ol>
 
 
@@ -742,6 +743,12 @@ mode. The messages may shed some light on what happened. Feel free to ask for
 help from the <a href="../mail.html">MTD mailing list</a>. If you think this is
 an UBIFS bug, please, send a
 <a href="../doc/ubifs.html#L_how_send_bugreport">bug report</a>.</p>
+
+
+
+<h2><a name="L_study_ubifs">I want to study UBIFS - any recommendations?</a></h2>
+
+<p>Follow <a href="../doc/ubifs.html#L_documentation">these</a> instructions.</p>
 
 
 <INCLUDE file="../inc/footer.tmpl" />

@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 21 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 23 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -74,7 +74,7 @@ subsystems involved:</p>
 <ul>
 	<li>scalability - UBIFS scales well with respect to flash size; namely,
 	mount time, memory consumption and I/O speed does not depend on flash
-	size (it is not 100% true for memory consumtion, but the dependency is
+	size (it is not 100% true for memory consumption, but the dependency is
 	very weak); UBIFS (not UBI!) should work fine for hundreds of GiB
 	flashes; however, UBIFS depends on UBI which has scalability
 	limitations (see <a href="ubi.html#L_scalability">here</a>);
@@ -141,10 +141,13 @@ subsystems involved:</p>
 
 <p>UBIFS is in mainline since 17 July 2008 and the first kernel release which
 contains UBIFS is <code>2.6.27</code>. But since UBIFS is a very new file system,
-it is recommended to pick the latest updates and fixes from the UBIFS git
-tree:</p>
+it is recommended to pick the latest updates and fixes from the
+<code>linux-next</code> branch of the UBIFS git tree:</p>
 
 <code>git://git.infradead.org/~dedekind/ubifs-2.6.git</code>
+
+<p><a href="http://git.infradead.org/ubifs-2.6.git">Here</a> is the
+corresponding Git-web address.</p>
 
 <p>The git tree has <code>master</code> and <code>linux-next</code> branches.
 The <code>master</code> branch contains the most recent stuff which is often
@@ -169,14 +172,14 @@ UBIFS version. The back-ports may be found at:</p>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.22.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.21.git</code>
 
-<p>Because the Linux kernel is changing rapidly, it is rather difficult
-to make back-ports match the mainline code, and different back-ports have
-different limitations. Below are some of them.</p>
+<p>The Linux kernel is changing rapidly and it is rather difficult to make
+back-ports fully match the mainline code, and the back-ports have various
+limitations. Below are some of them</p>
 
 <ul>
 	<li>Since it is impossible to register memory shrinker in kernel
 	versions <code>2.6.21</code> and <code>2.6.22</code>, the UBIFS
-	shrinker does not work there, which means the UBIFS TNC cache never
+	shrinker does not work there, which means that UBIFS TNC cache never
 	gets shrinked and the system may run out of memory if the file system
 	is very large.</li>
 
@@ -185,13 +188,6 @@ different limitations. Below are some of them.</p>
 	<code>prepare_write()</code>) back-ports <code>2.6.21</code>,
 	<code>2.6.22</code>, and <code>2.6.23</code> may have slightly worse
 	performance comparing to the mainline code.</li>
-
-	<li>NFS is not supported in back-ports <code>2.6.21</code>,
-	<code>2.6.22</code>, <code>2.6.23</code>, and <code>2.6.24</code>.
-	There is no fundamental reason for this though, it is just because the
-	corresponding internal kernel interfaces changed since kernel version
-	<code>2.6.25</code> and the UBIFS developers did not bother to look
-	closer at how NFS support is implemented in older kernels.</li>
 </ul>
 
 <p>Thus, only <code>2.6.25</code> and <code>2.6.26</code> back-ports have full
@@ -205,7 +201,9 @@ going to be maintained forever and will be deleted at some point.</p>
 <h2><a name="L_ml">Mailing list</a></h2>
 
 <p>You are welcome to send feed-back, bug-reports, patches, etc to the
-<a href="../mail.html">MTD mailing list</a>. Feel free to ask questions.</p>
+<a href="../mail.html">MTD mailing list</a>. Feel free to ask questions.
+It might make sense to check the <a href="../faq/ubifs.html">UBIFS FAQ</a> as
+well.</p>
 
 
 
@@ -231,7 +229,7 @@ tool to create an UBI image which may be put to the MTD device.</p>
 logarithmically in terms of flash size. However, UBI scales linearly
 (see <a href="ubi.html#L_scalability">here</a>) which makes
 overall UBI/UBIFS stack scalability linear. But the UBIFS authors believe it is
-always possible to create logarithmically scalable UBI2 and to improve the
+always possible to create logarithmically scalable UBI2 and improve the
 situation. Current UBI should be OK for 2-16GiB flashes, depending on the
 I/O speed and requirements.</p>
 
@@ -244,7 +242,8 @@ describes the issues in more details.</p>
 <table border="2" cellpadding="4" cellspacing="0">
 <tr>
 	<td><b>Scalability issue</b></td>
-	<td><b>JFFS2</b></td><td><b>UBIFS</b></td>
+	<td><b>JFFS2</b></td>
+	<td><b>UBIFS</b></td>
 </tr>
 
 <tr>
@@ -480,7 +479,7 @@ again.</p>
 <h2><a name="L_xattr">Extended attributes</a></h2>
 
 <p>UBIFS supports extended attributes if the corresponding configuration option
-is enabled (no additional mount options are required). It supports
+is enabled (no additional mount options are required). It supports the
 <code>user</code>, <code>trusted</code>, and <code>security</code> name-spaces.
 However, access control lists (ACL) support is not implemented.</p>
 
@@ -736,15 +735,41 @@ implement. And the effect of the index size uncertainty should be low.</p>
 
 <h2><a name="L_documentation">Documentation</a></h2>
 
-<p>The UBIFS white-paper which briefly describes main UBIFS design aspects is
-available here: <a href="ubifs_whitepaper.pdf">ubifs_whitepaper.pdf</a>. There is
-<a href="../faq/ubifs.html">UBIFS FAQ</a> which might be useful. Also, there is
-<a href="http://osl.sed.hu/wiki/ubifs/index.php/Main_Page">a wiki page</a>, but
-it has a lot of out-of-date information.</p>
+<p>If flash file systems is a completely new area for you, it is recommended
+to start from learning JFFS2, because many basic ideas are the same in UBIFS.
+Read the <a href="http://sources.redhat.com/jffs2/jffs2.pdf">JFFS2 design</a>
+document.</p>
 
-<p>It might also be very useful to study
-<a href="http://sources.redhat.com/jffs2/jffs2.pdf">JFFS2 design</a> because
-many basic ideas are the same in UBIFS.</p>
+<p>You may find the description of main JFFS2 issues, as well as very basic
+UBIFS ideas in the <a href="JFFS3design.pdf">JFFS3 design</a> document.
+Remember, the document in general is old and out-of-date. We do not use the
+"JFFS3" name anymore, and JFFS3 was re-named to UBIFS. The document was written
+when UBI did not exist and the document assumes that JFFS3 is talking directly
+to the MTD device, just like JFFS2. However, the <i>JFFS2 overview</i>,
+<i>JFFS3 Requirements</i>, and <i>Introduction to JFFS3</i> chapters are still
+mostly valid and give a good introduction into basic UBIFS ideas like
+wandering tree and the journal. Although please note, that the superblock
+description is irrelevant for UBIFS. UBIFS is based on UBI and does not need
+that trick. However, the superblock location idea may be used to create new
+scalable UBI2 layer.</p>
+
+<p>This web-page as well as the <a href="../faq/ubifs.html">UBIFS FAQ</a>
+contains a plenty of UBIFS information. And you have to study UBI as well,
+because UBIFS depends on the services provided by the UBI layer. See the
+<a href="ubi.html">UBI documentation</a> and <a href="../faq/ubi.html">UBI
+FAQ</a> sections.</p>
+
+<p>There is an <a href="ubifs_whitepaper.pdf">UBIFS white-paper</a> document
+available as well. However, it might be rather difficult for newbies, so we
+recommend to start with the JFFS3 design document. The UBIFS white-paper gives
+a complete UBIFS design picture and describes the UBIFS internals. The
+white-paper does not contain some details which you may find at this web-page
+or in the UBIFS FAQ, and vice-versa.</p>
+
+<p>And finally, there is <a href="ubifs.html#L_source">UBIFS source code</a>.
+The code has a great deal of comments, so we recommend to look there if
+you need all the details. And of course, you are welcome to ask questioins
+at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 
 
 
