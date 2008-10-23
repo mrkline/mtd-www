@@ -20,6 +20,7 @@
 	<li><a href="ubifs.html#L_usptools">User-space tools</a></li>
 	<li><a href="ubifs.html#L_scalability">Scalability</a></li>
 	<li><a href="ubifs.html#L_writeback">Write-back support</a></li>
+	<li><a href="ubifs.html#L_compression">Compression</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
 	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
 	<li><a href="ubifs.html#L_spaceacc">Flash space accounting issues</a></li>
@@ -122,7 +123,9 @@ subsystems involved:</p>
 	files which are supposed to compress well; or one may switch
 	compression on by default but disable it for supposedly uncompressible
 	data like multimedia files; at the moment UBIFS supports only zlib and
-	LZO compressors and it is not difficult to add more;</li>
+	LZO compressors and it is not difficult to add more; see
+	<a href="ubifs.html#L_compression">this</a> section for more
+	information.</li>
 
 	<li>recoverability - UBIFS may be fully recovered if the indexing
 	information gets corrupted; each piece of information in UBIFS has a
@@ -476,6 +479,41 @@ again.</p>
 
 
 
+<h2><a name="L_compression">Compression</a></h2>
+
+<p>UBIFS supports on-the-flight compression, which it compressed data
+before writing them to the flash media, and de-compressed before reading them,
+and this is absolutely transparent to the users. UBIFS compresses only regular
+files data. Directories, device nodes and so on are not compressed. Meta-data
+and the indexing information are not compressed as well.</p>
+
+<p>At the moment UBIFS supports <i>LZO</i> and <i>zlib</i> compressors. Zlib
+provides better compression ratio, but LZO is faster in both compression and
+decompression. LZO is the default compressor for in-kernel UBIFS and for the
+<code>mkfs.ubifs</code> utility. And of course you may disable UBIFS
+compression altogether using the "<code>-x none</code>"
+<a href="ubifs.html#L_usptools"><code>mkfs.ubifs</code></a> option.</p>
+
+<p>UBIFS splits all data on 4KiB chunks and compresses each chunk
+independently. This is not optimal, because larger chunks of data would
+compress better, but this still provides noticeable flash space economy. For
+example, real-life root file-system image for an ARM platform becomes ~40%
+smaller with LZO compression and ~50% smaller with zlib compression. This
+means that you may fit a 300MiB rootfs image into a 256MiB UBI volume and still
+have about 100MiB of free space. However, the figures may be different
+depending on the contents of the file-system. For example, if your file-system
+mostly contains <code>mp3</code> files, UBIFS will be unable to efficiently
+compress them, just because <code>mp3</code> files are already compressed.</p>
+
+<p>In UBIFS it is possible to enable or disable compression individually for
+each inode by setting or cleaning this compression flag. Note, the compression
+flag of directories is inherited, which means that when files and
+sub-directories are created, they inherit the compression flag of the parent
+directory. Please, refer <a href="../faq/ubifs.html#L_comproff">this</a>
+section for instruction about how the compression flag may be toggled.</p>
+
+
+
 <h2><a name="L_xattr">Extended attributes</a></h2>
 
 <p>UBIFS supports extended attributes if the corresponding configuration option
@@ -768,7 +806,7 @@ or in the UBIFS FAQ, and vice-versa.</p>
 
 <p>And finally, there is <a href="ubifs.html#L_source">UBIFS source code</a>.
 The code has a great deal of comments, so we recommend to look there if
-you need all the details. And of course, you are welcome to ask questioins
+you need all the details. And of course, you are welcome to ask questions
 at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 
 

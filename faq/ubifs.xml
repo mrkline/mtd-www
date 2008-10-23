@@ -616,12 +616,11 @@ accurate is free space reporting.</p>
 
 <h2><a name="L_comproff">How to disable compression?</a></h2>
 
-<p>UBIFS compression may be disabled for whole file system in FS creation time
-using corresponding <a href="ubifs.html#L_mkfubifs"><code>mkfs.ubifs</code></a>
-options.</p>
-
-<p>However, if the compression is enabled by default, it may be disabled for
-individual files by cleaning the compression inode flag:</p>
+<p>UBIFS compression may be disabled for whole file system during the image
+creation time using the "<code>-x none</code>" <a
+href="ubifs.html#L_mkfubifs"><code>mkfs.ubifs</code></a> option. However,
+if UBIFS compression is enabled, it may be disabled for individual files by
+cleaning the inode <i>compression flag</i>:</p>
 
 <pre>
 $ chattr -c /mnt/ubifs/file
@@ -638,18 +637,19 @@ flags &amp;= ~FS_COMPR_FL;
 ioctl(fd, FS_IOC_SETFLAGS, &amp;flags);
 </pre>
 
-<p>in <code>C</code> programs.</p>
-
-<p>Note, the code which uses this would work fine on other Linux file-systems.
-They just ignore the compression flag.</p>
+<p>in <code>C</code> programs. Similarly, if compression is disabled by
+default, you may enable if for individual inodes by setting the compression
+flag. Note, the code which uses the compression flag works fine on other Linux
+file-systems, because the flag is just ignored in this case.</p>
 
 <p>It might be a good idea to disable compression for say, <code>mp3</code> or
 <code>jpeg</code> files which would anyway not compress and UBIFS would just
 waste CPU time trying to compress them. The compression may also be disabled if
-one wants faster file read, because it UBIFS would not need to decompress the
-file on read. Write speed may be faster or slower if compression is disabled.
-Indeed, in case of a very fast CPU and very slow flash compressed writes are
-faster, and vice versa.</p>
+one wants faster file I/O, because UBIFS would not need to compress or
+decompress the data on reads and write. However, I/O speed may actually become
+slower if compression is disabled. Indeed, in case of a very fast CPU and very
+slow flash compressed writes are faster, but this is usually not true for
+embedded systems.</p>
 
 
 
