@@ -1,6 +1,6 @@
 <PAGE>
 	<VAR match="VAR_ORIGIN" replace="" />
-	<VAR match="VAR_CVSID" replace="Last updated: 26 Aug 2008, dedekind"/>
+	<VAR match="VAR_CVSID" replace="Last updated: 23 Oct 2008, dedekind"/>
 	<INCLUDE file="inc/header.tmpl" />
 
 	<VAR match="VAR_SEL_INDEX" replace="selected" />
@@ -24,6 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>23 Oct 2008: <a href="faq/ubifs.html#L_favor_lzo">Favor LZO</a>
+	    FAQ section added</li>
 	<li>14 Oct 2008: <a href="doc/ubifs.html#L_raw_vs_ftl">"Raw flash vs.
 	    FTL devices"</a> documentation section added</li>
 	<li>10 Oct 2008: First kernel containing (v. 2.6.27) is out</li>

@@ -20,6 +20,7 @@
 	<li><a href="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</a></li>
 	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of -c (--max-leb-cnt) mkfs.ubifs option?</a></li>
 	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></li>
+	<li><a href="ubifs.html#L_favor_lzo">What is "favor LZO" compression?</a></li>
 	<li><a href="ubifs.html#L_loop_mount">Can UBIFS mount loop-back devices?</a></li>
 	<li><a href="ubifs.html#L_atomic_change">How to change a file atomically?</a></li>
 	<li><a href="ubifs.html#L_atime">Does UBIFS support atime?</a></li>
@@ -423,6 +424,52 @@ about using UBIFS with nandsim.</p>
 <p>But be warned that this patch has not been well tested, it is not in
 mainline yet, and it has been created for development and debugging purposes,
 but not for production use.</p>
+
+
+
+<h2><a name="L_favor_lzo">What is "favor LZO" compression?</a></h2>
+
+<p>Starting from version <code>1.1</code>, the
+<a href="../doc/ubifs.html#L_usptools"><code>mkfs.ubifs</code></a> utility
+supports so-called "<i>favor LZO</i>" compression. This is not a new compression
+algorithm, it is just a method of combining LZO and zlib compressors to balance
+speed and compression ratio. A similar method exists in the
+<code>mkfs.jffs2</code> utility, and we borrowed this idea from there.</p>
+
+<p>As <a href="../doc/ubifs.html#L_compression">this</a> documentation section
+highlights, zlib compressor provides better compression ration comparing to
+the LZO compressor, but it is considerably slower, especially on embedded
+platforms which do not usually have powerful CPUs. The favor LZO compression
+method makes it possible to use zlib compressor for data chunks which zlib may
+compress much better than LZO, and to use LZO compressor for data chunks which
+zlib compresses only slightly better than LZO.</p>
+
+<p>Here is the favor LZO algorithm. Each 4KiB data chunk is compressed by both
+zlib and LZO compressors. If zlib compresses at least 20% better than LZO, then
+zlib is used for this data chunk. Otherwise, LZO is used. Very simple. The 20%
+threshold is configurable via the "<code>-X</code> <code>mkfs.ubifs</code>
+option, so you may make it 10% or anything else. Example:</p>
+
+<pre>
+$ mkfs.ubifs -r rootfs -m 2048 -e 129024 -c 2047 -x favor_lzo -X 5 -o ubifs.img
+</pre>
+
+<p>This command creates an UBIFS image containing the <code>rootfs</code>
+directory, using favor LZO compression with threshold 5%. This means that if
+a data chunk compresses at least 5% better with zlib, then
+<code>mkfs.ubifs</code> uses zlib, otherwise it uses LZO.</p>
+
+<p>So UBIFS images created with favor LZO compression will contain both LZO and
+zlib-compressed data nodes. However, the default file-system compressor will be
+LZO. This means, the kernel will use LZO compressor for all data. This is
+because the favor LZO method is not implemented in-kernel, just because UBIFS
+authors did not need it there. Of course you can mount the UBIFS images created
+with the favor LZO compression method, and they will work fine. But if you write
+a file to the UBIFS file-system, it will be compressed only by the LZO
+compressor. So favor LZO is actually useful only for read-only files which are
+not going to be over-written. However, it should be easy to implement favor LZO
+in the kernel.</p>
+
 
 
 

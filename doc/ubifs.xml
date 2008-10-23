@@ -512,6 +512,9 @@ sub-directories are created, they inherit the compression flag of the parent
 directory. Please, refer <a href="../faq/ubifs.html#L_comproff">this</a>
 section for instruction about how the compression flag may be toggled.</p>
 
+<p>It is also possible to combine LZO and zlib compressors, see
+<a href="../faq/ubifs.html#L_favor_lzo">this</a> FAQ section.</p>
+
 
 
 <h2><a name="L_xattr">Extended attributes</a></h2>
