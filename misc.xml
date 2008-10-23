@@ -1,0 +1,25 @@
+<PAGE>
+<VAR match="VAR_ORIGIN" replace="" />
+<VAR match="VAR_CVSID" replace="Last updated: 23 Oct 2008, dedekind"/>
+<INCLUDE file="inc/header.tmpl" />
+<VAR match="VAR_SEL_MISC" replace="selected" />
+<PARSE file="menu1.xml" />
+<INCLUDE file="inc/content.tmpl" />
+
+<p>This page contains various MTD-related information which does not fit the
+FAQ or Documentation categories.</p>
+
+<h2>Table of contents</h2>
+<ol>
+	<li><a href="ubifs.html#L_ubifs_compr">UBIFS compression experiments on ARM platform</a></li>
+</ol>
+
+
+
+<h2><a name="L_ubifs_compr">UBIFS compression experiments on ARMv7 platform</a></h2>
+
+<p>This section contains the results of our compression (UBIFS authours')
+experiments on an ARM platform with 256MiB OneNAND flash.</p>
+
+<INCLUDE file="inc/footer.tmpl" />
+</PAGE>

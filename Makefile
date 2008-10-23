@@ -1,7 +1,7 @@
 #
 CONV 	= "./html.py"
 
-TARGETS	= index.html archive.html mail.html source.html fellows.html
+TARGETS	= index.html archive.html mail.html source.html misc.html fellows.html
 SUBDIRS = doc faq
 
 
