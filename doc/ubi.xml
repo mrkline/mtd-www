@@ -95,9 +95,9 @@ of them.</p>
 <p>NAND flashes may have bit-flips which occur on read and write operations.
 Bit-flips are corrected by ECC checksums, but they may accumulate over
 time and cause data loss. UBI handles this by moving data from physical
-eraseblocks with bit-flips to other physical eraseblocks, thus doing active
-scrubbing. This is done transparently in background and is hidden from upper
-layers.</p>
+eraseblocks with bit-flips to other physical eraseblocks, thus doing scrubbing.
+This is done transparently in background and is hidden from upper laye
+s.</p>
 
 <p>Here is a short list of the main UBI features:</p>
 <ul>

@@ -553,7 +553,7 @@ flash, you should probably be more careful. However, see
 <a href="../faq/ubifs.html#L_ubifs_mlc">this</a> FAQ section for more
 information about UBIFS on MLC NAND.</p>
 
-<p>Note, currently UBIFS cannot disable CRC-32 calculation on write, because
+<p>Note, currently UBIFS cannot disable CRC-32 calculations on write, because
 UBIFS recovery process depends on in. When recovering from an unclean reboot
 and re-playing the journal, UBIFS has to be able to detect broken and
 half-written UBIFS nodes and drop them, and UBIFS depends on the CRC-32
