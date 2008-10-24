@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 23 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 24 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -21,6 +21,7 @@
 	<li><a href="ubifs.html#L_scalability">Scalability</a></li>
 	<li><a href="ubifs.html#L_writeback">Write-back support</a></li>
 	<li><a href="ubifs.html#L_compression">Compression</a></li>
+	<li><a href="ubifs.html#L_checksumming">Check-summing</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
 	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
 	<li><a href="ubifs.html#L_spaceacc">Flash space accounting issues</a></li>
@@ -73,50 +74,54 @@ subsystems involved:</p>
 <p>Here is a list of some of UBIFS features:</p>
 
 <ul>
-	<li>scalability - UBIFS scales well with respect to flash size; namely,
-	mount time, memory consumption and I/O speed does not depend on flash
-	size (it is not 100% true for memory consumption, but the dependency is
-	very weak); UBIFS (not UBI!) should work fine for hundreds of GiB
-	flashes; however, UBIFS depends on UBI which has scalability
+	<li><b>scalability</b> - UBIFS scales well with respect to flash size;
+	namely,	mount time, memory consumption and I/O speed does not depend on
+	flash size (it is not 100% true for memory consumption, but the
+	dependency is very weak); UBIFS (not UBI!) should work fine for hundreds
+	of GiB flashes; however, UBIFS depends on UBI which has scalability
 	limitations (see <a href="ubi.html#L_scalability">here</a>);
 	nonetheless, UBI/UBIFS stack scales much better than JFFS2, and if UBI
 	becomes a bottleneck, it is always possible to implement UBI2 without
 	changing UBIFS;</li>
 
-	<li>fast mount time - unlike JFFS2, UBIFS does not have to scan whole
+	<li><b>fast mount</b> - unlike JFFS2, UBIFS does not have to scan whole
 	media when mounting, it takes milliseconds for UBIFS to mount the
 	media, and this does not depend on flash size; however, UBI
 	initialization time depends on flash size and has to be taken into
 	account (see <a href="ubi.html#L_scalability">here</a> for more
 	details);</li>
 
-	<li>write-back support - this dramatically improves the throughput of
-	the file system comparing to JFFS2, which is write-through; see
-	<a href="ubi.html#L_writeback">here</a> for more details;</li>
+	<li><b>write-back support</b> - this dramatically improves the
+	throughput of the file system comparing to JFFS2, which is
+	write-through; see <a href="ubifs.html#L_writeback">here</a> for more
+	details;</li>
 
-	<li>tolerance to unclean reboots - UBIFS is a journaling file system
-	and it tolerates sudden crashes and unclean reboots; UBIFS just replays
-	the journal and recovers from the unclean reboot; mount time is a
-	little bit slower in this case, because of the need to replay the
+	<li><b>tolerance to unclean reboots</b> - UBIFS is a journaling file
+	system and it tolerates sudden crashes and unclean reboots; UBIFS just
+	replays the journal and recovers from the unclean reboot; mount time is
+	a little bit slower in this case, because of the need to replay the
 	journal, but UBIFS does not need to scan whole media, so it anyway
-	takes fractions of a second to mount UBIFS;</li>
+	takes fractions of a second to mount UBIFS; note, authors payed
+	special attention to this UBIFS aspect, see
+	<a href="../faq/ubifs.html#L_powercut">this</a> FAQ entry;</li>
 
-	<li>fast I/O - even with write-back disabled (e.g., if UBIFS is mounted
-	with <code>-o sync</code> mount flag) UBIFS shows good performance
-	which is close to JFFS2 performance; bear in mind, it is extremely
-	difficult to compete with JFFS2 in synchronous I/O, because JFFS2 does
-	not maintain indexing data structures on flash, so it does not have the
-	maintenance overhead, while UBIFS does have it; this is because of the
-	way UBIFS commits the journal - it does not move the data physically
-	from one place to another but instead, it just adds corresponding
-	information to the file system index and picks different eraseblocks
-	for the new journal (i.e., UBIFS has sort of "wandering"
-	journal); there are other tricks like multi-headed journal which make
-	UBIFS perform well;</li>
+	<li><b>fast I/O</b> - even with write-back disabled (e.g., if UBIFS is
+	mounted	with the "<code>-o sync</code>" mount option) UBIFS shows good
+	performance which is close to JFFS2 performance; bear in mind, it is
+	extremely difficult to compete with JFFS2 in synchronous I/O, because
+	JFFS2 does not maintain indexing data structures on flash, so it does
+	not have the maintenance overhead, while UBIFS does have it; but UBIFS
+	is still fast because of the way UBIFS commits the journal - it does
+	not move the data physically from one place to another but instead, it
+	just adds corresponding information to the file system index and picks
+	different eraseblocks for the new journal (i.e., UBIFS has sort of
+	"wandering" journal which constantly changes the position); there are
+	other tricks like multi-headed journal which make UBIFS perform
+	well;</li>
 
-	<li>on-the-flight compression - the data is stored in compressed form
-	on the flash media, which makes it possible to put considerably more
-	data to the flash than if the data was not compressed; this is very
+	<li><b>on-the-flight compression</b> - the data is stored in compressed
+	form on the flash media, which makes it possible to put considerably
+	more data to the flash than if the data was not compressed; this is very
 	similar to what JFFS2 has; UBIFS also allows to switch the compression
 	on/off on per-inode basis, which is very flexible; for example, one may
 	switch the compression off by default and enable it only for certain
@@ -127,7 +132,7 @@ subsystems involved:</p>
 	<a href="ubifs.html#L_compression">this</a> section for more
 	information.</li>
 
-	<li>recoverability - UBIFS may be fully recovered if the indexing
+	<li><b>recoverability</b> - UBIFS may be fully recovered if the indexing
 	information gets corrupted; each piece of information in UBIFS has a
 	header which describes this piece of information, and it is possible to
 	fully reconstruct the file system index by scanning the flash media; to
@@ -136,6 +141,13 @@ subsystems involved:</p>
 	but if you similarly wipe out UBIFS index, you still may re-construct
 	it, although a special user-space tool would be required to do
 	this;</li>
+
+	<li><b>integrity</b> - UBIFS (as well as UBI) checksums everything it
+	writes to the flash media to guarantee data integrity, UBIFS does not
+	leave data or meta-data corruptions unnoticed (JFFS2 is doing the same,
+	though); however, you may disable CRC checking for data to improve
+	file-system read speed and lessen CPU usage - read
+	<a href="ubifs.html#L_checksumming">this</a> section.</li>
 </ul>
 
 
@@ -517,6 +529,48 @@ section for instruction about how the compression flag may be toggled.</p>
 
 
 
+<h2><a name="L_checksumming">Check-summing</a></h2>
+
+<p>Every piece of information UBIFS writes to the media has a CRC-32 check-sum,
+and UBIFS verifies the check-sum for every piece of information it reads from
+the media. CRC-32 is a quite strong function and any data corruption will most
+probably be noticed. The same is true for UBI.</p>
+
+<p>CRC-32 loads the CPU and makes the file-system slower - this is the price we
+pay for providing very high data integrity level. But UBIFS allows to switch the
+data check-summing off using the <code>no_chk_data_crc</code> mount option. If
+UBIFS is mounted with this option, it does not check CRC-32 check-sum for data,
+but it does check it for the internal indexing information. And this option
+only affects reading, not writing, because UBIFS always calculates CRC-32 when
+writing the data.</p>
+
+<p>Disabling check-sum verification for data speeds-up file-system read
+speed and reduces CPU usage. But of course, it also lowers the file-system
+integrity level, so you should decide whether you want to use it or
+not depending on your system requirements. In general, if you use SLC NAND
+flash or NOR flash, it is probably fine to disable CRC-32. In case of MLC NAND
+flash, you should probably be more careful. However, see
+<a href="../faq/ubifs.html#L_ubifs_mlc">this</a> FAQ section for more
+information about UBIFS on MLC NAND.</p>
+
+<p>Note, currently UBIFS cannot disable CRC-32 calculation on write, because
+UBIFS recovery process depends on in. When recovering from an unclean reboot
+and re-playing the journal, UBIFS has to be able to detect broken and
+half-written UBIFS nodes and drop them, and UBIFS depends on the CRC-32
+check-sum here. So the <code>no_chk_data_crc</code> mount option does not
+improve UBIFS write speed. However, UBIFS writes speed should not be a problem
+for a great deal of standard work-loads because of
+<a href="ubifs.html#L_writeback">write-back</a> support.</p>
+
+<p>In other words, if you use UBIFS with data CRC-32 checking disabled, you
+still have the CRC-32 check-sum attached to each piece of data, and you may
+mount UBIFS with default options to enable CRC-32 checking at any time (e.g.,
+when you suspect the file-system might be corrupted because you visited the
+<a href="http://en.wikipedia.org/wiki/Large_Hadron_Collider">Large Hadron
+Collider</a> and exposed your flash to radiation).</p>
+
+
+
 <h2><a name="L_xattr">Extended attributes</a></h2>
 
 <p>UBIFS supports extended attributes if the corresponding configuration option
@@ -538,8 +592,24 @@ However, access control lists (ACL) support is not implemented.</p>
 
 	<li><code>fast_umount</code> - do not commit on unmount; this option
 	makes unmount faster, but the next mount slower because of the need to
-	replay the journal.</li>
+	replay the uncommitted journal;</li>
+
+	<li><code>chk_data_crc</code> (default) - check data CRC-32
+	check-sums;</li>
+
+	<li><code>no_chk_data_crc</code> - do not check data CRC-32 check-sums,
+	see <a href="ubifs.html#L_checksumming">this</a> section for more
+	details;</li>
 </ul>
+
+<p>Example:</p>
+
+<pre>
+$ mount -t ubifs -o fast_umount,no_chk_data_crc ubi0:rootfs /mnt/ubifs
+</pre>
+
+<p>mounts UBIFS file-system to <code>/mnt/ubifs</code>, enables fast
+unmount and disables data CRC checking.</p>
 
 <p>Besides, UBIFS supports the standard <code>sync</code> mount option which
 may be used to disable UBIFS write-back and write-buffer caching and make it

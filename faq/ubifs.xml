@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 23 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 24 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -437,7 +437,7 @@ speed and compression ratio. A similar method exists in the
 <code>mkfs.jffs2</code> utility, and we borrowed this idea from there.</p>
 
 <p>As <a href="../doc/ubifs.html#L_compression">this</a> documentation section
-highlights, zlib compressor provides better compression ration comparing to
+highlights, zlib compressor provides better compression ratio comparing to
 the LZO compressor, but it is considerably slower, especially on embedded
 platforms which do not usually have powerful CPUs. The favor LZO compression
 method makes it possible to use zlib compressor for data chunks which zlib may
