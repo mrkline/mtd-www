@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 24 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 25 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -21,7 +21,7 @@
 	<li><a href="ubifs.html#L_scalability">Scalability</a></li>
 	<li><a href="ubifs.html#L_writeback">Write-back support</a></li>
 	<li><a href="ubifs.html#L_compression">Compression</a></li>
-	<li><a href="ubifs.html#L_checksumming">Check-summing</a></li>
+	<li><a href="ubifs.html#L_checksumming">Checksumming</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
 	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
 	<li><a href="ubifs.html#L_spaceacc">Flash space accounting issues</a></li>
@@ -527,24 +527,34 @@ section for instruction about how the compression flag may be toggled.</p>
 <p>It is also possible to combine LZO and zlib compressors, see
 <a href="../faq/ubifs.html#L_favor_lzo">this</a> FAQ section.</p>
 
+<p>It's also worth noting that JFFS2 LZO compression is a little bit different
+to UBIFS zlib compression. UBIFS uses crypto-API deflate method, while JFFS2
+uses zlib library directly. As a result, UBIFS and JFFS2 use different zlib
+compression options. Namely, JFFS2 uses deflate level 3 and window bits 15,
+while UBIFS uses deflate level 6 and window bits -11 (minus makes zlib avoid
+putting a header to the output data stream). Experiments with compressing ARM
+code <a href="../misc.html#L_ubifs_compr">showed</a> that JFFS2 compression
+ratio is slightly smaller, decompression speed is also slightly slower, but
+compression speed is faster.</p>
 
 
-<h2><a name="L_checksumming">Check-summing</a></h2>
 
-<p>Every piece of information UBIFS writes to the media has a CRC-32 check-sum,
-and UBIFS verifies the check-sum for every piece of information it reads from
+<h2><a name="L_checksumming">Checksumming</a></h2>
+
+<p>Every piece of information UBIFS writes to the media has a CRC-32 checksum,
+and UBIFS verifies the checksum for every piece of information it reads from
 the media. CRC-32 is a quite strong function and any data corruption will most
 probably be noticed. The same is true for UBI.</p>
 
 <p>CRC-32 loads the CPU and makes the file-system slower - this is the price we
 pay for providing very high data integrity level. But UBIFS allows to switch the
-data check-summing off using the <code>no_chk_data_crc</code> mount option. If
-UBIFS is mounted with this option, it does not check CRC-32 check-sum for data,
+data checksumming off using the <code>no_chk_data_crc</code> mount option. If
+UBIFS is mounted with this option, it does not check CRC-32 checksum for data,
 but it does check it for the internal indexing information. And this option
 only affects reading, not writing, because UBIFS always calculates CRC-32 when
 writing the data.</p>
 
-<p>Disabling check-sum verification for data speeds-up file-system read
+<p>Disabling checksum verification for data speeds-up file-system read
 speed and reduces CPU usage. But of course, it also lowers the file-system
 integrity level, so you should decide whether you want to use it or
 not depending on your system requirements. In general, if you use SLC NAND
@@ -557,17 +567,17 @@ information about UBIFS on MLC NAND.</p>
 UBIFS recovery process depends on in. When recovering from an unclean reboot
 and re-playing the journal, UBIFS has to be able to detect broken and
 half-written UBIFS nodes and drop them, and UBIFS depends on the CRC-32
-check-sum here. So the <code>no_chk_data_crc</code> mount option does not
+checksum here. So the <code>no_chk_data_crc</code> mount option does not
 improve UBIFS write speed. However, UBIFS writes speed should not be a problem
 for a great deal of standard work-loads because of
 <a href="ubifs.html#L_writeback">write-back</a> support.</p>
 
 <p>In other words, if you use UBIFS with data CRC-32 checking disabled, you
-still have the CRC-32 check-sum attached to each piece of data, and you may
+still have the CRC-32 checksum attached to each piece of data, and you may
 mount UBIFS with default options to enable CRC-32 checking at any time (e.g.,
 when you suspect the file-system might be corrupted because you visited the
 <a href="http://en.wikipedia.org/wiki/Large_Hadron_Collider">Large Hadron
-Collider</a> and exposed your flash to radiation).</p>
+Collider</a> and exposed your flash to proton beams).</p>
 
 
 
@@ -595,9 +605,9 @@ However, access control lists (ACL) support is not implemented.</p>
 	replay the uncommitted journal;</li>
 
 	<li><code>chk_data_crc</code> (default) - check data CRC-32
-	check-sums;</li>
+	checksums;</li>
 
-	<li><code>no_chk_data_crc</code> - do not check data CRC-32 check-sums,
+	<li><code>no_chk_data_crc</code> - do not check data CRC-32 checksums,
 	see <a href="ubifs.html#L_checksumming">this</a> section for more
 	details;</li>
 </ul>

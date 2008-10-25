@@ -24,15 +24,15 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
-	<li>24 Oct 2008: <a href="doc/ubifs.html#L_checksumming">Check-summing</a>
+	<li>25 Oct 2008: <a href="misc.html#L_ubifs_compr">UBIFS ARM compression
+	    experiment</a> results are availabel</li>
+	<li>24 Oct 2008: <a href="doc/ubifs.html#L_checksumming">Checksumming</a>
 	    documentation section added</li>
 	<li>23 Oct 2008: <a href="faq/ubifs.html#L_favor_lzo">Favor LZO</a>
 	    FAQ section added</li>
 	<li>14 Oct 2008: <a href="doc/ubifs.html#L_raw_vs_ftl">"Raw flash vs.
 	    FTL devices"</a> documentation section added</li>
 	<li>10 Oct 2008: First kernel containing (v. 2.6.27) is out</li>
-	<li>26 Aug 2008: UBIFS <a href="doc/ubifs.html#L_spaceacc">flash space
-	    accounting issues</a> documetation section added</li>
 	<li>17 Jul 2008: UBIFS is merged into mainline, will show up in 2.6.27</li>
 	</ul>
 

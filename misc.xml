@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="" />
-<VAR match="VAR_CVSID" replace="Last updated: 23 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 25 Oct 2008, dedekind"/>
 <INCLUDE file="inc/header.tmpl" />
 <VAR match="VAR_SEL_MISC" replace="selected" />
 <PARSE file="menu1.xml" />
@@ -11,15 +11,172 @@ FAQ or Documentation categories.</p>
 
 <h2>Table of contents</h2>
 <ol>
-	<li><a href="ubifs.html#L_ubifs_compr">UBIFS compression experiments on ARM platform</a></li>
+	<li><a href="misc.html#L_ubifs_compr">UBIFS compression experiments on ARM platform</a></li>
 </ol>
 
 
 
-<h2><a name="L_ubifs_compr">UBIFS compression experiments on ARMv7 platform</a></h2>
+<h2><a name="L_ubifs_compr">UBIFS compression experiments on ARM platform</a></h2>
 
-<p>This section contains the results of our compression (UBIFS authours')
-experiments on an ARM platform with 256MiB OneNAND flash.</p>
+<p>This section contains the results of our compression experiments on an ARM
+platform with 256MiB OneNAND flash. Please, bear in mind that the results are
+specific to our platform and may be different for other platforms. Flash I/O
+speed, CPU speed, CPU architecture and contents of the test files greatly
+affect the results. Please, take this into account before extrapolating our
+test results to your system.</p>
+
+<p>UBIFS supports LZO and zlib
+<a href="doc/ubifs.html#L_compression">compressors</a> and the
+<code>mkfs.ubifs</code> tool supports
+<a href="faq/ubifs.html#L_favor_lzo">favor LZO</a> compression method. We tried
+to figure out what is the preferred compression type for our system, and the
+results of our experiments are below.</p>
+
+<table border="2" cellpadding="4" cellspacing="0">
+<tr>
+	<td>Compression type</td>
+	<td>Read speed</td>
+	<td>Read speed in percent</td>
+	<td>Image size</td>
+	<td>Image size in percent</td>
+	<td>Write speed</td>
+	<td>Size of full rootfs image</td>
+	<td>Size of full rootfs image in percent</td>
+</tr>
+<tr>
+	<td>No compression (<code>-x&amp;nbsp;none</code>)</td>
+	<td>25.81MiB/s</td>
+	<td>100%</td>
+	<td>98.2MiB</td>
+	<td>100%</td>
+	<td>4.3MiB/s</td>
+	<td>301.8MiB</td>
+	<td>100%</td>
+</tr>
+<tr>
+	<td>LZO (<code>-x&amp;nbsp;lzo</code>)</td>
+	<td>18.31MiB/s</td>
+	<td>70.9%</td>
+	<td>58.1MiB</td>
+	<td>59.2%</td>
+	<td>4.0MiB/s</td>
+	<td>170.3MiB</td>
+	<td>56.4%</td>
+</tr>
+<tr>
+	<td>Favor LZO 20% (<code>-x&amp;nbsp;favor_lzo&amp;nbsp;-X&amp;nbsp;20</code>)</td>
+	<td>16.72MiB/s</td>
+	<td>64.8%</td>
+	<td>56.4MiB</td>
+	<td>57.4%</td>
+	<td>-</td>
+	<td>164.9MiB</td>
+	<td>54.6%</td>
+</tr>
+<tr>
+	<td>Favor LZO 15% (<code>-x&amp;nbsp;favor_lzo&amp;nbsp;-X&amp;nbsp;15</code>)</td>
+	<td>15.14MiB/s</td>
+	<td>58.7%</td>
+	<td>54.9MiB</td>
+	<td>55.9%</td>
+	<td>-</td>
+	<td>160.5MiB</td>
+	<td>53.2%</td>
+</tr>
+<tr>
+	<td>Favor LZO 10% (<code>-x&amp;nbsp;favor_lzo&amp;nbsp;-X&amp;nbsp;10</code>)</td>
+	<td>12.66MiB/s</td>
+	<td>49.1%</td>
+	<td>53.3MiB</td>
+	<td>54.3%</td>
+	<td>-</td>
+	<td>156.5MiB</td>
+	<td>52.9%</td>
+</tr>
+<tr>
+	<td>zlib (<code>-x&amp;nbsp;zlib</code>)</td>
+	<td>9.74MiB/s</td>
+	<td>37.7%</td>
+	<td>50.9MiB</td>
+	<td>51.8%</td>
+	<td>1.2MiB/s</td>
+	<td>151.7MiB</td>
+	<td>49.7%</td>
+</tr>
+<tr>
+	<td>zlib-JFFS2 (<code>-x&amp;nbsp;zlib</code>, but hacked kernel and
+	    <code>mkfs.ubifs</code>)</td>
+	<td>9.39MiB/s</td>
+	<td>36.4%</td>
+	<td>51.8MiB</td>
+	<td>52.8%</td>
+	<td>1.7MiB/s</td>
+	<td>154.3MiB</td>
+	<td>51.1%</td>
+</tr>
+</table>
+
+<p>This table contains the results of 3 separate tests.</p>
+<ol>
+	<li>Read test, where we measured read speed of a 98.2MiB file. The file
+	contained various ARM libraries, executables from <code>/bin</code> and
+	<code>/sbin</code>, and files from <code>/etc</code>. We created
+	UBIFS images containing only this single file using using the
+	<code>mkfs.ubifs</code> utility with various compression options. Then
+	we measured read speed by reading whole 98.2MiB file on our ARM
+	platform. So,
+	<ul>
+		<li>1st column names the compressors and
+		<code>mkfs.ubifs</code> options;</li>
+
+		<li>2nd column lists file read speed;</li>
+
+		<li>3rd column lists file read speed as percent of the
+		uncompressed file read speed
+		([<i>read_speed</i>/25.81]*100%);</li>
+
+		<li>4th column lists resulting UBIFS image sizes;</li>
+
+		<li>5th column lists image sizes as percent of the
+		uncompressed image size ([<i>image_size</i>/98.2MiB]*100%).</li>
+	</ul></li>
+
+	<li>Write speed test, where we wrote the same 98.2MiB file and
+	synchronized the file system. And since favor LZO is
+	<code>mkfs.ubifs</code>-only feature, it could not be tested, so
+
+	<ul>
+		<li>6th column lists write speed.</li>
+	</ul></li>
+
+	<li>Rootfs image compression test, where we generated UBIFS image
+	containing our root file system and compared resulting image sizes. So
+	<ul>
+		<li>7th column lists sizes of our ARM rootfs images;</li>
+		<li>8th column lists rootfs image sizes in percent of
+		uncompressed rootfs image size
+		([<i>image_size</i>/301.8MiB]*100%).</li>
+	</ul></li>
+</ol>
+
+<p>UBIFS was mounted with "<code>bulk_read</code>" and
+"<code>no_chk_data_crc</code>"
+<a href="doc/ubifs.html#L_mountopts">mount options.</a></p>
+
+<p>The last row of the table contains the results of experimenting with JFFS2
+zlib initialization parameters
+(see <a href="doc/ubifs.html#L_compression">here</a>) which are different to
+UBIFS compression parameters. We just temporarily hacked UBIFS and
+<code>mkfs.ubifs</code> to carry out the experiment.</p>
+
+<p>As you may see from the table, zlib  considerably slower on both
+compressing and decompressing comparing to LZO, while compression ratio only
+slightly better. You may also see that the favor LZO method may be used to
+balance speed and compression ratio, although the kernel is unable to write
+using favor LZO method (well, it'd be  easy to implement this but write
+speed would drop a lot because the kernel would have to compress everything
+using both compressors). And because for our system the performance was more
+important, we selected LZO compressor.</p>
 
 <INCLUDE file="inc/footer.tmpl" />
 </PAGE>

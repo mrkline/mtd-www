@@ -487,7 +487,9 @@ the LZO compressor, but it is considerably slower, especially on embedded
 platforms which do not usually have powerful CPUs. The favor LZO compression
 method makes it possible to use zlib compressor for data chunks which zlib may
 compress much better than LZO, and to use LZO compressor for data chunks which
-zlib compresses only slightly better than LZO.</p>
+zlib compresses only slightly better than LZO. See
+<a href="../misc.html#L_ubifs_compr">this</a> section for some favor LZO
+experiment results on ARM platform.</p>
 
 <p>Here is the favor LZO algorithm. Each 4KiB data chunk is compressed by both
 zlib and LZO compressors. If zlib compresses at least 20% better than LZO, then
