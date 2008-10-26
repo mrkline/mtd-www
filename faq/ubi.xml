@@ -346,7 +346,7 @@ UBI: sub-page size:              512
 </pre>
 
 <p>Note, if sup-page size was not printed, it does not exist. Older UBI
-implementation do not print sub-page size, but they print VID header
+implementations do not print sub-page size, but they print VID header
 offset, which is by default equivalent to sub-page size:</p>
 
 <pre>
