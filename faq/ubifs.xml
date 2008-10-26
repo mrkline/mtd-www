@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 24 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 26 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -636,7 +636,9 @@ or
 dd if=/dev/urandom of=/mnt/ubifs/file bs=4096
 </pre>
 
-<p>and see the size of the file.</p>
+<p>and see the size of the file. And do not forget that some space is reserved
+for the super-user (see <a href="../doc/ubifs.html#L_rootspace">here</a>), so
+it is better to be the root.</p>
 
 <p>UBIFS users should know that the more dirty cached FS data is there, the
 less precise is the <code>df</code> report. Try to create a big file, and

@@ -23,6 +23,7 @@
 	<li><a href="ubifs.html#L_compression">Compression</a></li>
 	<li><a href="ubifs.html#L_checksumming">Checksumming</a></li>
 	<li><a href="ubifs.html#L_readahead">Read-ahead</a></li>
+	<li><a href="ubifs.html#L_rootspace">Space for superuser</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
 	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
 	<li><a href="ubifs.html#L_spaceacc">Flash space accounting issues</a></li>
@@ -176,11 +177,12 @@ unless you are an active UBIFS developer, use the <code>linux-next</code>
 branch.</p>
 
 <p>There are also <code>2.6.21</code>, <code>2.6.22</code>, <code>2.6.23</code>,
-<code>2.6.24</code>, <code>2.6.25</code>, and <code>2.6.26</code> kernel
-back-ports, although they are not always up-to-date and one may want to pick up
-additional patches from the main development git tree to utilize the latest
-UBIFS version. The back-ports may be found at:</p>
+<code>2.6.24</code>, <code>2.6.25</code>, <code>2.6.26</code> and
+<code>2.6.27</code>kernel back-ports, although they are not always up-to-date
+and one may want to pick up additional patches from the main development git
+tree to utilize the latest UBIFS version. The back-ports may be found at:</p>
 
+<code>git://git.infradead.org/~dedekind/ubifs-v2.6.27.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.26.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.25.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.24.git</code><br/>
@@ -206,7 +208,7 @@ limitations. Below are some of them</p>
 	performance comparing to the mainline code.</li>
 </ul>
 
-<p>Thus, only <code>2.6.25</code> and <code>2.6.26</code> back-ports have full
+<p>Thus, only <code>2.6.25</code> and higher version back-ports have full
 UBIFS functionality and are not much different to the mainline UBIFS. Note, all
 the back-port trees also have many MTD patches back-ported, and they have most
 of the UBI changes back-ported. Also bear in mind, the back-port trees are not
@@ -641,6 +643,31 @@ flushes the changes), and UBIFS won't automatically de-fragment them. However,
 it is possible to implement a background de-fragmentator. It is also possible
 to have per-inode journal head and avoid mixing data nodes belonging to
 different inodes in the same LEB. So there is room for improvements.</p>
+
+
+
+<h2><a name="L_rootspace">Space for superuser</a></h2>
+
+<p>UBIFS reserves some space for the superuser (root), which means that when
+the file-system is full for normal users, there is still little space for the
+super-user. File-systems like <code>ext2</code> have a similar feature.
+<a href="ubifs.html#L_usptools"><code>mkfs.ubifs</code></a>
+reserves ~1%, but at maximum ~5MiB of the space by default. The amount of
+reserved space is stored in the UBIFS superblock and may be changed arbitrarily.
+Currently <code>mkfs.ubifs</code> does not have a command line option to
+override the defaults, but it should be trivial to implement.</p>
+
+<p>By default only root may use the reserved space. But it is possible to
+extend the list of power users who are able to utilize the reserved space.
+UBIFS may record several user and group IDs at the superblock and allow them
+to utilize the reserved space as well. But again, current
+<code>mkfs.ubifs</code> utility does not have corresponding command line
+options, but it should be trivial to implement them. UBIFS authors added the
+mechanism, but did not use it so did not implement corresponding
+<code>mkfs.ubifs</code> options.</p>
+
+<p>Note, UBIFS prints the amount of reserved space when mounts the file-system.
+See UBIFS messages in the system log.</p>
 
 
 

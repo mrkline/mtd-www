@@ -24,6 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>26 Oct 2008: <a href="doc/ubifs.html#L_readahead">Space for
+	    superuser</a> documentation section added</li>
 	<li>26 Oct 2008: <a href="doc/ubifs.html#L_readahead">Read-ahead</a>
 	    documentation section added</li>
 	<li>25 Oct 2008: <a href="misc.html#L_ubifs_compr">UBIFS ARM compression
@@ -34,7 +36,7 @@
 	    FAQ section added</li>
 	<li>14 Oct 2008: <a href="doc/ubifs.html#L_raw_vs_ftl">"Raw flash vs.
 	    FTL devices"</a> documentation section added</li>
-	<li>10 Oct 2008: First kernel containing (v. 2.6.27) is out</li>
+	<li>10 Oct 2008: First kernel containing UBIFS (v. 2.6.27) is out</li>
 	<li>17 Jul 2008: UBIFS is merged into mainline, will show up in 2.6.27</li>
 	</ul>
 
