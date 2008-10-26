@@ -161,10 +161,10 @@ contains UBIFS is <code>2.6.27</code>. But since UBIFS is a very new file system
 it is recommended to pick the latest updates and fixes from the
 <code>linux-next</code> branch of the UBIFS git tree:</p>
 
-<code>git://git.infradead.org/~dedekind/ubifs-2.6.git</code>
+<code>git://git.infradead.org/ubifs-2.6.git</code>
 
 <p><a href="http://git.infradead.org/ubifs-2.6.git">Here</a> is the
-corresponding Git-web address.</p>
+corresponding Git-web view.</p>
 
 <p>The git tree has <code>master</code> and <code>linux-next</code> branches.
 The <code>master</code> branch contains the most recent stuff which is often

@@ -153,7 +153,10 @@ which the flash technology imposes.</p>
 <code>2.6.22</code>. But it is recommended to use the latest UBI which can
 be found in the UBI git tree:</p>
 
-<code>git://git.infradead.org/~dedekind/ubi-2.6.git</code>
+<code>git://git.infradead.org/ubi-2.6.git</code>
+
+<p><a href="http://git.infradead.org/ubi-2.6.git">Here</a> is the
+corresponding Git-web view.</p>
 
 <p>The git tree has <code>master</code> and <code>linux-next</code> branches.
 The <code>master</code> branch contains the most recent stuff which is often
