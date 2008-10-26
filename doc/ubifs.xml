@@ -45,7 +45,8 @@ they look like block devices to the outside world because they implement
 FTL (Flash Translation Layer) support in hardware, which simply speaking
 emulates a block device on top of the built-in flash chip. Please, make sure
 you understand the difference between raw flash and, say, MMC flash before
-reading about UBIFS. <a href="L_raw_vs_ftl">This</a> section should help.</p>
+reading about UBIFS. <a href="ubifs.html#L_raw_vs_ftl">This</a> section should
+help.</p>
 
 
 
