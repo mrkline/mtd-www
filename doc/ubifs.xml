@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 25 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 26 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_DOC" replace="selected" />
@@ -22,6 +22,7 @@
 	<li><a href="ubifs.html#L_writeback">Write-back support</a></li>
 	<li><a href="ubifs.html#L_compression">Compression</a></li>
 	<li><a href="ubifs.html#L_checksumming">Checksumming</a></li>
+	<li><a href="ubifs.html#L_readahead">Read-ahead</a></li>
 	<li><a href="ubifs.html#L_xattr">Extended attributes</a></li>
 	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
 	<li><a href="ubifs.html#L_spaceacc">Flash space accounting issues</a></li>
@@ -581,6 +582,68 @@ Collider</a> and exposed your flash to proton beams).</p>
 
 
 
+<h2><a name="L_readahead">Read-ahead</a></h2>
+
+<p>Read-ahead is an optimization technique which makes the file system read
+a little bit more data than users actually ask. The idea is that files are
+often read sequentially from the beginning to the end, so the file system tries
+to make next data available before the user actually asks for them.</p>
+
+<p>Linux VFS is capable of doing read-ahead and this does not require any
+support from the file system. This probably works well for traditional
+block-based file systems, however this does not work well for UBIFS.
+UBIFS works with UBI API, which works with MTD API, which is synchronous. MTD
+API is pretty trivial and does not have any request queues. This means that VFS
+blocks UBIFS readers and makes them wait for read-ahead process. In opposite,
+block-device API is asynchronous and readers do not wait for read-ahead.</p>
+
+<p>VFS read-ahead was designed for hard drives, and it was benchmarked with
+hard-drives. But the nature of raw flash devices is very different to the nature
+of Hard Drives Raw flash devices do not heave such a huge seek time as hard
+drives do, so the techniques which work for HDDs do not necessarily work well
+for flash.</p>
+
+<p>That said, VFS read-ahead only slows UBIFS down instead of improving it,
+so UBIFS disables VFS read-ahead. But UBIFS has its own internal read-ahead,
+which we call "<i>bulk-read</i>". You may enable bulk-read using the
+"<code>bulk_read</code>" UBIFS mount option.</p>
+
+<p>Some flashes may read faster if the data is read at one go, rather than
+at several read requests. For example, OneNAND can do "read-while-load" if
+it reads more than one NAND page. So UBIFS may benefit from reading large
+data chunks at one go, and this is exactly what bulk-read does.</p>
+
+<p>If UBIFS notices that a file is being read sequentially (at least 3
+sequential 4KiB blocks has been read), and if UBIFS sees that the further
+file data resides sequentially at the same eraseblock, it starts reading data
+ahead using large read requests, which makes it possible to read at higher
+rates. So UBIFS reads more than it is asked to, and it pushes the read-ahead
+data to the file caches, so the data become instantly available for the further
+user read requests.</p>
+
+<p>Here is an example. Suppose the user is reading a file sequentially. We are
+lucky and the file is not fragmented on the media. Suppose LEB 25 contains data
+nodes belonging to this file, and the data nodes are logically (in terms of
+logical file offset) and physically (in terms of LEB/offset addresses)
+sequential. Suppose user requests to read data node at LEB 25 offset 0. In this
+case UBIFS will actually read whole LEB 25 at one go, then populate the file
+cache with all the read data. And when the user asks the next piece of data,
+it will already be in the cache.</p>
+
+<p>Obviously, the bulk-read feature may slow UBIFS down in some work-loads, so
+you should be careful. It is also worth noting that bulk-read feature cannot
+help on highly fragmented file-systems. Although UBIFS does not fragment
+file-systems (e.g., the Garbage-Collector does not re-order data nodes), but
+UBIFS does not try to de-fragment them. For example, if you write a file
+sequentially, it won't be fragmented. But if you write more than one file at
+a time, they may become fragmented (well, this also depends on how write-back
+flushes the changes), and UBIFS won't automatically de-fragment them. However,
+it is possible to implement a background de-fragmentator. It is also possible
+to have per-inode journal head and avoid mixing data nodes belonging to
+different inodes in the same LEB. So there is room for improvements.</p>
+
+
+
 <h2><a name="L_xattr">Extended attributes</a></h2>
 
 <p>UBIFS supports extended attributes if the corresponding configuration option
@@ -610,6 +673,11 @@ However, access control lists (ACL) support is not implemented.</p>
 	<li><code>no_chk_data_crc</code> - do not check data CRC-32 checksums,
 	see <a href="ubifs.html#L_checksumming">this</a> section for more
 	details;</li>
+
+	<li><code>bulk_read</code> - enable bulk-read, see
+	<a href="ubifs.html#L_readahead">here</a>;</li>
+
+	<li><code>no_bulk_read</code> (default) - do not bulk-read.</li>
 </ul>
 
 <p>Example:</p>

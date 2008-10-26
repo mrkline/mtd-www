@@ -1,6 +1,6 @@
 <PAGE>
 	<VAR match="VAR_ORIGIN" replace="" />
-	<VAR match="VAR_CVSID" replace="Last updated: 23 Oct 2008, dedekind"/>
+	<VAR match="VAR_CVSID" replace="Last updated: 26 Oct 2008, dedekind"/>
 	<INCLUDE file="inc/header.tmpl" />
 
 	<VAR match="VAR_SEL_INDEX" replace="selected" />
@@ -24,6 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>26 Oct 2008: <a href="doc/ubifs.html#L_readahead">Read-ahead</a>
+	    documentation section added</li>
 	<li>25 Oct 2008: <a href="misc.html#L_ubifs_compr">UBIFS ARM compression
 	    experiment</a> results are availabel</li>
 	<li>24 Oct 2008: <a href="doc/ubifs.html#L_checksumming">Checksumming</a>
