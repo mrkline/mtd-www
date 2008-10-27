@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 26 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 27 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -122,10 +122,10 @@ syntax, where</p>
 <p>For example,</p>
 
 <pre>
-$ mount -t ubifs ubi0_0 /mnt/ubifs
+$ mount -t ubifs ubi1_0 /mnt/ubifs
 </pre>
 
-<p>mounts volume 0 on UBI device 0 to <code>/mnt/ubifs</code>, and</p>
+<p>mounts volume 0 on UBI device 1 to <code>/mnt/ubifs</code>, and</p>
 
 <pre>
 $ mount -t ubifs ubi0:rootfs /mnt/ubifs
@@ -135,7 +135,7 @@ $ mount -t ubifs ubi0:rootfs /mnt/ubifs
 is volume name). This method of specifying UBI volume is more preferable
 because it does not depend on volume number.</p>
 
-<p>Note, if <code>X</code> is not specified, UBIFS uses 0, i.e.,
+<p>Note, if <code>X</code> is not specified, UBIFS assumes 0, i.e.,
 "<code>ubi0:rootfs</code>" and "<code>ubi:rootfs</code>" are
 equivalent.</p>
 
@@ -169,16 +169,16 @@ steps.</p>
 <p>However, as described <a href="../doc/ubi.html#L_volupdate">here</a>,
 UBI has a volume update facility and there is an
 <a href="../doc/ubi.html#L_usptools"><code>ubiupdatevol</code></a> utility
-for this. So you may update UBI volumes straight form your
-running system as well. In this case, you only need UBIFS image, and you do not
-have to make the UBI image, i.e., the process has only 1 step in this case.</p>
+for this. So you may update UBI volumes on your running system as well.
+In this case you only need an UBIFS image, and you do not have to make the
+UBI image, i.e., the process has only 1 step in this case.</p>
 
 <p>So, there are 2 utilities:</p>
 <ul>
 	<li><a href="../doc/ubifs.html#L_usptools"><code>mkfs.ubifs</code></a>
 	which creates UBIFS images;</li>
 	<li><a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a>
-	which creates UBI images.</li>
+	which creates UBI images out of UBI images.</li>
 </ul>
 
 <p>And depending on the needs you use either <code>mkfs.ubifs</code> or
@@ -205,21 +205,24 @@ parameters and give some hints about how to find them out.</p>
 
 <p>And optionally, you should decide which compression algorithm you would want
 to use for this file-system. UBIFS supports zlib and LZO (default) at the
-moment. Generally, zlib compresses better, but it is slower on both compression
-and decompression. So this is a trade-off between space savings and speed. The
-best idea is to try both and choose the one which is more appropriate for you.
-But if flash space is not a big issue, it is recommended to use LZO.
-Alternatively, the compression may be switched off. See "<code>-x</code>"
-option of the <code>mkfs.ubifs</code> utility.</p>
+moment (see <a href="../doc/ubifs.html#L_compression">here</a>). There is also
+<a href="ubifs.html#L_favor_lzo">favor LZO</a> <code>mkfs.ubifs</code>
+compression method. Generally, zlib compresses better, but it is slower on both
+compression and decompression. So this is a trade-off between space savings and
+speed. The best idea is to try both and choose the one which is more appropriate
+for you. <a href="../misc.html#L_ubifs_compr">Here</a> you may find compression
+test results for ARM platform. Alternatively, the compression may be switched
+off. See "<code>-x</code>" option of the <code>mkfs.ubifs</code> utility.</p>
 
 <p>There are other advanced file-system and UBI characteristics which may be
-altered with the tools. Use them only if you understand what they do.</p>
+altered with various options of the tools. Use them only if you understand what
+they do.</p>
 
 <p>The below example demonstrates how to create an UBI/UBIFS image for a 256MiB
-SLC OneNAND flash chip with 128KiB physical eraseblocks, 2048 bytes NAND pages, and
-which supports 4 sub-pages (this means that it allows to do 4x512 bytes writes
-to the same NAND page, which is quite typical for SLC flashes). The resulting
-image will have one UBI volume storing UBIFS file-system.</p>
+SLC OneNAND flash chip with 128KiB physical eraseblocks, 2048 bytes NAND pages,
+and supporting 4 sub-pages (this means that it allows to do 4x512 bytes
+writes to the same NAND page, which is quite typical for SLC flashes). The
+resulting image will have only one UBI volume storing UBIFS file-system.</p>
 
 <pre>
 $ mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o ubifs.img
@@ -245,11 +248,11 @@ vol_flags=autoresize
 <ul>
 	<li><code>-r root-fs</code>: tells <code>mkfs.ubifs</code> to create an
 	UBIFS image which would have identical contents as the local
-	<code>root-fs</code> directory has;</li>
+	<code>root-fs</code> directory;</li>
 
 	<li><code>-m 2048</code>: tells <code>mkfs.ubifs</code> that the minimum
 	input/output unit size of the flash this UBIFS image is created for is
-	2048 bytes;</li>
+	2048 bytes (NAND page in this case);</li>
 
 	<li><code>-e 129024</code>: logical eraseblock size of the UBI volume
 	this image is created for;</li>
@@ -258,7 +261,9 @@ vol_flags=autoresize
 	eraseblocks; this means that it will be possible to use the resulting
 	file-system on volumes up to this size (less or equivalent); so in this
 	particular case, the resulting FS may be put on volumes up to about
-	251MiB (129024 multiplied by 2047);</li>
+	251MiB (129024 multiplied by 2047); See
+	<a href="ubifs.html#L_max_leb_cnt">this</a> section for more
+	details.</li>
 
 	<li><code>-p 128KiB</code>: tells <code>ubinize</code> that physical
 	eraseblock size of the flash chip the UBI image is created for is
@@ -277,10 +282,13 @@ refer <a href="../faq/ubi.html#L_ubi_mkimg">this</a> section for more
 <p>In the example, the <code>ubinize.cfg</code> file tells <code>ubinize</code>
 to create an UBI image which has a singe 200MiB dynamic volume with ID 0, and
 name "rootfs". The configuration file also sets the "autoresize" volume flag,
-which means that the volume will be automatically enlarged by UBIFS to have
+which means that the volume will be automatically enlarged by UBI to have
 the maximum possible size when it runs for the first time. See
 <a href="../doc/ubi.html#L_autoresize">here</a> for more information about what
-the auto-resize feature is.</p>
+the auto-resize feature is. And because we specified "<code>-c 2047</code>"
+<code>mkfs.ubifs</code> option, UBIFS will also automatically re-size on the
+first mount. So the end result will be that you have one single volume of
+maximum possible size, and UBIFS spans whole volume.</p>
 
 <p>Please, run <code>ubinize -h</code> and <code>mkfs.ubifs -h</code> for more
 information and for more possibilities to tweak the generated images.</p>
@@ -361,7 +369,7 @@ typical configurations:</p>
 <p>Please, also refer <a href="../doc/ubi.html#L_overhead">this</a> section for
 additional information.</p>
 
-<p>The easiest way to find out the LEB size is to attach the MTD device to UBI,
+<p>The simplest way to find out the LEB size is to attach the MTD device to UBI,
 as it is suggested at the end of
 <a href="../faq/ubi.html#L_find_min_io_size">this</a> section.</p>
 
@@ -372,8 +380,8 @@ as it is suggested at the end of
 <p>Yes, it is OK to mount empty UBI volumes, i.e. the volumes which
 contain only 0xFF bytes. In this case UBIFS formats the media automatically
 with default parameters (journal size, compression, etc). But generally, this
-feature should have limited use, and a proper UBIFS image should
-preferably be flashed created
+feature should have limited use (developing, debugging), and a proper UBIFS
+image should preferably be created and flashed
 (see <a href="ubifs.html#L_mkfubifs">this</a> section).</p>
 
 <p>Note, UBI has similar property and it automatically formats the flash media
@@ -557,7 +565,7 @@ intact. This is <code>POSIX</code> requirement and UBIFS satisfies it.</p>
 
 <p>No, it does not support atime. The authors think it is not very useful in
 embedded world and did not implement this. Indeed most of the users do not
-provably want the file-system doing inode updates every time it is read.</p>
+provably want the file-system doing inode updates every time they are read.</p>
 
 
 
@@ -592,6 +600,11 @@ be full. There are 2 main reasons for this:</p>
 	flash space is available, the less dirty data may be buffered, and
 	the more synchronous the file-system becomes.</li>
 </ul>
+
+<li>Note, also slows down when it is close to being full, but UBIFS should be
+better than JFFS2 in this respect (slow down less). This is because UBIFS
+always chooses optimal LEBs to garbage-collect, while JFFS2 may choose random
+eraseblocks.</li>
 
 
 
