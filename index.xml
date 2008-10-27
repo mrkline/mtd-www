@@ -24,6 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>27 Oct 2008: UBIFS slides are available
+	    (see <a href="doc/ubifs.html#L_documentation">here</a>)</li>
 	<li>26 Oct 2008: <a href="doc/ubifs.html#L_readahead">Space for
 	    superuser</a> documentation section added</li>
 	<li>26 Oct 2008: <a href="doc/ubifs.html#L_readahead">Read-ahead</a>

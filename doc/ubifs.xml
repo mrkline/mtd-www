@@ -976,6 +976,16 @@ because UBIFS depends on the services provided by the UBI layer. See the
 <a href="ubi.html">UBI documentation</a> and <a href="../faq/ubi.html">UBI
 FAQ</a> sections.</p>
 
+<p>Look at UBIFS presentation slides (<a href="ubifs.odp">ubifs.odp</a>) which
+give another UBI/UBIFS overview. The slides were prepared in OpenOffice.org
+Impress 2.4, so you need
+<a href="http://download.openoffice.org/">OpenOffice</a> to see them. The
+slides contain animation, so you have to watch them in "slide show" mode
+(use <code>F5</code> key). And if you do not have any possibility to get
+OpenOffice, here is a <a href="ubifs.pdf">pdf version</a>, but it is very ugly
+because it does not store the animation and draws all animation steps at
+once.</p>
+
 <p>There is an <a href="ubifs_whitepaper.pdf">UBIFS white-paper</a> document
 available as well. However, it might be rather difficult for newbies, so we
 recommend to start with the JFFS3 design document. The UBIFS white-paper gives
