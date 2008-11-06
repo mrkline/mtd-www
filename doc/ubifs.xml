@@ -1022,8 +1022,9 @@ to describe how the problem can be reproduced. The bugreport should be sent to
 the <a href="../mail.html">MTD mailing list</a>.</p>
 
 <p>Note, sometimes UBIFS bugs may appear to be UBI bugs. If you suspect
-there are UBI problems, please, also enable UBI debugging (see
-<a href="../faq/ubi.html#L_how_debugt">here</a>).</p>
+there are UBI problems, please, also enable UBI debugging. Please, refer the
+<a href="../faq/ubi.html#L_how_debugt">UBI debugging</a>) section for more
+information.</p>
 
 
 

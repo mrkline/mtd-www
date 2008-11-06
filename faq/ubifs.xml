@@ -81,11 +81,7 @@ example, pages 0 and 3, 1 and 4, 2 and 5, 3 and 6 in and so on (in the same
 eraseblock) may be paired (page distance is 4, but there may be other
 distances). So if you write data to, say, page 3 and cut the power, you may
 end up with corrupted data in page 0. UBIFS is not ready to handle this
-problem at the moment. However, UBIFS authors think it should be possible
-to deal with this issue by treating 4 MLC NAND pages (or more, depending
-on the distance) as on minimum I/O unit (by default minimum I/O unit is one
-NAND page, see <a href="ubifs.html#L_find_lebsz">here</a>). This needs some
-work though.</p>
+problem at the moment and this needs some work.</p>
 
 <p>The second aspect is the "program-disturb" MLC NAND property (see
 <a href="http://www.klabs.org/richcontent/MemoryContent/nvmt_symp/nvmts_2002/docs/12/12_dan_p.pdf">here</a>),
