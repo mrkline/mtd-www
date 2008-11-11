@@ -579,9 +579,10 @@ writes, not much else seems to be affected by this bug.</p>
 eraseblock, but the header supposed to be there. This probably means some
 corruption</p>
 
-<p>However, if you have UBI debugging enabled
-(<code>CONFIG_MTD_UBI_DEBUG=y</code>), you may see a lot of these messages and
-they are harmless. They are just debugging messages in this case.</p>
+<p>However, if you have UBI "build" debugging messages enabled,
+(<code>CONFIG_MTD_UBI_DEBUG_MSG_BLD=y</code>), you may see a lot of these
+messages and they are harmless. They are just debugging messages in this
+case.</p>
 
 
 
