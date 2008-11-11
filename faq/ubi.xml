@@ -32,6 +32,7 @@
 	<li><a href="ubi.html#L_mlc">May UBI be used on MLC flash?</a></li>
 	<li><a href="ubi.html#L_vid_offset_mismatch">Why does ubiattach on a freshly formatted device fail with "Invalid argument"?</a></li>
 	<li><a href="ubi.html#L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></li>
+	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
 	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
 </ol>
 
@@ -569,6 +570,18 @@ ubi.mtd=0,2048
 to turn it off. The code does not currently (as of 2.6.26) perform verification
 of sub-page writes correctly. As UBI is one of the few users of sub-page
 writes, not much else seems to be affected by this bug.</p>
+
+
+
+<h2><a name="L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></h2>
+
+<p>The messages mean that UBI could not find volume ID header in the
+eraseblock, but the header supposed to be there. This probably means some
+corruption</p>
+
+<p>However, if you have UBI debugging enabled
+(<code>CONFIG_MTD_UBI_DEBUG=y</code>), you may see a lot of these messages and
+they are harmless. They are just debugging messages in this case.</p>
 
 
 
