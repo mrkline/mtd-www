@@ -12,6 +12,7 @@ FAQ or Documentation categories.</p>
 <h2>Table of contents</h2>
 <ol>
 	<li><a href="misc.html#L_ubifs_compr">UBIFS compression experiments on ARM platform</a></li>
+	<li><a href="misc.html#L_ubifs_large_compr">UBIFS large block compression tests</a></li>
 </ol>
 
 
@@ -177,6 +178,186 @@ using favor LZO method (well, it'd be  easy to implement this but write
 speed would drop a lot because the kernel would have to compress everything
 using both compressors). And because for our system the performance was more
 important, we selected LZO compressor.</p>
+
+
+
+<h2><a name="L_ubifs_large_compr">UBIFS large block compression tests</a></h2>
+
+<p>UBIFS (just like JFFS2) compresses 4KiB data blocks, which means that all
+data is split on 4KiB chunks, and each chunk is compressed independently.
+Obviously, UBIFS could provide better compression if it used larger compression
+chunks, e.g. 8KiB or 16KiB. Implementing this would be difficult, but
+possible. But we tried to estimate how much of the improvement that would
+be and did the following:</p>
+
+<ul>
+	<li>gacked the <code>mkfs.ubifs</code> utility and made it generate
+	UBIFS images with large compression chunk sizes - 8KiB, 16KiB, 32KiB and
+	so on; <a href="mkfs.ubifs-comp.diff">here</a> is the patch which
+	implements the hack;</li>
+
+	<li>generated UBIFS images of our root file-system with various
+	compression chunk sizes; the root file system was ARM rootfs and
+	contained Debian-based <a href="http://maemo.org">Maemo</a> stuff;</li>
+
+	<li>generated UBIFS images with both LZO and zlib compressors with
+	4KiB-256KiB compression chunk sizes.</li>
+</ul>
+
+<p>The following table contains the results for LZO compressor.</p>
+
+<table border="2" cellpadding="4" cellspacing="0">
+<tr>
+	<td>Chunk size</td>
+	<td>UBIFS image size</td>
+	<td>Decrease (%)</td>
+	<td>Absolute decrease (%)</td>
+	<td>Decrease (MiB)</td>
+	<td>Absolute decrease (MiB)</td>
+</tr>
+<tr>
+	<td>4KiB</td>
+	<td>209.1MiB (219211776 bytes)</td>
+	<td>0.0%</td>
+	<td>0.0%</td>
+	<td>0.0MiB</td>
+	<td>0.0MiB</td>
+</tr>
+<tr>
+	<td>8KiB</td>
+	<td>200.9MiB (210696192 bytes)</td>
+	<td>3.9%</td>
+	<td>3.9%</td>
+	<td>8.1MiB</td>
+	<td>8.1MiB</td>
+</tr>
+<tr>
+	<td>16KiB</td>
+	<td>194.9MiB (204374016 bytes)</td>
+	<td>3.0%</td>
+	<td>6.8%</td>
+	<td>6.0MiB</td>
+	<td>14.2MiB</td>
+</tr>
+<tr>
+	<td>32KiB</td>
+	<td>189.5MiB (198696960 bytes)</td>
+	<td>2.8%</td>
+	<td>9.4%</td>
+	<td>5.4MiB</td>
+	<td>19.6MiB</td>
+</tr>
+<tr>
+	<td>64KiB</td>
+	<td>185.7MiB (194697216 bytes)</td>
+	<td>2.0%</td>
+	<td>11.2%</td>
+	<td>3.8MiB</td>
+	<td>23.4MiB</td>
+</tr>
+<tr>
+	<td>128KiB</td>
+	<td>183.6MiB (192503808 bytes)</td>
+	<td>1.1%</td>
+	<td>12.2%</td>
+	<td>2.1MiB</td>
+	<td>25.5MiB</td>
+</tr>
+<tr>
+	<td>256KiB</td>
+	<td>182.6MiB (191471616 bytes)</td>
+	<td>0.5%</td>
+	<td>12.7%</td>
+	<td>1.0MiB</td>
+	<td>26.5MiB</td>
+</tr>
+</table>
+
+<p>The following table contains the results for zlib compressor.</p>
+
+<table border="2" cellpadding="4" cellspacing="0">
+<tr>
+	<td>Chunk size</td>
+	<td>UBIFS image size</td>
+	<td>Decrease (%)</td>
+	<td>Absolute decrease (%)</td>
+	<td>Decrease (MiB)</td>
+	<td>Absolute decrease (MiB)</td>
+</tr>
+<tr>
+	<td>4KiB</td>
+	<td>189.5MiB (198696960 bytes)</td>
+	<td>0.0%</td>
+	<td>0.0%</td>
+	<td>0.0MiB</td>
+	<td>0.0MiB</td>
+</tr>
+<tr>
+	<td>8KiB</td>
+	<td>184.3MiB (193277952 bytes)</td>
+	<td>2.7%</td>
+	<td>2.7%</td>
+	<td>5.2MiB</td>
+	<td>5.2MiB</td>
+</tr>
+<tr>
+	<td>16KiB</td>
+	<td>181.7MiB (190568448 bytes)</td>
+	<td>1.4%</td>
+	<td>4.1%</td>
+	<td>2.6MiB</td>
+	<td>7.8MiB</td>
+</tr>
+<tr>
+	<td>32KiB</td>
+	<td>180.9MiB (189665280 bytes)</td>
+	<td>0.5%</td>
+	<td>4.5%</td>
+	<td>0.9MiB</td>
+	<td>8.6MiB</td>
+</tr>
+<tr>
+	<td>64KiB</td>
+	<td>180.6MiB (189407232 bytes)</td>
+	<td>0.1%</td>
+	<td>4.7%</td>
+	<td>0.2MiB</td>
+	<td>8.9MiB</td>
+</tr>
+<tr>
+	<td>128KiB</td>
+	<td>180.4MiB (189149184 bytes)</td>
+	<td>0.1%</td>
+	<td>4.8%</td>
+	<td>0.2MiB</td>
+	<td>9.1MiB</td>
+</tr>
+<tr>
+	<td>256KiB</td>
+	<td>180.4MiB (189149184 bytes)</td>
+	<td>0.1%</td>
+	<td>4.8%</td>
+	<td>0.2MiB</td>
+	<td>9.1MiB</td>
+</tr>
+</table>
+
+<p>The "decrease" column contains image size improvements comparing to the
+previous image, and the "absolute decrease" column contains image size
+improvements comparing to the standard image with 4KiB compression chunk
+size.</p>
+
+<p>As you can see, LZO gives better improvement comparing to zlib when
+compression chunk size grows. Also, LZO with 32KiB compression chunk gives the
+same result as zlib with standard 4KiB compression chunk size, so it is
+questionable whether it makes sense to use the former. This depends on large
+compression chunks I/O speed penalty, but we do not have any numbers for
+this.</p>
+
+<p>Thus, we figured out that large compression chunks support does not give
+much benefits <b>for our</b> system and did not implement this feature in
+UBIFS. However, for other systems this could give better improvements.</p>
+
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
