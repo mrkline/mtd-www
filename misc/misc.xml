@@ -191,7 +191,7 @@ possible. But we tried to estimate how much of the improvement that would
 be and did the following:</p>
 
 <ul>
-	<li>gacked the <code>mkfs.ubifs</code> utility and made it generate
+	<li>hacked the <code>mkfs.ubifs</code> utility and made it generate
 	UBIFS images with large compression chunk sizes - 8KiB, 16KiB, 32KiB and
 	so on; <a href="mkfs.ubifs-comp.diff">here</a> is the patch which
 	implements the hack;</li>
@@ -355,7 +355,7 @@ compression chunks I/O speed penalty, but we do not have any numbers for
 this.</p>
 
 <p>Thus, we figured out that large compression chunks support does not give
-much benefits <b>for our</b> system and did not implement this feature in
+much benefits for <b>our</b> system and did not implement this feature in
 UBIFS. However, for other systems this could give better improvements.</p>
 
 
