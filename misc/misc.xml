@@ -1,10 +1,10 @@
 <PAGE>
-<VAR match="VAR_ORIGIN" replace="" />
+<VAR match="VAR_ORIGIN" replace="../" />
 <VAR match="VAR_CVSID" replace="Last updated: 25 Oct 2008, dedekind"/>
-<INCLUDE file="inc/header.tmpl" />
+<INCLUDE file="../inc/header.tmpl" />
 <VAR match="VAR_SEL_MISC" replace="selected" />
-<PARSE file="menu1.xml" />
-<INCLUDE file="inc/content.tmpl" />
+<PARSE file="../menu1.xml" />
+<INCLUDE file="../inc/content.tmpl" />
 
 <p>This page contains various MTD-related information which does not fit the
 FAQ or Documentation categories.</p>
@@ -26,11 +26,11 @@ affect the results. Please, take this into account before extrapolating our
 test results to your system.</p>
 
 <p>UBIFS supports LZO and zlib
-<a href="doc/ubifs.html#L_compression">compressors</a> and the
+<a href="../doc/ubifs.html#L_compression">compressors</a> and the
 <code>mkfs.ubifs</code> tool supports
-<a href="faq/ubifs.html#L_favor_lzo">favor LZO</a> compression method. We tried
-to figure out what is the preferred compression type for our system, and the
-results of our experiments are below.</p>
+<a href="../faq/ubifs.html#L_favor_lzo">favor LZO</a> compression method. We
+tried to figure out what is the preferred compression type for our system, and
+the results of our experiments are below.</p>
 
 <table border="2" cellpadding="4" cellspacing="0">
 <tr>
@@ -161,11 +161,11 @@ results of our experiments are below.</p>
 
 <p>UBIFS was mounted with "<code>bulk_read</code>" and
 "<code>no_chk_data_crc</code>"
-<a href="doc/ubifs.html#L_mountopts">mount options.</a></p>
+<a href="../doc/ubifs.html#L_mountopts">mount options.</a></p>
 
 <p>The last row of the table contains the results of experimenting with JFFS2
 zlib initialization parameters
-(see <a href="doc/ubifs.html#L_compression">here</a>) which are different to
+(see <a href="../doc/ubifs.html#L_compression">here</a>) which are different to
 UBIFS compression parameters. We just temporarily hacked UBIFS and
 <code>mkfs.ubifs</code> to carry out the experiment.</p>
 
@@ -178,5 +178,5 @@ speed would drop a lot because the kernel would have to compress everything
 using both compressors). And because for our system the performance was more
 important, we selected LZO compressor.</p>
 
-<INCLUDE file="inc/footer.tmpl" />
+<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

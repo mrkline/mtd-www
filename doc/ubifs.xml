@@ -2,7 +2,6 @@
 <VAR match="VAR_ORIGIN" replace="../" />
 <VAR match="VAR_CVSID" replace="Last updated: 26 Oct 2008, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
-
 <VAR match="VAR_SEL_DOC" replace="selected" />
 <VAR match="VAR_SEL_UBIFS" replace="selected" />
 <PARSE file="../menu1.xml" />
