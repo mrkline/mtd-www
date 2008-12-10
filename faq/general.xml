@@ -14,6 +14,7 @@
 <H2>Table of contents</H2>
 <OL>
 	<LI><A HREF="general.html#L_mtd_what">Is an MTD device a block device or a char device?</A></LI>
+	<LI><A HREF="general.html#L_mtdwww">I'd like to add/change/fix information on this Web-site - how?</A></LI>
 	<LI><A HREF="general.html#L_mtd_vs_hdd">What are the differences between flash devices and block drives?</A></LI>
 	<LI><A HREF="general.html#L_ext2_mtd">Can I mount ext2 over an MTD device?</A></LI>
 	<LI><A HREF="general.html#L_point">What are the point() and unpoint() functions used for?</A></LI>
@@ -52,6 +53,16 @@ So MTD is neither a block nor a char device. There are translations to
 use them, as if they were. But those translations are nowhere near the
 original, just like translated Chinese poems.
 </P>
+
+
+
+<A NAME="L_mtdwww">
+<H2>I'd like to add/change/fix information on this Web-site - how?</H2>
+</A>
+
+<P>The sources of this Web-site are available at
+<CODE>git://git.infradead.org/mtd-www.git</CODE>. Just do your modifications
+and send the patch to the <A href="../mail.html">MTD mailing list</A>.</P>
 
 
 
