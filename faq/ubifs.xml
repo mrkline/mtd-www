@@ -174,7 +174,7 @@ UBI image, i.e., the process has only 1 step in this case.</p>
 	<li><a href="../doc/ubifs.html#L_usptools"><code>mkfs.ubifs</code></a>
 	which creates UBIFS images;</li>
 	<li><a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a>
-	which creates UBI images out of UBI images.</li>
+	which creates UBIFS images out of UBI images.</li>
 </ul>
 
 <p>And depending on the needs you use either <code>mkfs.ubifs</code> or
