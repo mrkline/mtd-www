@@ -66,7 +66,7 @@ $ modprobe ubi mtd=3 mtd=5
 and <code>mtd5</code>.</p>
 
 <p>If UBI is compiled into the kernel, the mtd device to attach may be
-specified in the kernel boot parameters, e.g.,</p>
+specified in the <code>ubi.mtd=</code>kernel boot parameter, e.g.,</p>
 
 <pre>
 ubi.mtd=3
@@ -76,7 +76,7 @@ ubi.mtd=3
 and</p>
 
 <pre>
-ubi.mtd=3 ubi.mtd=3
+ubi.mtd=3 ubi.mtd=6
 </pre>
 
 <p>command makes UBI attach <code>mtd3</code> and <code>mtd6</code>.</p>

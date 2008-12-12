@@ -139,8 +139,19 @@ equivalent.</p>
 <code>ubi:rootfs</code>) and "!" may be used instead (e.g.,
 <code>ubi!rootfs</code>).</p>
 
+<p>In order to mount UBIFS as the root file system, you have to compile UBIFS
+into the kernel (instead of compiling it as a kernel module) and specify proper
+kernel boot arguments and make the kernel mount UBIFS on boot. You have to
+provide the boot arguments to attach the UBI device (using the
+<code>ubi.mtd=</code> argument, see <a href="ubi.html#L_attachmtd">here</a>).
+Then you should tell the kernel the file system type by prividing the
+<code>rootfstype=</code> argument. And finally, you should specify which UBI
+volume has to be mounted on boot using the <code>root=</code> argument.
+The volume is specified the same way as described above (<code>ubiX_Y</code>
+or <code>ubiX:NAME</code>).</p>
+
 <p>The following is an example of the kernel boot arguments to attach
-<code>mtd0</code> to UBI and mount volume "rootfs":</p>
+<code>mtd0</code> to UBI and mount UBI volume "rootfs":</p>
 
 <pre>
 ubi.mtd=0 root=ubi0:rootfs rootfstype=ubifs
