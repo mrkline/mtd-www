@@ -53,7 +53,7 @@ creating this seciton. So,</p>
 </ul>
 
 <p>Please, do not be confused. Read <a
-href="../doc/ubifs.html#L_raw_vs_ftl">here</a> for more information about how
+href="ubifs.html#L_raw_vs_ftl">here</a> for more information about how
 raw flash devices are different to FTL devices.</p>
 
 

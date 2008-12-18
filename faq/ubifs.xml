@@ -50,12 +50,12 @@ should run fine. Let's consider some specific aspects of MLC NAND flashes:</p>
 	<li>when the data is written to an eraseblock, it has to be written
 	sequentially, from the beginning of the eraseblock to the end of it;
 	this is also not a problem because it is exactly what UBI and UBIFS do
-	(see also <a href="../faq/ubi.html#L_restrict">this</a> section);</li>
+	(see also <a href="ubi.html#L_restrict">this</a> section);</li>
 
 	<li>MLC flashes have rather short eraseblock life-cycle of just few
 	thousand of erase cycles; and this is not a problem, because UBI
 	uses deterministic wear-leveling algorithm
-	(see <a href="../faq/ubi.html#L_mlc">this</a> section);</li>
+	(see <a href="ubi.html#L_mlc">this</a> section);</li>
 
 	<li>MLC flashes have so called "read-disturb" property, which means
 	that NAND page read operation may introduce a permanent bit change; the
@@ -185,7 +185,7 @@ UBI image, i.e., the process has only 1 step in this case.</p>
 	<li><a href="../doc/ubifs.html#L_usptools"><code>mkfs.ubifs</code></a>
 	which creates UBIFS images;</li>
 	<li><a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a>
-	which creates UBIFS images out of UBI images.</li>
+	which creates UBI images out of UBIFS images.</li>
 </ul>
 
 <p>And depending on the needs you use either <code>mkfs.ubifs</code> or
@@ -206,7 +206,7 @@ before creating images:</p>
 	<li>logical eraseblock size.</li>
 </ul>
 
-<p><a href="../faq/ubi.html#L_find_min_io_size">This</a> and
+<p><a href="ubi.html#L_find_min_io_size">This</a> and
 <a href="ubifs.html#L_find_lebsz">this</a> sections explain the above
 parameters and give some hints about how to find them out.</p>
 
@@ -283,7 +283,7 @@ vol_flags=autoresize
 </ul>
 
 <p>The <code>ubinize</code> utility requires volumes description file. Please,
-refer <a href="../faq/ubi.html#L_ubi_mkimg">this</a> section for more
+refer <a href="ubi.html#L_ubi_mkimg">this</a> section for more
 <code>ubinize</code> usage information.</p>
 
 <p>In the example, the <code>ubinize.cfg</code> file tells <code>ubinize</code>
@@ -347,6 +347,11 @@ vol_alignment=1
 vol_flags=autoresize
 </pre>
 
+<p>To flash UBI images, please use the <code>ubiformat</code> utility
+(see <a href="ubi.html#L_flash_img">here</a>) or use/implement a custom
+flasher program (<a href="../doc/ubi.html#L_format">here</a> you may find some
+hints).</p>
+
 
 
 <h2><a name="L_find_lebsz">How to find out LEB size?</a></h2>
@@ -359,7 +364,7 @@ size which depends on the following flash chip parameters:</p>
 	<li>sub-page size;</li>
 </ul>
 
-<p>Please, refer <a href="../faq/ubi.html#L_find_min_io_size">this</a> section
+<p>Please, refer <a href="ubi.html#L_find_min_io_size">this</a> section
 for more information about how to find those 3 parameters. Here are the most
 typical configurations:</p>
 <ul>
@@ -378,7 +383,7 @@ additional information.</p>
 
 <p>The simplest way to find out the LEB size is to attach the MTD device to UBI,
 as it is suggested at the end of
-<a href="../faq/ubi.html#L_find_min_io_size">this</a> section.</p>
+<a href="ubi.html#L_find_min_io_size">this</a> section.</p>
 
 
 
@@ -392,7 +397,7 @@ image should preferably be created and flashed
 (see <a href="ubifs.html#L_mkfubifs">this</a> section).</p>
 
 <p>Note, UBI has similar property and it automatically formats the flash media
-if it is empty (see <a href="../faq/ubi.html#L_format_mtd">here</a>). So if
+if it is empty (see <a href="ubi.html#L_format_mtd">here</a>). So if
 there is an <code>mtd0</code> MTD device, the following will work:</p>
 
 <pre>
