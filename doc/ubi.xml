@@ -206,7 +206,7 @@ flashing UBI images.</p>
 	flash;</li>
 	<li>if the intention is to write some data to the eraseblock, which
 	should be part of a valid UBI image, the flasher also has to form a
-	valid ED header with incremented erase counter value, erase the
+	valid EC header with incremented erase counter value, erase the
 	physical eraseblock, and write the data with the formed header;</li>
 	<li>if one or few physical eraseblocks do not have EC header or the EC
 	header is corrupted, the flasher should use the average erase counter
