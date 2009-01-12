@@ -37,15 +37,16 @@
 
 <p>One thing people have to understand when dealing with UBIFS is that UBIFS is
 very different to any traditional file system - it <b>does not</b> work on top
-of block devices (like hard drives, MMC/SD cards, USB flash drives, SSDs, etc).
-UBIFS was designed to work on top of raw flash, which has nothing to do with
-block devices. This is why UBIFS does not work on MMC cards or USB flash drives -
+of block devices (like <code>hard drives</code>, <code>MMC/SD cards</code>,
+<code>USB flash drives</code>, <code>SSDs</code>, etc). UBIFS was designed to
+work on top of <b>raw</b> flash, which has nothing to do with block devices.
+This is why UBIFS does not work on <code>MMC cards</code> and the like -
 they look like block devices to the outside world because they implement
-FTL (Flash Translation Layer) support in hardware, which simply speaking
-emulates a block device on top of the built-in flash chip. Please, make sure
-you understand the difference between raw flash and, say, MMC flash before
-reading about UBIFS. <a href="ubifs.html#L_raw_vs_ftl">This</a> section should
-help.</p>
+<code>FTL</code> (Flash Translation Layer) support in hardware, which simply
+speaking emulates a block device on top of the built-in flash chip. Please,
+make sure you understand the differences between raw flash and, say, MMC flash
+before dealing with UBIFS. <a href="ubifs.html#L_raw_vs_ftl">This</a> section
+should help.</p>
 
 
 

@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="Last updated: 16 Oct 2008, dedekind"/>
+<VAR match="VAR_CVSID" replace="Last updated: 13 Jan 2009, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -24,10 +24,7 @@
 	<li><a href="ubi.html#L_find_min_io_size">How to find out min. I/O unit size, sub-page size, etc?</a></li>
 	<li><a href="ubi.html#L_flash_img">How to flash UBI images and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_restrict">Can UBI logical eraseblocks be written randomly?</a></li>
-	<li><a href="ubi.html#L_why_headers">What for does UBI need headers in physical eraseblocks?</a></li>
-	<li><a href="ubi.html#L_why_2_hdrs">Why does UBI need two headers, not just one?</a></li>
 	<li><a href="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</a></li>
-	<li><a href="ubi.html#L_volume_table">What is volume table?</a></li>
 	<li><a href="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</a></li>
 	<li><a href="ubi.html#L_mlc">May UBI be used on MLC flash?</a></li>
 	<li><a href="ubi.html#L_vid_offset_mismatch">Why does ubiattach on a freshly formatted device fail with "Invalid argument"?</a></li>
@@ -56,7 +53,8 @@ device to attach in the module arguments, e.g.</p>
 $ modprobe ubi mtd=3
 </pre>
 
-<p>loads the UBI kernel module and attaches <code>mtd3</code>. And</p>
+<p>loads the UBI kernel module and attaches MTD device number 3
+(<code>mtd3</code>). And</p>
 
 <pre>
 $ modprobe ubi mtd=3 mtd=5
@@ -82,25 +80,23 @@ ubi.mtd=3 ubi.mtd=6
 <p>command makes UBI attach <code>mtd3</code> and <code>mtd6</code>.</p>
 
 <p>And finally, MTD devices may be attached or detached at any time with the
-<code>ubiattach</code> and <code>ubidetach</code> utilities
-(see <a href="../doc/ubi.html#L_usptools">here</a>); For example,</p>
+<code>ubiattach</code> and <code>ubidetach</code>
+<a href="../doc/ubi.html#L_usptools">utilities</a>; For example,</p>
 
 <pre>
 $ ubiattach /dev/ubi_ctrl -m 3
 </pre>
 
-<p>attaches <code>mtd3</code>. But this "run-time attach" UBI capability was
-added recently and it is in the main-line kernels starting from version
-2.6.25. Note, it is anyway recommended to back-port UBI patches from the latest
-kernel or even better from the <a href="ubi.html#L_source">UBI git tree</a>.</p>
+<p>attaches <code>mtd3</code>. But these utilities will work with kernel
+versions starting from version <code>2.6.25</code>.</p>
 
 
 
 <h2><a name="L_mkvol">How to create/delete UBI volumes?</a></h2>
 
-<p>Use <code>ubimkvol</code> and <code>ubirmvol</code> tools (see
-<a href="../doc/ubi.html#L_usptools">here</a>). For example, the below command
-creates a 128MiB volume on UBI device 0:</p>
+<p>Use the <code>ubimkvol</code> and <code>ubirmvol</code>
+<a href="../doc/ubi.html#L_usptools">utilities</a>. For example, the below command
+creates an 128MiB volume on UBI device 0:</p>
 
 <pre>
 $ ubimkvol /dev/ubi0 -N rootfs -s 128MiB
@@ -119,12 +115,9 @@ $ ubirmvol /dev/ubi0 -n 0
 
 <h2><a name="L_run_jffs2">How to run JFFS2 on top of an UBI volume?</a></h2>
 
-<p>Although it may sound weird, UBI can emulate MTD devices for UBI volumes and
-JFFS2 can be mounted on these emulated MTD devices. Enable the
-"Emulate MTD devices" UBI configuration menu check-box to make UBI create one
-MTD device for each UBI volume. One of the reasons to do this might be using of
-MLC NAND flash (see <a href="ubi.html#L_mlc">this</a> section) or legacy
-software.</p>
+<p>UBI can emulate a fake MTD devices for each UBI volume and JFFS2 can be
+these emulated MTD devices. Enable the "<i>Emulate MTD devices</i>" UBI
+configuration menu check-box to switch this feature on.</p>
 
 
 
@@ -136,10 +129,10 @@ Please, read the <a href="../doc/ubi.html#L_rednote">big red note</a>
 and <a href="../doc/ubi.html#L_overview">overview</a> documentation sections to
 realize why.</p>
 
-<p>But it is much easier to implement FTL on top of UBI then on top of MTD,
+<p>But it is much easier to implement FTL on top of UBI than on top of MTD,
 because UBI takes care about many flash complexities and makes it
 possible to concentrate on on upper-level issues rather then solving flash
-media problems like wear-leveling, bit-flips, bad-blocks, etc.</p>
+media problems like wear-leveling, bit-flips, bad eraseblocks, etc.</p>
 
 <p><a
 href="http://lists.infradead.org/pipermail/linux-mtd/2008-January/020381.html">
@@ -151,31 +144,24 @@ This</a> e-mail describes an idea of a simple FTL layer on top of UBI.</p>
 	Do I have to format my empty flash before running UBI on top of it?
 </a></h2>
 
-<p>Generally speaking, the flash should be formatted into UBI format before
-using it. This means, each eraseblock should be erased and the erase counter
-header should be written to it. This is an ideal situation for UBI. However,
-it is not always possible because most embedded platforms may only wipe out
-the flash and flash images to it. This is we toughed UBI to deal with empty
-flash or empty eraseblocks perfectly well - it puts zero EC header to them
-automatically.</p>
+<p>Ideally, yes, but not necessarily.</p>
+
+<p>Roughly speaking, "UBI-formatted MTD device" has each PEB erased and
+containing a valid <a href="..doc//ubi.html#L_ubi_headers">EC header</a>.
+However, it is not always possible because many a lot of existing software is
+not UBI-aware and cannot preserve erase counters. Often all it can do is to wipe
+out the flash. This is why UBI can to deal with empty flash perfectly well - it
+just automatically formats it.</p>
 
 <p>So the answer is no, you do not have to. For example, if you wipe out the
 flash and try to attach it to UBI - it will work. UBI will just automatically
-format the flash (which however, will take some time). Or it is perfectly fine
-if you wipe out your flash, and write an UBI image to it (which will probably
-be shorter than the flash). In this case UBI will just format the empty
-physical eraseblocks at the end of the flash.</p>
+format the flash. The formatting process takes time, though.</p>
 
-<p>However, it is not recommended to do this often, because when erasing you
-loose erase counters, so you loose wearing information. Doing this over and
-over again may wear out some eraseblocks. This is especially dangerous on MLC
-NAND flashes which have very low eraseblock life-cycle. The proper way to deal
-with flash which is used for UBI is to preserve the erase-counters. Please, use
-the <a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a> utility
-for these purposes. This utility may wipe out the flash and preserve erase
-counters as well as properly write UBI images. Or refer
-<a href="../doc/ubi.html#L_format">this</a> section for some hints what
-the flasher should do to be UBI-aware.</p>
+<p>But keep in mind that every time you erase the flash, you loose erase
+counters, so you loose wearing information. Doing this over and over again may
+wear out some eraseblocks. This is especially dangerous on MLC NAND flashes
+which have very low eraseblock life-cycle. Try to use UBI-aware utilities and
+flashing programs (see <a href="../doc/ubi.html#L_format">here</a>).</p>
 
 
 
@@ -197,17 +183,18 @@ ubiformat: formatting eraseblock 4095 -- 100 % complete
 </pre>
 
 <p>Note, <a href="../doc/ubi.html#L_format">this</a> section has some hints
-for those who implement an UBI flasher program.</p>
+for those who implement a custom UBI flasher.</p>
 
 
 
 <h2><a name="L_ubi_mkimg">How to create UBI images?</a></h2>
 
-<p>UBI images may be created using the <code>ubinize</code> utility
-(see <a	href="../doc/ubi.html#L_usptools">here</a>). This utility takes the
-configuration file on input and generates an UBI image. The input configuration
-file describes all UBI volumes which the resulting UBI image have to contain.
-The configuration file has <code>ini</code>-file syntax. Here is an example:</p>
+<p>UBI images may be created using the
+<a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a> utility. This
+utility takes the configuration file on input and generates an UBI image on
+output. The input configuration file describes all UBI volumes which the
+resulting UBI image has to contain. The configuration file has the
+<code>ini</code>-file syntax. Here is an example:</p>
 
 <pre>
 $ cat config.ini
@@ -262,37 +249,40 @@ files:</p>
 <p>Users often wonder why <code>ubinize</code> needs a configuration file. The
 answer is that one UBI image may contain many UBI volumes with different
 characteristics and it is difficult to invent a nice command-line interface for
-specifying all those characteristics. Thus a configuration file is used.</p>
+specifying all those characteristics. Thus a configuration file is used. But
+feel free sending a patch which teaches <code>ubinize</code> working without
+the configuration file if there is only one volume.</p>
 
 <p>Note, UBI reserves <i>physical</i> flash space for volumes. Namely, UBI
 reserves a physical eraseblock for each logical eraseblock. The size if LEB
 130560 bytes in our example (found out by running <code>ubinize</code>
-with <code>-v</code> option), which means the configuration volume will have 5
-LEBs ([512 * 1024] / 130560 rounded up) and the root file-system
-volume will have at least 1767 LEBs (or more because of the auto-resize flag).
-This means that the MTD device have to have at least 1772
+with <code>-v</code> option), which means that the configuration volume will
+have 5 LEBs ([512 * 1024] / 130560 rounded up) and the root file-system
+volume will have at least 1767 LEBs. This means that the MTD device the
+<code>ubi.img</code> is going to be flashed to has to have at least 1772
 physical eraseblocks, which is about 221MiB. But because of the UBI overhead
 (see <a href="../doc/ubi.html#L_overhead">this</a> section), the MTD device
-has to be at least 225MiB in size. Of course it may be larger, in which
-case the "rootfs" volume will be re-sized and take the rest of the flash space
-(because of the auto-resize flag).</p>
+actually has to be at least 225MiB in size. Of course it may be larger,
+in which case the "rootfs" volume will be re-sized and take the rest of the
+flash space (because of the auto-resize flag).</p>
 
 <p>Also, the <code>config_data.img</code> and <code>rootfs.img</code> input
 files do not have to be 512KiB and 220MiB respectively, but may be smaller if
-needed. And the resulting <code>ubi.img</code> file may be smaller than 221MiB.
-All <code>ubinize</code> is doing is it takes the image files, splits them to
-LEB-sized chunks, forms PEB data by adding UBI headers to these LEB chunks, and
-writes the result to the output file. It also writes the volume table (2
-physical eraseblocks). Thus, <code>ubi.img</code> file size will be small if
-the input volume images are small. And <code>ubinize</code> does not do any
-further padding.</p>
+they contain less data. In this case the resulting <code>ubi.img</code> file
+will also be smaller than 221MiB. All the <code>ubinize</code> utility does is
+it takes the image files, splits them to LEB-sized chunks, forms PEB data by
+adding <a href="../doc/ubi.html#L_ubi_headers">UBI headers</a> to these LEB
+chunks, and writes the result to the output file. It also writes the
+<a href="../doc/ubi.html#L_vol_table">volume table</a> (2 physical
+eraseblocks). Thus, <code>ubi.img</code> file size will be small if the input
+volume images are small. And <code>ubinize</code> does not do any further
+padding.</p>
 
-<p>Before flashing the <code>ubi.img</code> file, the flash has to
-be erased, so that the physical eraseblocks which are not covered by
-<code>ubi.img</code> would be empty. And it is good idea to preserve erase
-counters if they exist. The
-<a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a> utility may be
-used for this.</p>
+<p>Please, use the Use the
+<a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a> utility to
+flash the resulting UBI image. Also, you can find detailed description of how
+UBI-aware flashing programs should work in
+<a href="../doc/ubi.html#L_format_det">this</a> section.</p>
 
 
 
@@ -308,35 +298,19 @@ used for this.</p>
 </ul>
 
 <p>Physical eraseblock (PEB) size should probably be found out in the flash
-manual.</p>
-
-<p>Minimum I/O unit size is NAND page size in case of NAND flash and should
-also be found out in the flash manual (it is usually 512, 2048 or even 4096 at
-some modern NANDs). For NOR flashes it is 1, unless you have a (rare) ECC-NOR
-flash which may have 8 or 16 byte minimal I/O unit size.</p>
-
-<p>Sub-page size is relevant only for some NAND flashes which allow several
-(usually 2 or 4) writes to the same NAND page. For example, many SLC NAND
-flashes have this. UBI utilizes this feature if it is available to waste less
-flash space. Typically, sub-page size if 256 in case of 512 bytes NAND page and
-512 in case of 2048 bytes NAND pages. MLC NAND flashes typically have no
-sub-pages. SLC OneNAND chips with 2048 bytes NAND page size support 512 byte
-sub-pages.</p>
-
-<p>Note, sub-page is an MTD term, but this is also referred to as "NOP" which
-stands for "number of partial programs". So NOP1 NAND flashes have no sub-pages
-(or you may treat this as sub-page size is equivalent to NAND page size),
-NOP 2 NAND flashes have 2 sub-pages (half a NAND page each), NOP 4 flashes
-have 4 sub-pages (quarter of a NAND page each).</p>
+manual. <a href="../doc/ubi.html#L_min_io_unit">This</a> and
+<a href="../doc/ubi.html#L_subpage">this</a> sections give some hints about
+what the min. I/O unit and sub-page sizes may be for you.</p>
 
 <p>Unfortunately, MTD does not expose information via sysfs and it is a bit
-tricky to find the above characteristics out for an existing MTD device (one
-would need to use an <code>ioctl</code>). Moreover, the sub-page size is not
-exposed to the user-space at all (just because nobody implemented this).</p>
+tricky to find out the above characteristics for an existing MTD device (one
+would need to use MTD device <code>ioctls</code>). Moreover, the sub-page
+size is not exposed to the user-space at all (just because nobody implemented
+this).</p>
 
 <p>The easiest way to find this out is to attach your MTD device to UBI and
 glance to the syslog/dmesg output (erase the MTD device before doing this -
-see <a href="ubi.html#L_ubierase">this</a> section). The newest UBI prints
+see <a href="ubi.html#L_ubierase">this</a> section). UBI should print
 something like this:</p>
 
 <pre>
@@ -346,13 +320,8 @@ UBI: smallest flash I/O unit:    2048
 UBI: sub-page size:              512
 </pre>
 
-<p>Note, if sup-page size was not printed, it does not exist. Older UBI
-implementations do not print sub-page size, but they print VID header
-offset, which is by default equivalent to sub-page size:</p>
-
-<pre>
-UBI: VID header offset:          512 (aligned 512)
-</pre>
+<p>Note, if sup-page size was not printed, the flash is not NAND flash or
+NAND flash which does not have sub-pages.</p>
 
 
 
@@ -374,7 +343,7 @@ ubiformat: formatting eraseblock 4095 -- 100 % complete
 </pre>
 
 <p>Note, <a href="../doc/ubi.html#L_format">this</a> has some hints for those
-who implement a flasher program.</p>
+who implement a custom UBI-aware flasher program.</p>
 
 
 
@@ -385,73 +354,31 @@ who implement a flasher program.</p>
 <p>No, the flash chip restrictions have to be taken into account. This is
 because UBI logical eraseblocks (LEB) are mapped to physical eraseblocks (PEB),
 and an LEB write operation is essentially a write to the corresponding PEB
-plus a small offset, because there are erase counter and volume ID headers at
-the beginning of the PEB (see <a href="../doc/ubi.html#L_overhead">here</a>
-for few more details). The important flash restrictions are:</p>
+plus a small offset. The important flash restrictions are:</p>
 
 <ol>
-	<li>many flashes have minimal input-output unit size larger then 1 byte,
-	so write offsets and lengths have to be aligned to the minimum I/O unit
-	size; for example, in case of a NAND flash with 2KiB NAND page it is
-	possible to write only 2, 4, 8, etc KiB chunks and only to 0, 2, 4, 8,
-	etc KiB offsets;</li>
+	<li>all writes have to be aligned to the
+	<a href="../doc/ubi.html#L_min_io_unit">min. I/O unit</a> size and be
+	multiple of min. I/O unit size;</li>
 
-	<li>it is prohibited to write more then once to the same PEB
-	offset;</li>
+	<li>sometimes it is prohibited to write more then once to the same PEB
+	offset (e.g., in case of NAND flash);</li>
 
 	<li>many NAND flashes (specifically, MLC NAND flashes) require NAND
 	pages to be written sequentially from the beginning of the physical
 	eraseblock, to the end of the physical eraseblock; for example, it is
-	prohibited to write first to offset 2048, then to offset 0; once offset
+	prohibited to first write to offset 2048, then to offset 0; once offset
 	2048 has been written to, it is possible to write only to further
 	offsets.</li>
 </ol>
 
 <p>Even if the flash chip is devoid of the last restriction, UBI anyway
 requires logical eraseblocks to be written sequentially from the beginning
-to the end; this is needed because UBI calculates data CRC when moving logical
+to the end. This is because UBI calculates data CRC when moving logical
 eraseblocks to other physical eraseblocks (see
-<a href="../doc/ubi.html#L_lebchange_det">here</a> to realize why),
-so a write operation to before the furthest data offset causes a CRC error;</p>
-
-
-
-<h2><a name="L_why_headers">
-	What for does UBI need headers in physical eraseblocks?
-</a></h2>
-
-<p>The headers are needed to keep track of erase counters and
-physical-to-logical eraseblock associations. There are two UBI headers stored
-in each PEB:</p>
-<ul>
-	<li><b>erase counter header</b> (or <b>EC header</b>) which is mostly
-	needed to store the erase counter of the PEB;</li>
-
-	<li><b>volume identifier header</b> (or <b>VID header</b>) which stores
-	volume ID and LEB number this PEB belongs to.</li>
-</ul>
-
-<p>Note, there are also some other data stored in EC and VID headers, see
-<code>ubi-media.h</code> for more details.</p>
-
-
-
-<h2><a name="L_why_2_hdrs">Why does UBI need two headers, not just one?</a></h2>
-
-<p>UBI maintains two per-eraseblock headers because it needs to write different
-information on flash at different moments of time:</p>
-<ul>
-	<li>after a PEB is erased, the EC header is written straight away,
-	which minimizes the probability of losing the erase counter due to an
-	unclean reboot;</li>
-
-	<li>when UBI associates a PEB with a LEB, the VID header is written
-	to the PEB.</li>
-</ul>
-
-<p>When the EC header is written to a PEB, UBI does not yet know the volume ID
-and LEB number this PEB will be associated with. This is why UBI needs to do
-two separate write operations and to have two separate headers.</p>
+<a href="../doc/ubi.html#L_lebchange_det">here</a> for more information),
+so a write an offset which is less than the furthest written data offset causes
+CRC errors;</p>
 
 
 
@@ -460,18 +387,12 @@ two separate write operations and to have two separate headers.</p>
 </a></h2>
 
 <p>Because many flashes (e.g., NOR) do not have OOB and UBI was designed to be
-a <i>generic</i> wear-leveling layer. Also, modern MLC NAND flashes use whole
-OOB area for the ECC checksum, so there is no room for application data.</p>
+<i>generic</i>. Also, modern MLC NAND flashes use whole OOB area for the ECC
+checksum, so there is no room for application data.</p>
 
-
-
-<h2><a name="L_volume_table">What is volume table?</a></h2>
-
-<p><b>Volume table</b> is an on-flash internal UBI data structure containing
-information about each volume on this UBI device (e.g., volume size, name,
-type, etc.). Each time a volume is created, removed or re-sized, or
-updated, the volume table is altered. UBI maintains two copies of the volume
-table for reliability and power-off tolerance reasons.</p>
+<p>But of course, things could be optimized for SLC NAND flashes if UBI used
+the space available in the OOB area. This is not implemented, but one could
+probably do this.</p>
 
 
 
@@ -507,7 +428,8 @@ Why does ubiattach on a freshly formatted device fail with "Invalid argument"?
 </a></h2>
 
 <p>On NAND devices that support sub-page accesses, <code>ubiformat</code>
-may choose a different location for the VID header to the kernel UBI driver
+may choose a different location for the
+<a href="../doc/ubi.html#L_ubi_headers">VID header</a> to the kernel UBI driver
 This can result in the following error when attaching to a UBI device:</p>
 
 <pre>
@@ -575,9 +497,9 @@ writes, not much else seems to be affected by this bug.</p>
 
 <h2><a name="L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></h2>
 
-<p>The messages mean that UBI could not find volume ID header in the
-eraseblock, but the header supposed to be there. This probably means some
-corruption</p>
+<p>The messages mean that UBI could not find
+<a href="../doc/ubi.html#L_ubi_headers">VID header</a> in the eraseblock, but
+the header supposed to be there. This probably means some corruption</p>
 
 <p>However, if you have UBI "build" debugging messages enabled,
 (<code>CONFIG_MTD_UBI_DEBUG_MSG_BLD=y</code>), you may see a lot of these
