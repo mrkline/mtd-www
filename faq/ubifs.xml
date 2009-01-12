@@ -550,6 +550,9 @@ and <code>e2fsprogs-devel</code> (<code>libuuid</code> is provided
 there, strangely) packages, in Debian install <code>zlib1g-dev</code>,
 <code>liblzo2-dev</code> and <code>uuid-dev</code> packages.</p>
 
+<p>Note, <a href="../faq/general.html#L_compile_mtd">this</a> section provides
+information about other dependencies in the  <code>mtd-utils</code> tree.</p>
+
 
 
 <h2><a name="L_atomic_change">How to change a file atomically?</a></h2>

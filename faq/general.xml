@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="$Id: general.xml,v 1.2 2006/03/31 14:57:32 jwboyer Exp $"/>
+<VAR match="VAR_CVSID" replace="Last updated: 12 Jan 2009, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -19,6 +19,7 @@
 	<LI><A HREF="general.html#L_ext2_mtd">Can I mount ext2 over an MTD device?</A></LI>
 	<LI><A HREF="general.html#L_point">What are the point() and unpoint() functions used for?</A></LI>
 	<LI><A HREF="general.html#L_unlock">I keep getting errors whenever I try to write or erase to my MTD device</A></LI>
+	<LI><A HREF="general.html#L_compile_mtd">How to compile the mtd-utils tree?</A></LI>
 </OL>
 
 
@@ -246,6 +247,18 @@ unlock them.
 		<TD>GE28F256L30T</TD>
 	</TR>
 </TABLE>
+
+
+<A NAME="L_compile_mtd">
+<H2>How to compile the mtd-utils tree?</H2>
+</A>
+
+<p>You have to install libraries the tools depend on. Please, find
+the information about <code>mkfs.jffs2</code> dependencies
+<a href="../faq/jffs2.html#L_mkfs_jffs2_comp">here</a> and the
+the information about <code>mkfs.ubifs</code> dependencies
+<a href="../faq/ubifs.html#L_mkfs_ubifs_comp">here</a>.</p>
+
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

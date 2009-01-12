@@ -1,6 +1,6 @@
 <PAGE>
 <VAR match="VAR_ORIGIN" replace="../" />
-<VAR match="VAR_CVSID" replace="$Id: jffs2.xml,v 1.8 2006/03/31 14:38:41 jwboyer Exp $"/>
+<VAR match="VAR_CVSID" replace="Last updated: 12 Jan 2009, dedekind"/>
 <INCLUDE file="../inc/header.tmpl" />
 
 <VAR match="VAR_SEL_FAQ" replace="selected" />
@@ -23,6 +23,7 @@
 	<LI><A HREF="jffs2.html#L_putimage">How to program an image to FLASH?</A></LI>
 	<LI><A HREF="jffs2.html#L_bbhandle">How does JFFS2 handle a block going bad in NAND flash?</A></LI>
 	<LI><A HREF="jffs2.html#L_clmarker">What is cleanmarker and what it is used for?</A></LI>
+	<LI><A HREF="jffs2.html#L_mkfs_jffs2_comp">How to compile mkfs.jffs2?</A></LI>
 </OL>
 
 
@@ -404,6 +405,20 @@ which contain all 0xFF and have no cleanmarker. This is an unneeded wasting of
 time.
 </P>
 
+
+
+<A NAME="L_mkfs_jffs2_comp">
+<H2>How to compile mkfs.jffs2?</H2>
+</A>
+
+<p>The <code>mkfs.jffs2</code> utility requres the <code>ACL</code> and
+<code>zlib</code> libraries. In Fedora, please, install the
+<code>libacl-devel</code> and <code>zlib-devel</code> packages. In Debian,
+please, install the <code>libacl1-dev</code> and <code>zlib1g-dev</code>
+packages.</p>
+
+<p>Note, <a href="../faq/general.html#L_compile_mtd">this</a> section provides
+information about other dependencies in the  <code>mtd-utils</code> tree.</p>
 
 <INCLUDE file="../inc/footer.tmpl"/>
 </PAGE>
