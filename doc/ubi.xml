@@ -572,8 +572,8 @@ you use to erase the flash and to write UBI images have to be UBI-aware. The
 
 <h4><a name="L_format_det">UBI flasher details</a></h4>
 
-<p>The following is a lists what the UBI flasher program has to do when erasing
-the flash of when flashing UBI images.</p>
+<p>The following is a list of what the UBI flasher program has to do when
+erasing the flash or when flashing UBI images.</p>
 
 <ul>
 	<li>First of all, scan the flash and collect the erase counters. Namely,
