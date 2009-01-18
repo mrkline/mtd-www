@@ -20,22 +20,32 @@
 	<li><a href="ubi.html#L_usptools">User-space tools</a></li>
 	<li><a href="ubi.html#L_ubi_headers">UBI headers</a></li>
 	<li><a href="ubi.html#L_vol_table">UBI volume table</a>
-		<ul><li><a href="ubi.html#L_vol_table_det">Implementation details</a></li></ul></li>
+		<ul><li><a href="ubi.html#L_vol_table_det">Implementation details</a></li></ul>
+	</li>
 	<li><a href="ubi.html#L_min_io_unit">Minimum flash input/output unit</a></li>
 	<li><a href="ubi.html#L_subpage">NAND flash sub-pages</a></li>
 	<li><a href="ubi.html#L_hdr_pos">UBI headers position</a></li>
 	<li><a href="ubi.html#L_overhead">Flash space overhead</a></li>
 	<li><a href="ubi.html#L_format">Saving erase counters</a>
-		<ul><li><a href="ubi.html#L_format_det">UBI flasher details</a></li></ul></li>
-	<li><a href="ubi.html#L_scalability">Scalability issues</a>
-		<ul><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ul></li>
-	<li><a href="ubi.html#L_unmap">LEB un-map operation</a>
-		<ul><li><a href="ubi.html#L_unmap_det">Implementation details</a></li></ul></li>
-	<li><a href="ubi.html#L_volupdate">Volume update operation</a></li>
-	<li><a href="ubi.html#L_lebchange">Atomic LEB change operation</a>
-		<ul><li><a href="ubi.html#L_lebchange_det">Implementation details</a></li></ul></li>
-	<li><a href="ubi.html#L_autoresize">Volume auto-resize</a></li>
+		<ul><li><a href="ubi.html#L_format_det">UBI flasher details</a></li></ul>
+	</li>
 	<li><a href="ubi.html#L_torturing">Marking eraseblocks as bad</a></li>
+	<li><a href="ubi.html#L_scalability">Scalability issues</a>
+		<ul><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ul>
+	</li>
+	<li><a href="ubi.html#L_autoresize">Volume auto-resize</a></li>
+	<li><a href="ubi.html#L_ubi_operations">UBI operations</a>
+		<ol>
+		<li><a href="ubi.html#L_unmap">LEB un-map</a>
+			<ul><li><a href="ubi.html#L_unmap_det">Implementation details</a></li></ul>
+		</li>
+		<li><a href="ubi.html#L_map">LEB map</a></li>
+		<li><a href="ubi.html#L_volupdate">Volume update</a></li>
+		<li><a href="ubi.html#L_lebchange">Atomic LEB change</a>
+			<ul><li><a href="ubi.html#L_lebchange_det">Implementation details</a></li></ul>
+		</li>
+		</ol>
+	</li>
 	<li><a href="ubi.html#L_ubidoc">More documentation</a></li>
 	<li><a href="ubi.html#L_how_send_bugreport">How to send a bugreport?</a></li>
 </ol>
@@ -225,7 +235,7 @@ repository tree.</p>
 	devices (the opposite to what <code>ubiattach</code> does);</li>
 	<li><code>ubimkvol</code> - creates UBI volumes on UBI devices;</li>
 	<li><code>ubirmvol</code> - removes UBI volumes from UBI devices;</li>
-	<li><code>ubiupdatevol</code> - updates UBI volumes; this tool uses the
+<li><code>ubiupdatevol</code> - updates UBI volumes; this tool uses the
 	<a href="ubi.html#L_volupdate">UBI volume update feature</a> which
 	leaves the volume in "corrupted" state if the update was interrupted;
 	additionally, this tool may be used to wipe out UBI volumes;</li>
@@ -289,11 +299,11 @@ Let's consider what happens to the headers in case of some UBI operations.</p>
 	erased, the EC header is written straight away. The VID header is not
 	written.</li>
 
-	<li>The LEB map operation or a write operation to an un-mapped LEB makes
-	UBI find an appropriate PEB and write the VID header to it (the EC
-	header must already be there). Note, the write operation to an already
-	mapped LEB just writes the data straight to PEB and does not change the
-	UBI headers.</li>
+	<li>The <a href="ubi.html#L_map">LEB map</a> operation or a write
+	operation to an un-mapped LEB makes UBI find an appropriate PEB and
+	write the VID header to it (the EC header must already be there). Note,
+	the write operation to an already mapped LEB just writes the data
+	straight to PEB and does not change the UBI headers.</li>
 </ul>
 
 <p>UBI maintains two per-PEB headers because it needs to write different
@@ -342,7 +352,7 @@ the corresponding volume table record is changed. UBI maintains two copies of
 the volume for reliability and power-cut tolerance reasons.</p>
 
 
-<h4><a name="L_scalability_det">Implementation details</a></h4>
+<h4><a name="L_vol_table_det">Implementation details</a></h4>
 
 <p>Internally, the volume table resides in a special-purpose UBI volume which
 is called <b>layout volume</b>. This volume consists of 2 LEBs - one for each
@@ -693,6 +703,41 @@ images.</p>
 
 
 
+<h2><a name="L_torturing">Marking eraseblocks as bad</a></h2>
+
+<p>This section is relevant for NAND flashes and other flashes which admit of
+bad eraseblocks. UBI marks physical eraseblocks as bad on 2 occasions:</p>
+
+<ol>
+	<li>eraseblock write operation failed, in which case UBI moves the
+	data from this PEB to some other PEB (data recovery) and schedules this
+	PEB for torturing;</li>
+	<li>erase operation failed with <code>EIO</code> error, in which case
+	the eraseblock s marked as bad straight away.</li>
+</ol>
+
+<p>The torturing is done in background with the purpose of detecting whether the
+physical eraseblock is really bad. The write failure might have happened because
+of many reasons, including bugs in the driver or in the upper level stuff like
+the file system (e.g., the FS mistakenly writes many times to the same NAND
+page). During the torturing UBI does the following:</p>
+
+<ul>
+	<li>erase the eraseblock;</li>
+	<li>read it back and make sure it contains only 0xFF bytes;</li>
+	<li>write test pattern bytes;</li>
+	<li>read the eraseblock back and check the pattern;</li>
+	<li>and so on for several patterns (<code>0xA5</code>,
+	<code>0x5A</code>, <code>0x00</code>).</li>
+</ul>
+
+<p>The eraseblock is not marked as bad if it survives the torture test. Note, a
+bit-flip during the torture test is treated as a good reason to mark the
+eraseblock bad as well. Please, refer the <code>torture_peb()</code> function
+for detailed information.</p>
+
+
+
 <h2><a name="L_scalability">Scalability issues</a></h2>
 
 <p>Unfortunately, UBI scales linearly in terms of flash size. UBI
@@ -783,7 +828,53 @@ UBI.</p>
 
 
 
-<h2><a name="L_unmap">LEB un-map operation</a></h2>
+<h2><a name="L_autoresize">Volume auto-resize</a></h2>
+
+<p>It is well-known that NAND chips have some amount of physical eraseblocks
+marked as bad by the manufacturer. The bad PEBs are distributed randomly
+and their number is different, although manufacturers usually guarantee that
+the first few physical eraseblocks are not bad and the total amount of bad PEBs
+does not exceed certain number. For example, a new 256MiB Samsung OneNAND chip
+is guaranteed to have not more than 40 128KiB PEBs (but of course, more
+physical eraseblock will become bad over time). This is about 2% of flash
+size.</p>
+
+<p>When it is needed to create an UBI image which will be flashed to the end
+user devices in production line, you should define exact sizes of all volumes
+(the sizes are stored in the UBI volume table). But it is difficult to do
+because the total flash chip size may vary depending on the amount of the
+initially bad PEBs.</p>
+
+<p>One obvious way to solve the problem is to assume the worst case, when all
+chips would have maximum amount of bad PEBs. But in practice, most of the chips
+will have only few bad PEBs which is far less than the maximum. In general, it
+is fine - this will increase reliability, because UBI anyway uses all PEBs of
+the device. On the other hand UBI anyway reserves some amount of physical
+eraseblocks for bad PEB handling which is 1% of PEBs by default. So in case of
+the above mentioned OneNAND chip the result would be that 1% of PEBs would be
+reserved by UBI, and 0-2% of PEBs would not be used (they would be seen as
+available LEBs to the UBI users).</p>
+
+<p>But there is an alternative approach - one of the volume may have the
+<b>auto-resize</b> mark, which means that its size has to be enlarged when UBI
+is run for the first time. After the volume size is adjusted, UBI removes the
+auto-resize mark and the volume is not re-sized anymore. The auto-resize flag is
+stored in the volume table and only one volume may be marked as auto-resize.
+For example, if there is a volume which is intended to have the root
+file-system, it may be reasonable to mark it with the auto-resize flag.</p>
+
+<p>In the example with OneNAND chip, if one of the UBI volumes is be marked
+as auto-re-sized, it will be enlarged by 0-2% on the first UBI boot, but 1% of
+PEBs will anyway be reserved for bad PEB handling.</p>
+
+<p>Note, the auto-resize feature exists in the Linux kernel starting from
+version <code>2.6.25</code>.</p>
+
+
+
+<h1><a name="L_ubi_operations">UBI operations</a></h1>
+
+<h2><a name="L_unmap">LEB un-map</a></h2>
 
 <p>The <b>LEB un-map</b> operation is implemented by the
 <code>ubi_leb_unmap()</code> UBI kernel API function. And starting from kernel
@@ -809,23 +900,13 @@ might be "surprises" in case of unclean reboots: if the reboot happens before
 <i>P</i> has been physically erased, <i>L</i> will be mapped to <i>P</i> again
 when UBI attaches the MTD device after the unclean reboot. Indeed, UBI will
 scan the MTD device and find <i>P</i> which refers <i>L</i>, and it will
-add this mapping information to the EBA table.</p>
+add this mapping information to the
+<a href="ubi.html#L_scalability_det">EBA table</a>.</p>
 
-<p>But once you write any data to <i>L</i>, it gets mapped to a new PEB,
+<p>But once you write any data to <i>L</i>, or map it using the
+<a href="ubi.html#L_map">LEB map</a> operation, it gets mapped to a new PEB
 and the old contents goes forever, because even in case of an unclean reboot UBI
 would pick the newer mapping for <i>L</i>.</p>
-
-<p>You may use the LEB map operation which maps the LEB to an empty PEB, so the
-LEB would always contain only 0xFF bytes, even in case of an unclean reboot.
-But do not use this unless it is really needed, because this puts additional
-overhead on the UBI wear-leveling sub-system, comparing to an un-mapped LEB.
-Indeed, if an LEB is un-mapped, there is no PEB which contains LEB's data, and
-the wear-leveling sub-system does not have to move any data to maintain
-wear-leveling. Conversely, if the LEB is mapped to a PEB, there is one more PEB
-for the wear-leveling sub-system to care about, and one more LEB to re-map to
-another PEB if the erase counter of the current PEB becomes too low (then the
-LEB is re-mapped to a PEB with higher erase counter and the old PEB is used for
-other operations).</p>
 
 <h4><a name="L_unmap_det">Implementation details</a></h4>
 
@@ -860,12 +941,71 @@ necessary to make sure the data reached the the new PEB.</p>
 
 
 
-<h2><a name="L_volupdate">Volume update operation</a></h2>
+<h2><a name="L_map">LEB map</a></h2>
 
-<p>The <b>volume update</b> operation may be useful to implement software updates
-for devices. The operation changes the contents of whole UBI volume with new
-contents. But if it gets interrupted in the middle of the update, the volume goes
-into the "corrupted" state and further I/O on the volume ends up with an
+<p>The <b>LEB map</b> operation maps a previously
+<a href="ubi.html#L_unmap">un-mapped</a> logical eraseblock to a physical
+eraseblock. For example, if the operation is run for LEB <i>A</i>, UBI will
+find appropriate PEB, write <a href="ubi.html#L_ubi_headers">VID header</a> to
+the PEB, and amend the in-memory
+<a href="ubi.html#L_scalability_det">EBA table</a>. The VID header will
+refer LEB <i>A</i>. After this operation all I/O to LEB <i>A</i> will actually
+go to the mapped PEB.</p>
+
+<p>The LEB map operation is available via the <code>ubi_leb_map()</code>
+UBI kernel API function, or via the <code>UBI_IOCEBMAP</code> volume character
+device ioctl command. However, thie ioctl interface is available only starting
+from kernel version <code>2.6.29</code></p>.
+
+<p>The LEB map operation accepts the <code>dtype</code> parameter which suggests
+UBI which type of data the LEB will contain. Namely, <code>dtype</code> may be
+one of:</p>
+
+<ul>
+	<li><code>UBI_SHORTTERM</code> - the LEB will store short-term data,
+	which means that it will be erased soon; UBI will map this LEB to a
+	PEB with low erase counter, so it will grow relative to other PEB
+	erase counters;</li>
+	<li><code>UBI_LONGTTERM</code> - the LEB will store long-term data and
+	will not be erased soon; UBI will map this LEB to a PEB with high erase
+	counter, so it will go down relative to other PEB erase counters;</li>
+	<li><code>UBI_UNKNOWN</code> - should be used most of the time, when
+	you are not sure whether the the data is long-term or short term.</li>
+</ul>
+
+<p>Bear in mind that <code>dtype</code> is only a hint. Please, use
+<code>UBI_UNKNOWN</code> if unsure. And note, UBI authors never really tested
+the effects of using <code>UBI_SHORTTERM</code> and <code>UBI_LONGTTERM</code>,
+so there is not guarantee they improve anything.</p>
+
+<p>One of the possible use-cases of the LEB map operation is making sure the
+old LEB contents goes away forever. As it was explained in
+<a href="ubi.html#L_unmap">this</a> section, when an LEB is un-mapped, the
+corresponding PEB is not erased straight away. And if an unclean reboot happens,
+the LEB may becomes mapped to the same PEB again, after the UBI attaches the
+MTD device. So, if you map the LEB just after un-mapping it, you are guaranteed
+that the old LEB contents never comes back. In other words, the LEB is guaranteed
+to contain only 0xFF bytes after the map operation returns, even in case of an
+unclean reboot.</p>
+
+<p>Please, use the LEB map operation carefully. Do not use this unless it is
+really needed, because mapped LEBs add more overhead on the UBI wear-leveling
+sub-system, comparing to un-mapped LEBs. Indeed, if an LEB is un-mapped, there
+is no PEB which contains LEB's data, and the wear-leveling sub-system does not
+have to move any data to maintain wear-leveling. Conversely, if the LEB is
+mapped to a PEB, there is one more PEB for the wear-leveling sub-system to care
+about, and one more LEB to re-map to another PEB if the erase counter of the
+current PEB becomes too low (then the LEB is re-mapped to a PEB with higher
+erase counter and the old PEB is used for other operations).</p>
+
+
+
+<h2><a name="L_volupdate">Volume update</a></h2>
+
+<p>The <b>volume update</b> operation is be useful for device software updates.
+The operation changes the contents of whole UBI volume with new contents. But if
+it gets interrupted in the middle of the update, the volume goes into the
+"corrupted" state and further I/O on the volume ends up with an
 <code>EBADF</code> error. And the only way to get the volume back to the normal
 state is to start a new volume update operation and finish it.</p>
 
@@ -925,12 +1065,12 @@ marker.</p>
 
 
 
-<h2><a name="L_lebchange">Atomic LEB change operation</a></h2>
+<h2><a name="L_lebchange">Atomic LEB change</a></h2>
 
-<p>The <b>atomic LEB change</b> changes the contents of an LEB atomically, so
-that the old contents is preserved if if the operation is interrupted. In other
-words, the result of the operation is that the LEB either has the old contents
-or the new contents.</p>
+<p>The <b>atomic LEB change</b> operation changes the contents of an LEB
+atomically, so that the old contents is preserved if the operation is
+interrupted. In other words, the result of the operation is that the LEB either
+has the old contents or the new contents.</p>
 
 <p>The operation is available via the <code>ubi_leb_change()</code> kernel API
 call. The user-space interface for this operation exists starting from kernel
@@ -1015,85 +1155,6 @@ during the initialization, it selects the one with higher sequence number
 means that all data has been written to the flash media), otherwise it selects
 the PEB with lower sequence number(<i>P<sub>1</sub></i>). Of course, UBI has to
 read the LEB contents in order to check the <code>CRC-32</code> checksum.</p>
-
-
-
-<h2><a name="L_autoresize">Volume auto-resize</a></h2>
-
-<p>It is well-known that NAND chips have some amount of physical eraseblocks
-marked as bad by the manufacturer. The bad PEBs are distributed randomly
-and their number is different, although manufacturers usually guarantee that
-the first few physical eraseblocks are not bad and the total amount of bad PEBs
-does not exceed certain number. For example, a new 256MiB Samsung OneNAND chip
-is guaranteed to have not more than 40 128KiB PEBs (but of course, more
-physical eraseblock will become bad over time). This is about 2% of flash
-size.</p>
-
-<p>When it is needed to create an UBI image which will be flashed to the end
-user devices in production line, you should define exact sizes of all volumes
-(the sizes are stored in the UBI volume table). But it is difficult to do
-because the total flash chip size may vary depending on the amount of the
-initially bad PEBs.</p>
-
-<p>One obvious way to solve the problem is to assume the worst case, when all
-chips would have maximum amount of bad PEBs. But in practice, most of the chips
-will have only few bad PEBs which is far less than the maximum. In general, it
-is fine - this will increase reliability, because UBI anyway uses all PEBs of
-the device. On the other hand UBI anyway reserves some amount of physical
-eraseblocks for bad PEB handling which is 1% of PEBs by default. So in case of
-the above mentioned OneNAND chip the result would be that 1% of PEBs would be
-reserved by UBI, and 0-2% of PEBs would not be used (they would be seen as
-available LEBs to the UBI users).</p>
-
-<p>But there is an alternative approach - one of the volume may have the
-<b>auto-resize</b> mark, which means that its size has to be enlarged when UBI
-is run for the first time. After the volume size is adjusted, UBI removes the
-auto-resize mark and the volume is not re-sized anymore. The auto-resize flag is
-stored in the volume table and only one volume may be marked as auto-resize.
-For example, if there is a volume which is intended to have the root
-file-system, it may be reasonable to mark it with the auto-resize flag.</p>
-
-<p>In the example with OneNAND chip, if one of the UBI volumes is be marked
-as auto-re-sized, it will be enlarged by 0-2% on the first UBI boot, but 1% of
-PEBs will anyway be reserved for bad PEB handling.</p>
-
-<p>Note, the auto-resize feature exists in the Linux kernel starting from
-version <code>2.6.25</code>.</p>
-
-
-
-<h2><a name="L_torturing">Marking eraseblocks as bad</a></h2>
-
-<p>This section is relevant for NAND flashes and other flashes which admit of
-bad eraseblocks. UBI marks physical eraseblocks as bad on 2 occasions:</p>
-
-<ol>
-	<li>eraseblock write operation failed, in which case UBI moves the
-	data from this PEB to some other PEB (data recovery) and schedules this
-	PEB for torturing;</li>
-	<li>erase operation failed with <code>EIO</code> error, in which case
-	the eraseblock s marked as bad straight away.</li>
-</ol>
-
-<p>The torturing is done in background with the purpose of detecting whether the
-physical eraseblock is really bad. The write failure might have happened because
-of many reasons, including bugs in the driver or in the upper level stuff like
-the file system (e.g., the FS mistakenly writes many times to the same NAND
-page). During the torturing UBI does the following:</p>
-
-<ul>
-	<li>erase the eraseblock;</li>
-	<li>read it back and make sure it contains only 0xFF bytes;</li>
-	<li>write test pattern bytes;</li>
-	<li>read the eraseblock back and check the pattern;</li>
-	<li>and so on for several patterns (<code>0xA5</code>,
-	<code>0x5A</code>, <code>0x00</code>).</li>
-</ul>
-
-<p>The eraseblock is not marked as bad if it survives the torture test. Note, a
-bit-flip during the torture test is treated as a good reason to mark the
-eraseblock bad as well. Please, refer the <code>torture_peb()</code> function
-for detailed information.</p>
 
 
 
