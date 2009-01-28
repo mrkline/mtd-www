@@ -656,20 +656,15 @@ different inodes in the same LEB. So there is room for improvements.</p>
 <p>UBIFS reserves some space for the superuser (root), which means that when
 the file-system is full for normal users, there is still little space for the
 super-user. File-systems like <code>ext2</code> have a similar feature.
-<a href="ubifs.html#L_usptools"><code>mkfs.ubifs</code></a>
-reserves ~1%, but at maximum ~5MiB of the space by default. The amount of
-reserved space is stored in the UBIFS superblock and may be changed arbitrarily.
-Currently <code>mkfs.ubifs</code> does not have a command line option to
-override the defaults, but it should be trivial to implement.</p>
+<a href="ubifs.html#L_usptools"><code>mkfs.ubifs</code></a> has <code>-R</code>
+option which may be used to specify the resorved space size.</p>
 
 <p>By default only root may use the reserved space. But it is possible to
 extend the list of power users who are able to utilize the reserved space.
 UBIFS may record several user and group IDs at the superblock and allow them
-to utilize the reserved space as well. But again, current
+to utilize the reserved space as well. However, current
 <code>mkfs.ubifs</code> utility does not have corresponding command line
-options, but it should be trivial to implement them. UBIFS authors added the
-mechanism, but did not use it so did not implement corresponding
-<code>mkfs.ubifs</code> options.</p>
+options, but it should be trivial to implement them.</p>
 
 <p>Note, UBIFS prints the amount of reserved space when mounts the file-system.
 See UBIFS messages in the system log.</p>
