@@ -685,15 +685,6 @@ However, access control lists (ACL) support is not implemented.</p>
 <p>The following are UBIFS-specific mount options.</p>
 
 <ul>
-	<li><code>norm_unmount</code> (default) - commit on unmount; the
-	journal is committed when the file system is unmounted so that the next
-	mount does not have to replay the journal and it becomes very
-	fast;</li>
-
-	<li><code>fast_umount</code> - do not commit on unmount; this option
-	makes unmount faster, but the next mount slower because of the need to
-	replay the uncommitted journal;</li>
-
 	<li><code>chk_data_crc</code> (default) - check data CRC-32
 	checksums;</li>
 
@@ -710,11 +701,11 @@ However, access control lists (ACL) support is not implemented.</p>
 <p>Example:</p>
 
 <pre>
-$ mount -t ubifs -o fast_umount,no_chk_data_crc ubi0:rootfs /mnt/ubifs
+$ mount -t ubifs -o no_chk_data_crc ubi0:rootfs /mnt/ubifs
 </pre>
 
-<p>mounts UBIFS file-system to <code>/mnt/ubifs</code>, enables fast
-unmount and disables data CRC checking.</p>
+<p>mounts UBIFS file-system to <code>/mnt/ubifs</code> and disables data CRC
+checking.</p>
 
 <p>Besides, UBIFS supports the standard <code>sync</code> mount option which
 may be used to disable UBIFS write-back and write-buffer caching and make it
