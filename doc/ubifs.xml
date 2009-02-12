@@ -678,6 +678,9 @@ is enabled (no additional mount options are required). It supports the
 <code>user</code>, <code>trusted</code>, and <code>security</code> name-spaces.
 However, access control lists (ACL) support is not implemented.</p>
 
+<p>Note, currently <code>mkfs.ubifs</code> ignores extended attributes and
+does not write them to the target file-system image.</p>
+
 
 
 <h2><a name="L_mountopts">Mount options</a></h2>
