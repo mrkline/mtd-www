@@ -30,6 +30,7 @@
 	<li><a href="ubi.html#L_vid_offset_mismatch">Why does ubiattach on a freshly formatted device fail with "Invalid argument"?</a></li>
 	<li><a href="ubi.html#L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></li>
 	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
+	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
 	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
 </ol>
 
@@ -46,38 +47,50 @@ kernel or built as a kernel module.</p>
 
 <h2><a name="L_attachmtd">How to attach an MTD device?</a></h2>
 
+<p>Each MTD device has a name and a number, which you may find out by
+examining the <code>/proc/mtd</code> file. The preferrable way to attach
+MTD devices is to attach them by name, not by number, because MTD device
+numbers may change if you change the layout of your flash, while the
+names will supposdly stay the same.</p>
+
 <p>If UBI is compiled as a kernel module, it is enough to specify the MTD
-device to attach in the module arguments, e.g.</p>
+device name or number to attach in the module arguments, e.g.</p>
 
 <pre>
-$ modprobe ubi mtd=3
+$ modprobe ubi mtd=rootfs
+$ modprobe ubi mtd=0
 </pre>
 
-<p>loads the UBI kernel module and attaches MTD device number 3
-(<code>mtd3</code>). And</p>
+
+<p>loads the UBI kernel module and attaches MTD device named "rootfs" or with
+number 3 (<code>mtd3</code>). And</p>
 
 <pre>
+$ modprobe ubi mtd=config mtd=rootfs
 $ modprobe ubi mtd=3 mtd=5
 </pre>
 
-<p>command loads UBI kernel module and attaches <code>mtd3</code>
-and <code>mtd5</code>.</p>
+<p>command loads UBI kernel module and attaches MTD devices named "config"
+and "rootfs", or <code>mtd3</code> and <code>mtd5</code>.</p>
 
 <p>If UBI is compiled into the kernel, the mtd device to attach may be
 specified in the <code>ubi.mtd=</code>kernel boot parameter, e.g.,</p>
 
 <pre>
-ubi.mtd=3
+ubi.mtd=rootfs
+ubi.mtd=0
 </pre>
 
-<p>command makes UBI attach <code>mtd3</code> when the kernel is booting,
-and</p>
+<p>command makes UBI attach MTD device named "rootfs" or <code>mtd3</code> when
+the kernel is booting. And</p>
 
 <pre>
-ubi.mtd=3 ubi.mtd=6
+ubi.mtd=config ubi.mtd=rootfs
+ubi.mtd=3 ubi.mtd=5
 </pre>
 
-<p>command makes UBI attach <code>mtd3</code> and <code>mtd6</code>.</p>
+<p>command makes UBI attach MTD devices named "config" and "rootfs", or
+<code>mtd3</code> and <code>mtd5</code>.</p>
 
 <p>And finally, MTD devices may be attached or detached at any time with the
 <code>ubiattach</code> and <code>ubidetach</code>
@@ -88,7 +101,9 @@ $ ubiattach /dev/ubi_ctrl -m 3
 </pre>
 
 <p>attaches <code>mtd3</code>. But these utilities will work with kernel
-versions starting from version <code>2.6.25</code>.</p>
+versions starting from version <code>2.6.25</code>. And someone should
+update them and teach to accept MTD device names, not only MTD device
+numbers.</p>
 
 
 
@@ -499,12 +514,62 @@ writes, not much else seems to be affected by this bug.</p>
 
 <p>The messages mean that UBI could not find
 <a href="../doc/ubi.html#L_ubi_headers">VID header</a> in the eraseblock, but
-the header supposed to be there. This probably means some corruption</p>
+the header supposed to be there. This probably means some corruption.</p>
 
 <p>However, if you have UBI "build" debugging messages enabled,
 (<code>CONFIG_MTD_UBI_DEBUG_MSG_BLD=y</code>), you may see a lot of these
 messages and they are harmless. They are just debugging messages in this
 case.</p>
+
+
+
+<h2><a name="L_force_no_subpage">How to force UBI to ignore sub-pages?"</a></h2>
+
+<p>If your NAND flash supports
+<a href="../doc/ubi.html#L_subpage">sub-pages</a>, UBI will use them. But
+sometimes you may want to ask UBI to ignore sub-pages, for example if you have
+an UBI image which was made for a similar NAND flash, but without sub-pages, or
+if you just want to disable sub-pages for testing purposes. You may do this
+by forcing UBI to read/write the VID header from/to the beginning of the second
+page, instead of the second sub-page (which is the default behaviour). And UBI
+uses sub-pages <i>only</i> for VID headers, so this is enough.</p>
+
+<p>If you attach MTD devices using the
+<a href="../doc/ubi.html#L_usptools"><code>ubiattach</code></a> tool - just
+use the <code>--vid-hdr-offset</code> option and specify the second page
+offset. For example, if you have 2048-byte NAND pages, use
+<code>--vid-hdr-offset 2048</code>. All the below examples also assume
+2048-byte NAND pages.</p>
+
+<p>If you do not use <code>ubiattach</code> and instead specify the MTD device
+to attach using kernel boot parameters (see
+<a href="ubi.html#L_attachmtd">here</a>), then you may put VID header offset
+after the MTD device name or number. For example:</p>
+
+<pre>
+$ ubi.mtd=rootfs,2048
+$ ubi.mtd=3,2048
+</pre>
+
+<p>will attach MTD device named "rootfs" (or MTD device number 3) and force
+UBI to read/write VID headers from/to offset 2048, which is the second NAND
+page in the eraseblock.</p>
+
+<p>Similarly, if you use module load parameters, try</p>
+
+<pre>
+$ modprobe ubi mtd=rootfs,2048
+$ modprobe ubi mtd=3,2048
+</pre>
+
+<p>And of course, if you have an MTD partition which is already formatted
+so that sub-pages are used, which means all VID headers sit at offsets 512
+(second sub-page of a 2048-byte NAND page), you cannot force UBI to stop using
+sub-pages (it will fail). You may do this only if you are attaching an empty
+MTD patrition, or if the flash is already formatted so that all VID headers
+are at offset 2048. This means that if you use or
+<a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a>, you should
+avoid using the <code>-s</code> parameter.</p>
 
 
 
