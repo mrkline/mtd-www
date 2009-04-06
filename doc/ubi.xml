@@ -220,7 +220,7 @@ this branch.</p>
 <code>git://git.infradead.org/mtd-utils.git</code>
 
 <p>Please, clone it and compile. The easiest way to compile UBI tools is to go
-straight to the <code>ubi-utils/new-utils</code> sub-directory and type
+straight to the <code>ubi-utils</code> sub-directory and type
 <code>make</code>. <a href="../faq/general.html#L_compile_mtd">This</a> section
 provides information about how to compile the whole <code>mtd-utils</code>
 repository tree.</p>

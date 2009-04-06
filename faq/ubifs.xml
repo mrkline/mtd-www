@@ -170,7 +170,7 @@ UBI volumes.</p>
 First of all, you have to understand that UBIFS works on top of UBI which works
 on top or MTD which basically represents your raw flash. This means, that if
 you need to create an image which would be flashed to the raw flash, you should
-first create an UBIFS image, than UBI image. In other words, the process has 2
+first create an UBIFS image, then UBI image. In other words, the process has 2
 steps.</p>
 
 <p>However, as described <a href="../doc/ubi.html#L_volupdate">here</a>,
