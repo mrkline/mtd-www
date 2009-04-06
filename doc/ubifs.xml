@@ -1058,7 +1058,7 @@ are hidden, but in case of raw flash the software has to deal with them. Please,
 refer <a href="../faq/general.html#L_mtd_vs_hdd">this</a> table for the some
 more details about the difference between block devices and raw flashes.</p>
 
-<p>UBIFS file system has been designed for raw flash. It does work with block
+<p>UBIFS file system has been designed for raw flash. It doesn't work with block
 devices and it assumes the raw flash device model. In other words, it assumes
 the device has eraseblocks, which may be written to, read from, or erased.
 UBIFS takes care of writing all data out-of-place, doing garbage-collection
