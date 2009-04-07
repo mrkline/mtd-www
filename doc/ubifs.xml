@@ -178,9 +178,10 @@ unless you are an active UBIFS developer, use the <code>linux-next</code>
 branch.</p>
 
 <p>There are also <code>2.6.24</code>, <code>2.6.25</code>, <code>2.6.26</code>
-<code>2.6.27</code> and <code>2.6.28</code>kernel back-ports which may be found
-at:</p>
+<code>2.6.27</code>, <code>2.6.28</code>, and <code>2.6.28</code> kernel
+back-ports which may be found at:</p>
 
+<code>git://git.infradead.org/~dedekind/ubifs-v2.6.28.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.28.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.27.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.26.git</code><br/>
