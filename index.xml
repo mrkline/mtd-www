@@ -24,6 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>09 Apr 2009: MTD finally got sysfs support, which will show up in
+	    2.6.30.</li>
 	<li>07 Jan 2008: UBIFS back-ports for kernel versions <code>2.6.21</code>,
 	    <code>2.6.22</code> and <code>2.6.23</code> are not supported any
 	    longer (see
