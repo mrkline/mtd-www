@@ -997,28 +997,35 @@ at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 <h2><a name="L_how_send_bugreport">How to send an UBIFS bugreport?</a></h2>
 
 <p>When sending a bug report, please:</p>
-<ul>
-	<li>make sure you have compiled kernel symbols in
+<ol>
+	<li>make sure you use up-to-date UBIFS; pull the latest UBIFS patches
+	if needed, see <a href="ubifs.html#L_source">here</a>; no one is
+	interested in digging already fixed problems;</li>
+
+	<li>make sure you have compiled the kernel symbols in
 	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
 
-	<li>mark the <b>Enable debugging</b> check-box in the kernel
-	configuration menu(<code>CONFIG_UBIFS_FS_DEBUG=y</code> in
-	<code>.config</code>); Please, do not enable other debugging
-	sub-options like debugging messages unless you know what you are
+	<li>mark the <b>Enable debugging</b> check-box in the UBIFS kernel
+	configuration menu (<code>CONFIG_UBIFS_FS_DEBUG=y</code> in
+	<code>.config</code>); please, do not enable other UBIFS debugging
+	sub-options like extra debugging messages unless you know what you are
 	doing;</li>
 
-	<li>attach all messages UBIFS prints, not just those you see at the
-	console, but also those you see when running <code>dmesg</code>; or
+	<li>include all the messages UBIFS prints, not only those you see at
+	the console, but also those you see when running <code>dmesg</code>; or
 	before running your UBIFS test, which reproduces the error, just
 	invoke <code>dmesg -n8</code> command to make all kernel messages
 	to go to the console; another possibility is to boot the kernel
 	with <code>ignore_loglevel</code> option, in which makes the kernel
 	print all messages to the console unconditionally;</li>
 
-	<li>attach the <code>cat /proc/mtd</code> output;</li>
+	<li>describe your flash device, attach the
+	"<code>cat /proc/mtd</code>" output;</li>
+
+	<li>specify which kernel version you are using;</li>
 
 	<li>describe how the problem cab be reproduced;</li>
-</ul>
+</ol>
 
 <p>The bugreport should be sent to the
 <a href="../mail.html">MTD mailing list</a>.</p>
