@@ -28,6 +28,7 @@
 	<li><a href="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</a></li>
 	<li><a href="ubi.html#L_mlc">May UBI be used on MLC flash?</a></li>
 	<li><a href="ubi.html#L_vid_offset_mismatch">Why does ubiattach on a freshly formatted device fail with "Invalid argument"?</a></li>
+	<li><a href="ubi.html#L_subpage">What is sub-page?</a></li>
 	<li><a href="ubi.html#L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></li>
 	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
 	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
@@ -497,6 +498,12 @@ $ ubiattach /dev/ubi_ctrl -m 0 -O 2048
 <pre>
 ubi.mtd=0,2048
 </pre>
+
+
+
+<h2><a name="L_subpage">What is sub-page?</a></h2>
+
+<p>Please, refer <a href="../doc/ubi.html#L_subpage">this</a> section.</p>
 
 
 

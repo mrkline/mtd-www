@@ -440,38 +440,39 @@ all NANDs have sub-pages.</p>
 
 <ul>
 	<li>MLC NANDs do not have sub-pages, at least to the date of writing
-	this piece of documentation (January 2009).</li>
-	<li>SLC NANDs usually have sub-pages. E.g., 512-byte NAND pages consist
-	of 2 256-byte sub-pages, and 2048-byte NAND pages consist of 4 512-byte
-	sub-pages.</li>
-	<li>SLC OneNAND chips with 2048 bytes NAND page size have 4 512-byte
+	of this piece of documentation (April 2009).</li>
+	<li>SLC NANDs usually do have sub-pages. E.g., 512-byte NAND pages
+	usually consist of 2x256-byte sub-pages, and 2048-byte NAND pages
+	consist of 4x512-byte sub-pages.</li>
+	<li>SLC OneNAND chips with 2048 bytes NAND page size have 4x512-byte
 	sub-pages.</li>
 </ul>
 
-<p>If the NAND flash (and its controller, as well as the diver) supports
-sub-pages, ECC codes are calculated on per-sub-page basis, instead of
-per-NAND page basis. This allows reading and writing sub-pages
-independently.</p>
+<p>If the NAND flash supports sub-pages, then what can be done is ECC codes
+can be calculated on per-sub-page basis, instead of per-NAND page basis.
+In this case it becomes possible to read and write sub-pages independently.</p>
 
-<p>But even though the NAND chip may support sub-pages, the NAND controller may
-disallow them if it calculates ECC codes on per-NAND page basis (e.g., this is
-the case for the <a href="http://en.wikipedia.org/wiki/OLPC_XO-1">OLPC XO-1</a>
-laptop).</p>
+<p>But obviously, even though the NAND chip may support sub-pages, the NAND
+controller may disallow them. Indeed, if the flash is managed by a controller
+which calculates ECC codes on per-NAND page basis, then it is impossible to
+do I/O in sub-page fractions. E.g. this is the case for the
+<a href="http://en.wikipedia.org/wiki/OLPC_XO-1">OLPC XO-1</a> laptop) - its
+NAND chip supports sub-pages, but the NAND controller does not.</p>
 
 <p>Note, sub-page is an MTD term, but this is also referred to as "NOP" which
-stands for "number of partial programs". NOP1 NAND flashes have no sub-pages
-(UBI treats this as sub-page size is equivalent to NAND page size), NOP2 NAND
-flashes have 2 sub-pages (half a NAND page each), NOP4 flashes have 4
+stands for "number of partial programs". NOP1 NAND flashes have no sub-pages -
+UBI treats them as NANDS with sub-page size equivalent to NAND page size. NOP2
+NAND flashes have 2 sub-pages (half a NAND page each), NOP4 flashes have 4
 sub-pages (quarter of a NAND page each).</p>
 
 <p>UBI utilizes sub-pages to lessen flash space overhead. The overhead is less
 if NAND flash supports sub-pages (see <a href="ubi.html#L_overhead">here</a>).
 Indeed, let's consider a NAND flash with 128KiB eraseblocks and 2048-byte pages.
-If it does not have sub-pages, UBI will put the the VID header at physical
-offset 2048, so LEB size will be 124KiB (128KiB minus one NAND page which stores
+If it does not have sub-pages, UBI puts the the VID header at physical
+offset 2048, so LEB size becomes 124KiB (128KiB minus one NAND page which stores
 the EC header and minus another NAND page which stores the VID header. In
-opposite, if the NAND flash has sub-pages, UBI will put the VID header at
-physical offset 512 (the second sub-page), so LEB size will be 126KiB
+opposite, if the NAND flash does have sub-pages, UBI puts the VID header at
+physical offset 512 (the second sub-page), so LEB size becomes 126KiB
 (128KiB minus one NAND page which is used for storing both UBI headers). See
 <a href="ubi.html#L_header_position">this</a> section for more information
 about where the UBI headers are stored.</p>
@@ -482,7 +483,7 @@ this is that sub-page writes may be slow. To write a sub-page, the driver may
 actually write whole NAND page, but put <code>0xFF</code> bytes to the sub-pages
 which are not relevant to this operation. E.g., this means that writing 4
 sub-pages may be 4 times slower than writing whole NAND page at once. Thus,
-again, UBI does use sub-pages internally, but this notion does not exist in the
+UBI does use sub-pages for the headers, but this notion does not exist in the
 UBI API.</p>
 
 
