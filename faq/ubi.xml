@@ -21,7 +21,8 @@
 	<li><a href="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</a></li>
 	<li><a href="ubi.html#L_ubierase">How to erase flash and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_ubi_mkimg">How to create UBI images?</a></li>
-	<li><a href="ubi.html#L_find_min_io_size">How to find out min. I/O unit size, sub-page size, etc?</a></li>
+	<li><a href="ubi.html#L_find_min_io_size">How to find out min. I/O unit size, sub-page size, and LEB size?</a></li>
+	<li><a href="ubifs.html#L_find_lebsz">How to find out LEB size?</a></li>
 	<li><a href="ubi.html#L_flash_img">How to flash UBI images and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_restrict">Can UBI logical eraseblocks be written randomly?</a></li>
 	<li><a href="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</a></li>
@@ -303,41 +304,32 @@ UBI-aware flashing programs should work in
 
 
 <h2><a name="L_find_min_io_size">
-	How to find out min. I/O unit size, sub-page size, etc?
+	How to find out min. I/O unit size, sub-page size, and LEB size?
 </a></h2>
 
-<p>When creating UBI images it is necessary to know:</p>
+<p>If you run kernel version <code>2.6.30</code> or later, the easiest
+way to find out all these parameters is to run the
+<a href="../doc/ubi.html#L_usptools"><code>mtdinfo</code></a>
+tool, which reports them. Of course, the tool has to be run on the
+target.</p>
+
+<p>Otherwise, first find out the physical eraseblock (PEB) size from
+the flash manual, or from the <code>/proc/mtd</code> file on the target.</p>
+
+<p>Refer <a href="../doc/ubi.html#L_min_io_unit">this</a> and
+<a href="../doc/ubi.html#L_subpage">this</a> sections for some hints about
+what the min. I/O unit and sub-page sizes may be for you.</p>
+
+<p>The LEB size is defined by:</p>
 <ul>
 	<li>physical eraseblock size;</li>
 	<li>minimum input/output unit size;</li>
-	<li>sub-page size.</li>
+	<li>sub-page size;</li>
 </ul>
 
-<p>Physical eraseblock (PEB) size should probably be found out in the flash
-manual. <a href="../doc/ubi.html#L_min_io_unit">This</a> and
-<a href="../doc/ubi.html#L_subpage">this</a> sections give some hints about
-what the min. I/O unit and sub-page sizes may be for you.</p>
-
-<p>Unfortunately, MTD does not expose information via sysfs and it is a bit
-tricky to find out the above characteristics for an existing MTD device (one
-would need to use MTD device <code>ioctls</code>). Moreover, the sub-page
-size is not exposed to the user-space at all (just because nobody implemented
-this).</p>
-
-<p>The easiest way to find this out is to attach your MTD device to UBI and
-glance to the syslog/dmesg output (erase the MTD device before doing this -
-see <a href="ubi.html#L_ubierase">this</a> section). UBI should print
-something like this:</p>
-
-<pre>
-UBI: physical eraseblock size:   131072 bytes (128 KiB)
-UBI: logical eraseblock size:    129024 bytes
-UBI: smallest flash I/O unit:    2048
-UBI: sub-page size:              512
-</pre>
-
-<p>Note, if sup-page size was not printed, the flash is not NAND flash or
-NAND flash which does not have sub-pages.</p>
+<p>Please, read <a href="../doc/ubi.html#L_overhead">this</a> section for
+information about how LEB size is calculated (it is denoted by <i>O</i>
+there).</p>
 
 
 

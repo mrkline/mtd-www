@@ -43,7 +43,7 @@ work on top of <b>raw</b> flash, which has nothing to do with block devices.
 This is why UBIFS does not work on <code>MMC cards</code> and the like -
 they look like block devices to the outside world because they implement
 <code>FTL</code> (Flash Translation Layer) support in hardware, which simply
-speaking emulates a block device on top of the built-in flash chip. Please,
+speaking emulates a block device on top of the built-in raw flash. Please,
 make sure you understand the differences between raw flash and, say, MMC flash
 before dealing with UBIFS. <a href="ubifs.html#L_raw_vs_ftl">This</a> section
 should help.</p>
@@ -64,7 +64,7 @@ subsystems involved:</p>
 <ul>
 	<li><i>MTD subsystem</i>, which provides uniform interface to access
 	flash chips. MTD provides an notion of MTD devices (e.g.,
-	<code>/dev/mtd0</code>) which basically represent raw flash;</li>
+	<code>/dev/mtd0</code>) which basically represents raw flash;</li>
 	<li><i>UBI subsystem</i>, which is a wear-leveling and volume management
 	system for flash devices; UBI works on top of MTD devices and provides
 	a notion of UBI volumes; UBI volumes are higher level entities than MTD
@@ -79,13 +79,14 @@ subsystems involved:</p>
 <ul>
 	<li><b>scalability</b> - UBIFS scales well with respect to flash size;
 	namely,	mount time, memory consumption and I/O speed does not depend on
-	flash size (it is not 100% true for memory consumption, but the
-	dependency is very weak); UBIFS (not UBI!) should work fine for hundreds
-	of GiB flashes; however, UBIFS depends on UBI which has scalability
-	limitations (see <a href="ubi.html#L_scalability">here</a>);
-	nonetheless, UBI/UBIFS stack scales much better than JFFS2, and if UBI
-	becomes a bottleneck, it is always possible to implement UBI2 without
-	changing UBIFS;</li>
+	flash size (currently it is not 100% true for memory consumption, but
+	the dependency is very weak, and this may be fixed); UBIFS (not UBI!)
+	should work fine for hundreds of GiB flashes; however, UBIFS depends on
+	UBI which has scalability limitations
+	(see <a href="ubi.html#L_scalability">here</a>); nonetheless, the
+	UBI/UBIFS stack scales much better than JFFS2, and if UBI becomes a
+	bottleneck, it is always possible to implement UBI2 without changing
+	UBIFS;</li>
 
 	<li><b>fast mount</b> - unlike JFFS2, UBIFS does not have to scan whole
 	media when mounting, it takes milliseconds for UBIFS to mount the
@@ -95,9 +96,9 @@ subsystems involved:</p>
 	details);</li>
 
 	<li><b>write-back support</b> - this dramatically improves the
-	throughput of the file system comparing to JFFS2, which is
-	write-through; see <a href="ubifs.html#L_writeback">here</a> for more
-	details;</li>
+	throughput of the file system in many workloads, comparing to JFFS2,
+	which is write-through; see <a href="ubifs.html#L_writeback">here</a>
+	for more details;</li>
 
 	<li><b>tolerance to unclean reboots</b> - UBIFS is a journaling file
 	system and it tolerates sudden crashes and unclean reboots; UBIFS just
@@ -124,7 +125,7 @@ subsystems involved:</p>
 
 	<li><b>on-the-flight compression</b> - the data is stored in compressed
 	form on the flash media, which makes it possible to put considerably
-	more data to the flash than if the data was not compressed; this is very
+	more data to the flash than if the data were not compressed; this is very
 	similar to what JFFS2 has; UBIFS also allows to switch the compression
 	on/off on per-inode basis, which is very flexible; for example, one may
 	switch the compression off by default and enable it only for certain
@@ -138,18 +139,18 @@ subsystems involved:</p>
 	<li><b>recoverability</b> - UBIFS may be fully recovered if the indexing
 	information gets corrupted; each piece of information in UBIFS has a
 	header which describes this piece of information, and it is possible to
-	fully reconstruct the file system index by scanning the flash media; to
-	make it more clear, imaging you wiped out the FAT table on your FAT
-	file system (FAT table is the index of the FS); for FAT FS it is fatal;
-	but if you similarly wipe out UBIFS index, you still may re-construct
-	it, although a special user-space tool would be required to do
-	this;</li>
+	fully reconstruct the file system index by scanning the flash media;
+	this is very similar to JFFS2; to make it more clear, imaging you have
+	wiped out the FAT table on your FAT file system; for FAT FS this would
+	be fatal; but if you similarly wipe out UBIFS index, you still may
+	re-construct it, although a special user-space tool would be required to
+	do this (this utility is not implemented at the moment, though);</li>
 
 	<li><b>integrity</b> - UBIFS (as well as UBI) checksums everything it
 	writes to the flash media to guarantee data integrity, UBIFS does not
-	leave data or meta-data corruptions unnoticed (JFFS2 is doing the same,
-	though); however, you may disable CRC checking for data to improve
-	file-system read speed and lessen CPU usage - read
+	leave data or meta-data corruptions unnoticed (JFFS2 is doing the same);
+	however, you may disable CRC checking for data to improve file-system
+	read speed and lessen CPU usage - read
 	<a href="ubifs.html#L_checksumming">this</a> section.</li>
 </ul>
 
@@ -158,8 +159,8 @@ subsystems involved:</p>
 <h2><a name="L_source">Source code</a></h2>
 
 <p>UBIFS is in mainline since 17 July 2008 and the first kernel release which
-contains UBIFS is <code>2.6.27</code>. But since UBIFS is a very new file system,
-it is recommended to pick the latest updates and fixes from the
+contains UBIFS is <code>2.6.27</code>. But since UBIFS is a very new file
+system, it is recommended to pick the latest updates and fixes from the
 <code>linux-next</code> branch of the UBIFS git tree:</p>
 
 <code>git://git.infradead.org/ubifs-2.6.git</code>
@@ -178,56 +179,24 @@ unless you are an active UBIFS developer, use the <code>linux-next</code>
 branch.</p>
 
 <p>There are also <code>2.6.24</code>, <code>2.6.25</code>, <code>2.6.26</code>
-<code>2.6.27</code>, <code>2.6.28</code>, and <code>2.6.28</code> kernel
-back-ports which may be found at:</p>
+<code>2.6.27</code>, <code>2.6.28</code>, and <code>2.6.29</code> kernel
+back-ports which may be found here:</p>
 
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.28.git</code><br/>
+<code>git://git.infradead.org/~dedekind/ubifs-v2.6.29.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.28.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.27.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.26.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.25.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.24.git</code>
 
-<p>UBIFS authors used to maintain back-ports for kernel versions
-<code>2.6.21</code>, <code>2.6.22</code>, and <code>2.6.23</code>. However, we
-stopped maintaining them at the beginning of 2009 (see
-<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-January/024167.html">
-this</a> announcement). The trees are still available at:</p>
-
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.23.git</code><br/>
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.22.git</code><br/>
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.21.git</code>
-
-<p>Roughly speaking, the trees contain all UBI and UBIFS changes for kernel
-version <code>2.6.27</code> and may be some more patches. If you want to use
-one of these trees, it is recommended to back-port all the other UBIFS changes
-there. The easies way is to take the patches from the <code>2.6.24</code>
-back-port. And beware of the limitations of UBIFS back-ports to the very old
-kernels.</p>
-
-<ul>
-	<li>Since it is impossible to register memory shrinker in kernel
-	versions <code>2.6.21</code> and <code>2.6.22</code>, the UBIFS
-	shrinker does not work there, which means that UBIFS TNC cache never
-	gets shrunk and the system may run out of memory if the file system
-	is very large.</li>
-
-	<li>Because of VFS interface changes since kernel version
-	<code>2.6.24</code> (<code>write_begin()</code> instead of
-	<code>prepare_write()</code>) back-ports <code>2.6.21</code>,
-	<code>2.6.22</code>, and <code>2.6.23</code> may have slightly worse
-	performance comparing to the mainline code.</li>
-</ul>
-
-
 
 
 <h2><a name="L_ml">Mailing list</a></h2>
 
 <p>You are welcome to send feed-back, bug-reports, patches, etc to the
-<a href="../mail.html">MTD mailing list</a>. Feel free to ask questions.
-It might make sense to check the <a href="../faq/ubifs.html">UBIFS FAQ</a> as
-well.</p>
+<a href="../mail.html">MTD mailing list</a>. Feel free to ask questions,
+but please, check the <a href="../faq/ubifs.html">UBIFS FAQ</a> before
+doing this.</p>
 
 
 
@@ -235,7 +204,7 @@ well.</p>
 
 <p>There is only one UBIFS user-space tool at the moment -
 <code>mkfs.ubifs</code>, which creates UBIFS images. The tool may be found in
-the <i>MTD utils</i> repository (<code>mkfs.ubifs</code> sub-directory):</p>
+the <i>MTD utils</i> repository (the <code>mkfs.ubifs</code> sub-directory):</p>
 
 <code>git://git.infradead.org/mtd-utils.git</code>
 
@@ -243,7 +212,7 @@ the <i>MTD utils</i> repository (<code>mkfs.ubifs</code> sub-directory):</p>
 UBI volumes using <a href="ubi.html#L_usptools"><code>ubiupdatevol</code></a>
 or may be further fed to the
 <a href="ubi.html#L_usptools"><code>ubinize</code></a>
-tool to create an UBI image which may be put to the MTD device.</p>
+tool to create an UBI image which may be put to the raw flash.</p>
 
 
 
@@ -252,12 +221,12 @@ tool to create an UBI image which may be put to the MTD device.</p>
 <p>All the data structures UBIFS is using are trees, so it scales
 logarithmically in terms of flash size. However, UBI scales linearly
 (see <a href="ubi.html#L_scalability">here</a>) which makes
-overall UBI/UBIFS stack scalability linear. But the UBIFS authors believe it is
-always possible to create logarithmically scalable UBI2 and improve the
-situation. Current UBI should be OK for 2-16GiB flashes, depending on the
-I/O speed and requirements.</p>
+overall UBI/UBIFS stack scalability to be linear. But UBIFS authors believe it
+is possible to create logarithmically scalable UBI2 and improve the
+situation. Current UBI should be OK for 2-16GiB raw flashes, depending on the
+I/O speed and the requirements.</p>
 
-<p>Note, although the UBI scalability is linear, it anyway scales better much
+<p>Note, although UBI scalability is linear, it anyway scales much better
 than JFFS2, which was originally designed for small ~32MiB NOR flashes. JFFS2
 has scalability issues on the "file system level", while UBI/UBIFS stack has
 scalability issues only on lower "raw flash level". The following table
@@ -305,8 +274,8 @@ describes the issues in more details.</p>
 	<td>True. JFFS2 has to check whole file system just after it has been
 	    mounted in case of NAND flash. The checking involves reading all
 	    nodes for each inode and checking their CRC checksums, which
-	    consumes a lot of CPU. For example, this may be seen by running the
-	    <code>top</code> utility just after JFFS2 has been mounted. This
+	    consumes a lot of CPU. For example, this may be observed by running
+	    <code>top</code> just after JFFS2 has been mounted. This
 	    slows down overall system boot-up time. Fundamentally, this is
 	    needed because JFFS2 does not store space accounting information
 	    (i.e., free/dirty space) on the flash media but instead, gathers
@@ -326,7 +295,7 @@ describes the issues in more details.</p>
 </tr>
 
 <tr>
-	<td>The first file access time linearly depends on its size</td>
+	<td>File access time linearly depends on its size</td>
 	<td>True. JFFS2 has to keep in RAM so-called "fragment tree" for each
 	    inode corresponding to an opened file. The fragment tree is an
 	    in-memory RB-tree which is indexed by file offset and refers
@@ -344,7 +313,7 @@ describes the issues in more details.</p>
 	    the file system, the B-tree is looked-up and the corresponding
 	    flash address to read is found. There is a TNC cache which caches
 	    the B-tree nodes when the B-tree is looked-up, and the cache is
-	    shrinkable, which means it might be shrunk when the kernel needs
+	    shrinkable, which means it can be shrunk when the kernel needs
 	    more memory.</td>
 </tr>
 
@@ -366,7 +335,8 @@ describes the issues in more details.</p>
 	    performance much because of the write-back support: the data
 	    changes do not go to the flash straight away - they are instead
 	    deferred and are done later, when (hopefully) more data is changed
-	    at the same data page and usually in background.</td>
+	    at the same data page. And write-back usually happens in
+	    background.</td>
 </tr>
 </table>
 
@@ -377,7 +347,7 @@ describes the issues in more details.</p>
 <p>UBIFS supports write-back, which means that file changes do not go to the
 flash media straight away, but they are cached and go to the flash later, when
 it is absolutely necessary. This helps to greatly reduce the amount of I/O
-which results in better performance. Write-back caching is standard technique
+which results in better performance. Write-back caching is a standard technique
 which is used by most file systems like <code>ext3</code> or
 <code>XFS</code>.</p>
 
@@ -390,8 +360,8 @@ small, JFFS2 is very close to a synchronous file system.</p>
 
 <p>Write-back support requires the application programmers to take extra care
 about synchronizing important files in time. Otherwise the files may corrupt or
-disappear in case of power-cuts, which happen very often in many embedded
-devices. Let's look at what Linux manual pages say:</p>
+disappear in case of power-cuts, which happens very often in many embedded
+devices. Let's take a glimpse at Linux manual pages:</p>
 
 <pre>
 $ man 2 write
@@ -410,39 +380,44 @@ because UBIFS does reserves space for cached dirty data). This is also true for
 JFFS2, as well as for any other Linux file system.</p>
 
 <p>However, some (perhaps not very good) user-space programmers do not take
-write-back into account. They do not read man pages carefully. And some
-applications which have been used in embedded systems which run JFFS2 worked
-fine, because JFFS2 is so close to being synchronous. Of course, the
-applications are buggy, but they appeared to work well enough with JFFS2. But
-the bugs show up when UBIFS is used. Please, be careful and check/test your
-applications with respect to power cut tolerance if you switch from JFFS2 to
-UBIFS. The following is a list of useful hints and advices.</p>
+write-back into account. They do not read manual pages carefully. When such
+applications are used in embedded systems which run JFFS2 - they work fine,
+because JFFS2 is almost synchronous. Of course, the applications are buggy,
+but they appear to work well enough with JFFS2. But the bugs show up when
+UBIFS is used instead. Please, be careful and check/test your applications
+with respect to power cut tolerance if you switch from JFFS2 to UBIFS. The
+following is a list of useful hints and advices.</p>
 
 <ul>
-	<li>If you want to switch into synchronous mode, use
+	<li>If you want to switch into synchronous mode, use the
 	<code>-o sync</code> option when mounting UBIFS; however, the file
-	system performance may drop - be careful;</li>
+	system performance will drop - be careful;</li>
 
 	<li>Always keep in mind the above statement from the manual pages and
 	run <code>fsync()</code> for all important files you change; of
 	course, there is no need to synchronize "throw-away" temporary files;
-	Just think how important is the file data and decide;</li>
+	Just think how important is the file data and decide; and do not
+	use <code>fsync()</code> unnecessarily, because this will hit the
+	performance;</li>
 
 	<li>If you want to be more accurate, you may use
 	<code>fdatasync()</code>, in which cases only data changes will be
 	flushed, but not inode meta-data changes (e.g., "<i>mtime</i>"
 	or permissions); this might be more optimal than using
 	<code>fsync()</code> if the synchronization is done often, e.g., in
-	a loop; otherwise just stick with  <code>fsync()</code>;</li>
+	a loop; otherwise just stick with <code>fsync()</code>;</li>
 
 	<li>In shell, the <code>sync</code> command may be used, but it
 	synchronizes whole file system which might be not very optimal; and
 	there is a similar <i>libc</i> <code>sync()</code> function;</li>
 
-	<li>Alternatively to <code>fdatasync()</code> you may use
-	<code>O_SYNC</code> flag of the <code>open()</code> call; this will
-	make sure all the data (but not meta-data) changes go to the media
-	before the <code>write()</code> operation returns;</li>
+	<li>You may use the <code>O_SYNC</code> flag of the
+	<code>open()</code> call; this will make sure all the data (but not
+	meta-data) changes go to the media before the <code>write()</code>
+	operation returns; but in general, it is better to use
+	<code>fsync()</code>, because <code>O_SYNC</code> makes each
+	write to be synchronous, while <code>fsync()</code> allows to
+	accumulate many writes and synchronize them at once;</li>
 
 	<li>It is possible to make certain inodes to be synchronous by
 	default by setting the "<i>sync</i>" inode flag; in a shell, the
@@ -468,7 +443,7 @@ of some directory to be synchronous by default (e.g., <code>/etc</code>).</p>
 
 <p>The <code>fdatasync()</code> call for directories is "no-op" in UBIFS and
 all UBIFS operations which change directory entries are synchronous.
-However, you should not to assume this for portability (e.g., this is not
+However, you should not assume this for portability (e.g., this is not
 true for <code>ext2</code>). Similarly, the "<i>dirsync</i>" inode flag has
 no effect in UBIFS.</p>
 
@@ -494,7 +469,7 @@ first make a copy <code>bar</code> of this file, then change file
 <code>bar</code> to <code>foo</code>. Because the re-name operation is atomic
 (this is a <code>POSIX</code> requirement) and <code>bar</code> is
 synchronized, the whole update operation is atomic as well. Indeed, if a power
-cut happens, you will end up with intact <code>foo</code> and half-updated
+cut happens, you will end up with an intact <code>foo</code> and half-updated
 <code>bar</code>, in which case the whole atomic update operation may be run
 again.</p>
 
@@ -502,15 +477,15 @@ again.</p>
 
 <h2><a name="L_compression">Compression</a></h2>
 
-<p>UBIFS supports on-the-flight compression, which it compressed data
-before writing them to the flash media, and de-compressed before reading them,
+<p>UBIFS supports on-the-flight compression, which means it compresses data
+before writing them to the flash media, and de-compresses before reading them,
 and this is absolutely transparent to the users. UBIFS compresses only regular
 files data. Directories, device nodes and so on are not compressed. Meta-data
 and the indexing information are not compressed as well.</p>
 
 <p>At the moment UBIFS supports <i>LZO</i> and <i>zlib</i> compressors. Zlib
 provides better compression ratio, but LZO is faster in both compression and
-decompression. LZO is the default compressor for in-kernel UBIFS and for the
+decompression. LZO is the default compressor for UBIFS and for the
 <code>mkfs.ubifs</code> utility. And of course you may disable UBIFS
 compression altogether using the "<code>-x none</code>"
 <a href="ubifs.html#L_usptools"><code>mkfs.ubifs</code></a> option.</p>
@@ -527,24 +502,24 @@ mostly contains <code>mp3</code> files, UBIFS will be unable to efficiently
 compress them, just because <code>mp3</code> files are already compressed.</p>
 
 <p>In UBIFS it is possible to enable or disable compression individually for
-each inode by setting or cleaning this compression flag. Note, the compression
+each inode by setting or cleaning their compression flag. Note, the compression
 flag of directories is inherited, which means that when files and
 sub-directories are created, they inherit the compression flag of the parent
 directory. Please, refer <a href="../faq/ubifs.html#L_comproff">this</a>
 section for instruction about how the compression flag may be toggled.</p>
 
-<p>It is also possible to combine LZO and zlib compressors, see
+<p>It is also possible to somewhat combine LZO and zlib compressors, see
 <a href="../faq/ubifs.html#L_favor_lzo">this</a> FAQ section.</p>
 
 <p>It's also worth noting that JFFS2 LZO compression is a little bit different
-to UBIFS zlib compression. UBIFS uses crypto-API deflate method, while JFFS2
+to UBIFS zlib compression. UBIFS uses the crypto-API deflate method, while JFFS2
 uses zlib library directly. As a result, UBIFS and JFFS2 use different zlib
 compression options. Namely, JFFS2 uses deflate level 3 and window bits 15,
 while UBIFS uses deflate level 6 and window bits -11 (minus makes zlib avoid
 putting a header to the output data stream). Experiments with compressing ARM
 code <a href="../misc.html#L_ubifs_compr">showed</a> that JFFS2 compression
 ratio is slightly smaller, decompression speed is also slightly slower, but
-compression speed is faster.</p>
+compression speed is a bit faster.</p>
 
 
 
@@ -552,7 +527,7 @@ compression speed is faster.</p>
 
 <p>Every piece of information UBIFS writes to the media has a CRC-32 checksum,
 and UBIFS verifies the checksum for every piece of information it reads from
-the media. CRC-32 is a quite strong function and any data corruption will most
+the media. CRC-32 is quite strong function and any data corruption will most
 probably be noticed. The same is true for UBI.</p>
 
 <p>CRC-32 loads the CPU and makes the file-system slower - this is the price we
@@ -1043,9 +1018,9 @@ information.</p>
 a block device on top of flash hardware. At early days FTL ran on the
 host computer. For example, old PCMCIA flash devices were essentially raw flash
 devices, and the PCMCIA standard defined the media storage format for them. So
-the host computer had to run the FTL software driver which implements PCMCIA
+the host computer had to run the FTL software driver which implemented PCMCIA
 FTL. However, nowadays FTL is usually firmware, and it is run by the controller
-which is built intro the storage device. For example, if you look inside an USB
+which is built into the storage device. For example, if you look inside an USB
 flash drive, you'll find there a NAND chip (or several of them), and a
 micro-controller, which runs FTL firmware. Some USB flash drives are known to
 have quite powerful ARM processors inside. Similarly, MMC, eMMC, SD, SSD, and
@@ -1085,27 +1060,27 @@ devices.</p>
 <p>Very often people ask questions like "why would one need to use raw
 flash and why not just use eMMC, or something like this?". Well, there is no
 simple answer, and the following is what UBIFS developers think. Please,
-take it as just our opinion and take into account the date of this writing (15
-October 2008). The answer is given in a form of a list of non-structured items,
-and the reader should structure and interpret it in a way which is appropriate
-for his system. And because mass storage systems mostly use NAND flash (modern
-FTL devices have NAND flash arrays inside), the answer talk specifically about
-NAND flashes. Also, we'd like to emphasize that we do not give general
-recommendations and everything depends on system requirements.</p>
+take into account the date of this writing (3 May 2009). The answer is given in
+form of a list of non-structured items, and the reader should structure
+it in a way which is appropriate for his system. And because mass storage
+systems mostly use NAND flash (modern FTL devices also have NAND flash arrays
+inside), we talk specifically about NAND flashes. Also, we'd like to emphasize
+that we do not give general recommendations and everything depends on system
+requirements.</p>
 
 <ul>
 	<li>Bare NAND chips are cheaper and simpler, which is very important
 	for small system. However, it seems like the industry pushes FTL
 	devices forward and the situation is not that simple and obvious
 	anymore. Indeed, an FTL devise is more complex than a raw NAND of
-	similar size, because FTL device has to have additional controller
+	similar size, because FTL device has additional controller inside,
 	and so on. But since the industry tends to produce a lot of FTL devices,
 	and actually sell a lot of them, the price is going down.</li>
 
 	<li>If you need an flash storage where you are going to use FAT file
 	system, then in most cases you should stick with an FTL device (eMMC,
 	MMC, SD or whatever). Just make sure the FTL device is doing proper
-	wear-leveling. We believe the good brand FTL devices do it well.</li>
+	wear-leveling.</li>
 
 	<li>The other situation is when you are going to use your FTL device
 	for system storage (e.g. for rootfs) and use a more robust file system
@@ -1124,7 +1099,7 @@ recommendations and everything depends on system requirements.</p>
 	<li>If you start thinking about how FTL could be implemented, you
 	realize that it must do things like garbage collection (sometimes
 	referred to as "reclaim process"). And flash hardware pretty much
-	requires most writes to be out-of-place. But how does FTL behaves in
+	requires most writes to be out-of-place. But how does FTL behave in
 	case of sudden power-cuts? What if a power-cut happens while it is in
 	the middle of doing garbage collection? Does the FTL device guarantee
 	that the data which was on the flash media before the power cut happens
@@ -1140,31 +1115,31 @@ recommendations and everything depends on system requirements.</p>
 	But this does not mean that all USB flash drives are bad, but you just
 	should be careful.</li>
 
-	<li>We have heard reports that MMC and SD cards corrupt and loose data
-	if power is cut during writing. Even the data which was there long time
-	before may corrupt or disappear. This means that they have bad FTL
+	<li>We have heard reports that MMC, eMMC, and SD cards corrupt and loose
+	data if power is cut during writing. Even the data which were there long
+	time before may corrupt or disappear. This means that they have bad FTL
 	which does not do things properly. But again, this does not have to be
-	true for all MMCs and SDs - there are many different vendors. But
-	again, you should be careful.</li>
+	true for all MMCs/eMMCs and SDs - there are many different vendors. Be
+	careful, though.</li>
 
 	<li>In general, if you glance back into the history, many FTL devices
 	were mostly used with FAT file system for storing stuff like photo and
 	video. FAT file system is not reliable by definition, which suggests
-	that FTL devices may also not be very reliable, just because
+	that FTL devices may also be not very reliable, just because
 	historically this was not really required. Indeed, it is not a big deal
 	to loose a couple of photos. However, it is crucial to make sure that
 	system libraries do not corrupt because of power-cuts.</li>
 
 	<li>Good FTL, especially if it deals with MLC NAND (which is used in
 	modern mass storage devices) must be a rather complex piece of
-	software. Implementing it in firmware might be a not very simple task.
+	software. Implementing it in firmware might be a difficult task.
 	And running it might require a powerful controller. Obviously, we may
 	suspect that vendors go for various kind of tricks or compromises to
 	keep their devices "good enough" and cheap. For example, it is known
 	that some vendors optimize their FTL devices for FAT, and if you start
 	using ext3 on top of it, you might face some unexpected problems or the
-	device may become not as good as you would imagine. Again, with closed
-	FTL it is often difficult to verify this..</li>
+	device may become not as good as you would imagine. And with closed
+	FTL it is often difficult to verify this.</li>
 
 	<li>SSD drives are probably very different to eMMC, MMC/SD etc. We have
 	not worked with SSD drives. They are expensive and they probably have
@@ -1177,11 +1152,15 @@ recommendations and everything depends on system requirements.</p>
 	is nothing wrong in using an FTL device as long as you trust it, or
 	have tested it, or it simply fit your system requirements.</li>
 
-	<li>In case of raw flash we exactly know what we are doing. UBI/UBIFS
+	<li>In case of raw flash we know exactly what we are doing. UBI/UBIFS
 	handles	all aspects of NAND flash like bad erase-blocks and
 	wear-leveling. It guarantees power-cut tolerance. It is open and
-	available, so you may always validate, test, and fix it. In opposite,
-	it is not that simple to fix firmware bugs.</li>
+	available, so you may always validate, test, and fix it. There is not
+	lie about what it can and what it cannot. In opposite, with FTL devices
+	you do not have much visibility to what is going on inside, vendors
+	may lie about how good their FTL device is. If you find a bug in the
+	firmware, vendors do not usually provide you a fast and easy way to
+	update it, and so on.</li>
 
 	<li>Theoretically, UBIFS may do better job, because it knows much more
 	information about the files than FTL. For example, UBIFS knows about
@@ -1192,10 +1171,18 @@ recommendations and everything depends on system requirements.</p>
 	better job on a bare NAND, than a traditional FS on an FTL device with
 	a similar NAND chip. On the other hand, FTL devices may	include
 	multiple NAND chips, highly parallelise things and provide fast I/O.
-	Probably SSD is a good example. But this may affect the cost.</li>
+	Probably SSD is a good example.</li>
 
 	<li>Obviously, the advantage of FTL devices is that you use old and
-	trusted software on top of them.</li>
+	trusted software on top of them. But be careful, sometimes this may
+	be not 100% true. UBIFS authors once tested a good brand eMMC with
+	respect to the power cut tolerance. Some severe problems were found.
+	But also, it was found that ext3 was not really usable with that
+	eMMC either. What happened was that power cuts sometimes left some
+	eMMC sectors not readable - the read operation returned ECC errors.
+	But for ext3 read errors are fatal - it is not designed to handle
+	them. The <code>ckfs.ext3</code> tool also refused to repair a file
+	system which had unreadable sectors.</li>
 </ul>
 
 <p>So it is indeed difficult to give an answer. Just think about cons and pros,

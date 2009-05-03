@@ -235,7 +235,7 @@ repository tree.</p>
 	devices (the opposite to what <code>ubiattach</code> does);</li>
 	<li><code>ubimkvol</code> - creates UBI volumes on UBI devices;</li>
 	<li><code>ubirmvol</code> - removes UBI volumes from UBI devices;</li>
-<li><code>ubiupdatevol</code> - updates UBI volumes; this tool uses the
+	<li><code>ubiupdatevol</code> - updates UBI volumes; this tool uses the
 	<a href="ubi.html#L_volupdate">UBI volume update feature</a> which
 	leaves the volume in "corrupted" state if the update was interrupted;
 	additionally, this tool may be used to wipe out UBI volumes;</li>
@@ -243,7 +243,9 @@ repository tree.</p>
 	a file with the same initial seed as UBI would use;</li>
 	<li><code>ubinize</code> - generates UBI images;</li>
 	<li><code>ubiformat</code> - formats empty flash, erases flash and
-	preserves erase counters, flashes UBI images to MTD devices.</li>
+	preserves erase counters, flashes UBI images to MTD devices;</li>
+	<li><code>mtdinfo</code> - reports information about MTD devices
+	found in the system.</li>
 </ul>
 
 <p>All UBI tools support "-h" option and print sufficient usage
@@ -423,10 +425,6 @@ It affects many things, e.g.:</p>
 	by buffering the read data and copying only the requested amount of
 	bytes to the user buffer.</li>
 </ul>
-
-<p>The min. I/O unit size is provided to UBI by the MTD layer. Namely, by the
-<code>writesize</code> field of the <code>struct mtd_info</code> MTD device
-description object (see the Linux kernel source codes).</p>
 
 
 

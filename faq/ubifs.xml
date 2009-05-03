@@ -16,7 +16,6 @@
 	<li><a href="ubifs.html#L_ubifs_mlc">May UBIFS be used on MLC NAND flash?</a></li>
 	<li><a href="ubifs.html#L_mount_ubifs">How to mount UBIFS?</a></li>
 	<li><a href="ubifs.html#L_mkfubifs">How to create an UBIFS image?</a></li>
-	<li><a href="ubifs.html#L_find_lebsz">How to find out LEB size?</a></li>
 	<li><a href="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</a></li>
 	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of -c (--max-leb-cnt) mkfs.ubifs option?</a></li>
 	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></li>
@@ -169,7 +168,7 @@ UBI volumes.</p>
 <p>Creating UBIFS images might be a little trickier than creating JFFS2 images.
 First of all, you have to understand that UBIFS works on top of UBI which works
 on top or MTD which basically represents your raw flash. This means, that if
-you need to create an image which would be flashed to the raw flash, you should
+you need to create an image which should be flashed to the raw flash, you should
 first create an UBIFS image, then UBI image. In other words, the process has 2
 steps.</p>
 
@@ -199,19 +198,26 @@ be used on. Namely, you have to know the following characteristics of the flash
 before creating images:</p>
 
 <ul>
-	<li>flash size;</li>
-	<li>physical eraseblock size;</li>
-	<li>minimum flash input/output unit size;</li>
-	<li>for NAND flashes, sub-page size;</li>
+	<li>MTD partition size;</li>
+	<li>flash physical eraseblock size;</li>
+	<li><a href="../doc/ubi.html#L_min_io_unit">minimum flash input/output
+	unit</a> size;</li>
+	<li>for NAND flashes - <a href="../doc/ubi.html#L_subpage">sub-page</a>
+	size;</li>
 	<li>logical eraseblock size.</li>
 </ul>
 
-<p><a href="ubi.html#L_find_min_io_size">This</a> and
-<a href="ubifs.html#L_find_lebsz">this</a> sections explain the above
-parameters and give some hints about how to find them out.</p>
+<p>If you run linux kernel version <code>2.6.30</code> or higher, or you
+have the MTD sysfs support back-ported, then you may find all these parameters
+by running the <a href="../doc/ubi.html#L_usptools"><code>mtdinfo</code></a>
+tool with <code>-u</code> parameter. Of course, the tool has to be run on
+the target system.</p>
 
-<p>And optionally, you should decide which compression algorithm you would want
-to use for this file-system. UBIFS supports zlib and LZO (default) at the
+<p>Please, refer <a href="ubi.html#L_find_min_io_size">this</a> for more
+information bout how to find these parameters.</p>
+
+<p>And optionally, you should decide which compression algorithm you want
+to use for the file-system. UBIFS supports zlib and LZO (default) at the
 moment (see <a href="../doc/ubifs.html#L_compression">here</a>). There is also
 <a href="ubifs.html#L_favor_lzo">favor LZO</a> <code>mkfs.ubifs</code>
 compression method. Generally, zlib compresses better, but it is slower on both
@@ -226,8 +232,8 @@ altered with various options of the tools. Use them only if you understand what
 they do.</p>
 
 <p>The below example demonstrates how to create an UBI/UBIFS image for a 256MiB
-SLC OneNAND flash chip with 128KiB physical eraseblocks, 2048 bytes NAND pages,
-and supporting 4 sub-pages (this means that it allows to do 4x512 bytes
+SLC OneNAND flash chip with 128KiB physical eraseblocks, 2048-byte NAND pages,
+and 512-byte sub-pages (this means that it allows to do 4x512 bytes
 writes to the same NAND page, which is quite typical for SLC flashes). The
 resulting image will have only one UBI volume storing UBIFS file-system.</p>
 
@@ -351,39 +357,6 @@ vol_flags=autoresize
 (see <a href="ubi.html#L_flash_img">here</a>) or use/implement a custom
 flasher program (<a href="../doc/ubi.html#L_format">here</a> you may find some
 hints).</p>
-
-
-
-<h2><a name="L_find_lebsz">How to find out LEB size?</a></h2>
-
-<p>When creating UBIFS images it is necessary to know logical eraseblock
-size which depends on the following flash chip parameters:</p>
-<ul>
-	<li>physical eraseblock size;</li>
-	<li>minimum input/output unit size;</li>
-	<li>sub-page size;</li>
-</ul>
-
-<p>Please, refer <a href="ubi.html#L_find_min_io_size">this</a> section
-for more information about how to find those 3 parameters. Here are the most
-typical configurations:</p>
-<ul>
-	<li>NOR flash with 1 byte min. I/O unit size: LEB size is PEB size
-	minus 128;</li>
-	<li>NAND flash with 512 byte NAND page and 265 byte sub-page: LEB size
-	is PEB size minus 512;</li>
-	<li>NAND flash with 2048 byte NAND page and 512 byte sub-page: LEB size
-	is PEB size minus 2048;</li>
-	<li>NAND flash with 2048 byte NAND page and no sub-page: LEB size
-	is PEB size minus 4096.</li>
-</ul>
-
-<p>Please, also refer <a href="../doc/ubi.html#L_overhead">this</a> section for
-additional information.</p>
-
-<p>The simplest way to find out the LEB size is to attach the MTD device to UBI,
-as it is suggested at the end of
-<a href="ubi.html#L_find_min_io_size">this</a> section.</p>
 
 
 
@@ -536,7 +509,6 @@ a file to the UBIFS file-system, it will be compressed only by the LZO
 compressor. So favor LZO is actually useful only for read-only files which are
 not going to be over-written. However, it should be easy to implement favor LZO
 in the kernel.</p>
-
 
 
 
