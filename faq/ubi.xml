@@ -199,7 +199,11 @@ ubiformat: bad eraseblocks: 13, 666
 ubiformat: formatting eraseblock 4095 -- 100 % complete
 </pre>
 
-<p>Note, <a href="../doc/ubi.html#L_format">this</a> section has some hints
+<p><b>Note!</b> If you use an old kernel, which is older than 2.6.30 and where
+MTD does not support sysfs, you have to pass "<code>-s</code>" argument to
+<code>ubiformat</code>.</p>
+
+<p><a href="../doc/ubi.html#L_format">This</a> section has some hints
 for those who implement a custom UBI flasher.</p>
 
 
