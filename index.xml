@@ -24,27 +24,9 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>11 May 2009: new 'mtdinfo' user-space tool added.</li>
 	<li>09 Apr 2009: MTD finally got sysfs support, which will show up in
 	    2.6.30.</li>
-	<li>07 Jan 2008: UBIFS back-ports for kernel versions <code>2.6.21</code>,
-	    <code>2.6.22</code> and <code>2.6.23</code> are not supported any
-	    longer (see
-	    <a href="http://lists.infradead.org/pipermail/linux-mtd/2009-January/024167.html">
-	    here</a>)</li>
-	<li>27 Oct 2008: UBIFS slides are available
-	    (see <a href="doc/ubifs.html#L_documentation">here</a>)</li>
-	<li>26 Oct 2008: <a href="doc/ubifs.html#L_readahead">Space for
-	    superuser</a> documentation section added</li>
-	<li>26 Oct 2008: <a href="doc/ubifs.html#L_readahead">Read-ahead</a>
-	    documentation section added</li>
-	<li>25 Oct 2008: <a href="misc.html#L_ubifs_compr">UBIFS ARM compression
-	    experiment</a> results are availabel</li>
-	<li>24 Oct 2008: <a href="doc/ubifs.html#L_checksumming">Checksumming</a>
-	    documentation section added</li>
-	<li>23 Oct 2008: <a href="faq/ubifs.html#L_favor_lzo">Favor LZO</a>
-	    FAQ section added</li>
-	<li>14 Oct 2008: <a href="doc/ubifs.html#L_raw_vs_ftl">"Raw flash vs.
-	    FTL devices"</a> documentation section added</li>
 	<li>10 Oct 2008: First kernel containing UBIFS (v. 2.6.27) is out</li>
 	<li>17 Jul 2008: UBIFS is merged into mainline, will show up in 2.6.27</li>
 	</ul>
