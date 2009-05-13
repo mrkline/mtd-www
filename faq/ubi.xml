@@ -33,6 +33,7 @@
 	<li><a href="ubi.html#L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></li>
 	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
 	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
+	<li><a href="ubi.html#L_flasher">How to implement UBI flasher?</a></li>
 	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
 </ol>
 
@@ -573,6 +574,12 @@ MTD patrition, or if the flash is already formatted so that all VID headers
 are at offset 2048. This means that if you use or
 <a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a>, you should
 avoid using the <code>-s</code> parameter.</p>
+
+
+
+<h2><a name="L_flasher">How to implement UBI flasher?</a></h2>
+
+<p>Please, read <a href="../doc/ubi.html#L_format">here</a></p>
 
 
 
