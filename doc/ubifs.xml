@@ -984,7 +984,9 @@ at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 	configuration menu (<code>CONFIG_UBIFS_FS_DEBUG=y</code> in
 	<code>.config</code>); please, do not enable other UBIFS debugging
 	sub-options like extra debugging messages unless you know what you are
-	doing;</li>
+	doing; <b>note</b>, you should enable UBIFS debugging, not UBI
+	debugging - distinguish between UBI and UBIFS please, they are
+	different things;</li>
 
 	<li>include all the messages UBIFS prints, not only those you see at
 	the console, but also those you see when running <code>dmesg</code>; or
