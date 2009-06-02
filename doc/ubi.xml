@@ -173,9 +173,10 @@ because:</p>
 	mechanisms).</li>
 </ul>
 
-<p>UBI can emulate MTD devices on top of UBI volumes. This looks a little
-strange, because UBI works on top of an MTD device, then emulates other MTD
-devices, but this actually works and makes it possible for existing software
+<p>There is an additional driver called <code>gluebi</code> which emulates MTD
+devices on top of UBI volumes. This looks a little strange, because UBI works
+on top of an MTD device, then <code>gluebi</code> emulates other MTD devices
+on top, but this actually works and makes it possible for existing software
 (e.g., JFFS2) to run on top of UBI volumes. However, new software may benefit
 from the advanced UBI features and let UBI solve many issues which the flash
 technology imposes.</p>

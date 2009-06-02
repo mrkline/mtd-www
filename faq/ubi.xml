@@ -133,9 +133,15 @@ $ ubirmvol /dev/ubi0 -n 0
 
 <h2><a name="L_run_jffs2">How to run JFFS2 on top of an UBI volume?</a></h2>
 
-<p>UBI can emulate a fake MTD devices for each UBI volume and JFFS2 can be
-these emulated MTD devices. Enable the "<i>Emulate MTD devices</i>" UBI
-configuration menu check-box to switch this feature on.</p>
+<p>There is an additional driver called <code>gluebi</code> which can emulate
+fake MTD devices for each UBI volume and JFFS2 can be used with these emulated
+MTD devices. Enable <code>gluebi</code> in the UBI configuration menu (the
+"<i>MTD devices emulation driver (gluebi)</i>" option).</p>
+
+<p>Note, pre-<code>2.6.31</code> kernels did not have a separate
+<code>gluebi</code> driver and it was built into the UBI driver. The
+corresponding UBI configuration menu option was
+"<i>Emulate MTD devices</i>"</p>
 
 
 
