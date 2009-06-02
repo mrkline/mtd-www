@@ -799,6 +799,19 @@ Node devices which are controlled via serial line and may switch the power of
 the connected device on and off. UBIFS survived more than 20000 power-cuts
 while running stress tests.</p>
 
+<p>UBIFS authors not tested UBIFS well on NOR, though. And there is a known
+issue which has not yet been fixed because the reporter has not provided
+enough information. Please, see the discussion at the
+<a href="../mail.html">MTD mailing list</a>. The had subject
+"<i>UBIFS Corrupt during power failure</i>". The beginning of the thread
+may be found
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-March/024953.html">here</a>,
+then it continues
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-April/025229.html">here</a>,
+and then continues
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-May/025609.html">here</a>.
+</p>
+
 
 
 <h2><a name="L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></h2>
