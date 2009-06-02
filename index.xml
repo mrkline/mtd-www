@@ -24,6 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>02 Jun 2009: UBI got notification capabilities, gluebi is now a separate module</li>
+	<li>27 May 2009: mkfs.ubifs now can write straight to UBI volumes</li>
 	<li>11 May 2009: new 'mtdinfo' user-space tool added.</li>
 	<li>09 Apr 2009: MTD finally got sysfs support, which will show up in
 	    2.6.30.</li>
