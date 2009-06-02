@@ -179,6 +179,10 @@ for this. So you may update UBI volumes on your running system as well.
 In this case you only need an UBIFS image, and you do not have to make the
 UBI image, i.e., the process has only 1 step in this case.</p>
 
+<p>Moreover, you may even build the image on your target system and write
+it directly to your UBI volume - just specify the volume character device
+as the output file to <code>mkfs.ubifs</code>.</p>
+
 <p>So, there are 2 utilities:</p>
 <ul>
 	<li><a href="../doc/ubifs.html#L_usptools"><code>mkfs.ubifs</code></a>
