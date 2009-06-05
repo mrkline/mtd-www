@@ -31,6 +31,7 @@
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
+	<li><a href="ubifs.html#L_empty_file">Why my file is empty after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_study_ubifs">I want to study UBIFS - any recommendations?</a></li>
 </ol>
 
@@ -143,7 +144,7 @@ into the kernel (instead of compiling it as a kernel module) and specify proper
 kernel boot arguments and make the kernel mount UBIFS on boot. You have to
 provide the boot arguments to attach the UBI device (using the
 <code>ubi.mtd=</code> argument, see <a href="ubi.html#L_attachmtd">here</a>).
-Then you should tell the kernel the file system type by prividing the
+Then you should tell the kernel the file system type by providing the
 <code>rootfstype=</code> argument. And finally, you should specify which UBI
 volume has to be mounted on boot using the <code>root=</code> argument.
 The volume is specified the same way as described above (<code>ubiX_Y</code>
@@ -533,7 +534,7 @@ information about other dependencies in the  <code>mtd-utils</code> tree.</p>
 
 <h2><a name="L_atomic_change">How to change a file atomically?</a></h2>
 
-<p>Changing a file atomically means changing the contents in a way that unclean
+<p>Changing a file atomically means changing its contents in a way that unclean
 reboots could not lead to any corruption or inconsistency in the file. The only
 reliable way to do this in UBIFS (and in most of other file-systems, e.g. JFFS2
 or ext3) is the following:</p>
@@ -544,11 +545,19 @@ or ext3) is the following:</p>
 	<li>synchronize the copy (see
 	<a href="../doc/ubifs.html#L_writeback">here</a>);</li>
 	<li>re-name the copy to the file (using the <code>rename()</code>
-	<i>libc</i> function or <code>mv</code> utility).</li>
+	<i>libc</i> function or the <code>mv</code> utility).</li>
 </ul>
 
-<p>Note, if power-cut happens during re-naming, the original file will be
-intact. This is <code>POSIX</code> requirement and UBIFS satisfies it.</p>
+<p>Note, if a power-cut happens during the re-naming, the original file will be
+intact because the re-name operation is atomic. This is a <code>POSIX</code>
+requirement and UBIFS satisfies it.</p>
+
+<p>Often applications do not do the third step - synchronizing the copy.
+Although this is generally an application bug, the ext4 file-system
+has a hack which makes sure the data of the copy hits the disk before the
+re-name meta-data, which "fixes" buggy applications. However, UBIFS does not
+have this feature, altough we plan to implement it. Please, refer
+<a href="../doc/ubifs.html#L_sync_exceptions">this</a> section.</p>
 
 
 
@@ -840,6 +849,31 @@ size.</p>
 depend on the journal size. There is very weak dependency, though, because for
 bigger journal we need bigger log, but it is really something which does not
 make any noticeable difference.</p>
+
+
+
+<h2><a name="L_empty_file">Why my file is empty after an unclean reboot?</a></h2>
+
+<p>The general answer to this is that you did not synchronized your file
+using something like <code>fsync()</code> <code>libc</code> function.
+You have to do this because UBIFS file-system is asynchronous and supports
+write-back. See <a href="../doc/ubifs.html#L_writeback">here</a> for more
+information about UBIFS write-back support. You may also take a look
+<a href="ubifs.html#L_atomic_change">here</a> for information about how
+to update the contents of files atomically.</p>
+
+<p>Zero-length files are a special case of corruptions which happen when
+applications first truncate files, then update them. The truncation is
+synchronous in UBIFS, so it is written to the flash media straight away. But
+when the data are written, they go to the page cache, not to the flash media.
+So when an unclean reboot happens, the file becomes empty (truncated) because
+the data are lost. The solution for this is to use <code>fsync()</code>.</p>
+
+<p>However, the ext4 file-system helps buggy applications to lessen the
+probability of getting zero-length files by implementing a special hack.
+Please, refer <a href="../doc/ubifs.html#L_sync_exceptions">this</a> section
+for more information. UBIFS does not provide a similar hack, although we are
+planning to implement it.</p>
 
 
 
