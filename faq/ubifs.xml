@@ -805,7 +805,7 @@ system at those moments is very low in real-life.</p>
 
 <p>Real power-cut tests have also been done on OneNAND flash. We used Power
 Node devices which are controlled via serial line and may switch the power of
-the connected device on and off. UBIFS survived more than 20000 power-cuts
+the connected device on and off. UBIFS survived more than 100000 power-cuts
 while running stress tests.</p>
 
 <p>UBIFS authors not tested UBIFS well on NOR, though. And there is a known
