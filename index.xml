@@ -24,6 +24,7 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>08 Jun 2009: a bad bug fixed in mkfs.ubifs, please update your version</li>
 	<li>02 Jun 2009: UBI got notification capabilities, gluebi is now a separate module</li>
 	<li>27 May 2009: mkfs.ubifs now can write straight to UBI volumes</li>
 	<li>11 May 2009: new 'mtdinfo' user-space tool added.</li>
