@@ -472,24 +472,24 @@ Theodore Tso's</a> article is a good reading.</p>
 <h2><a name="L_sync_exceptions"></a>Synchronization exceptions for buggy applications</h2>
 
 <p>As <a href="ubifs.html#L_writeback">this</a> section describes, UBIFS is
-a fully asynchronous file-system, and applications should synchronize their
+an asynchronous file-system, and applications should synchronize their
 files whenever it is required. The same applies to most Linux file-systems, e.g.
 <code>XFS</code>.</p>
 
-<p>However, the many applications ignore this and does not synchronize
+<p>However, many applications ignore this and do not synchronize
 files properly. And there was a huge war between user-space and kernel
 developers related to ext4 delayed allocation feature. Please, see the
 <a href="http://thunk.org/tytso/blog/2009/03/12/delayed-allocation-and-the-zero-length-file-problem/">
-Theodore Tso's blog post</a>. More information may be found at the
+Theodore Tso's blog post</a>. More information may be found in this
 <a href="http://lwn.net/Articles/326471/">LNW article</a>.</p>
 
 <p>In short, the flame war was about 2 cases. The first case was about the
 <a href="../faq/ubifs.html#L_atomic_change">atomic re-name</a>, where many
 user-space programs did not synchronize the copy before re-naming it. The
-second case was about the applications which truncate files, then change them.
-There was no final agreement, but it the "we cannot ignore the real world"
+second case was about applications which truncate files, then change them.
+There was no final agreement, but the "we cannot ignore the real world"
 argument found ext4 developers' understanding, and there were 2 ext4 changes
-which sort of solved both problems.</p>
+which help both problems.</p>
 
 <p>Roughly speaking, the first chage made ext4 synchronize files on close if
 they were previously truncated. This was a hack from file-system point
