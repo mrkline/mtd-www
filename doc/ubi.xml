@@ -664,7 +664,7 @@ is the code from UBI which does the right thing.</p>
 
 <pre>
 /**
- * calc_data_len - calculate how much real data is stored in a buffer.
+ * calc_data_len - calculate how much real data are stored in a buffer.
  * @ubi: UBI device description object
  * @buf: a buffer with the contents of the physical eraseblock
  * @length: the buffer length
@@ -970,7 +970,7 @@ one of:</p>
 	will not be erased soon; UBI will map this LEB to a PEB with high erase
 	counter, so it will go down relative to other PEB erase counters;</li>
 	<li><code>UBI_UNKNOWN</code> - should be used most of the time, when
-	you are not sure whether the the data is long-term or short term.</li>
+	you are not sure whether the data are long-term or short term.</li>
 </ul>
 
 <p>Bear in mind that <code>dtype</code> is only a hint. Please, use
@@ -1036,7 +1036,7 @@ Also, you do not have to write all new data at one go. It is OK to call
 the <code>write()</code> function arbitrary number of times and pass arbitrary
 amount of data each time. The operation will be finished after all the data
 have been written. If the last write operation contains more bytes than UBI
-expects, the extra data is just ignored.</p>
+expects, the extra data are just ignored.</p>
 
 <p>Special case of the volume update operation is what we call <b>volume
 truncation</b>, which is done by the same ioctl command if the data length is
@@ -1129,7 +1129,7 @@ physical eraseblock <i>P<sub>1</sub></i>. First of all, UBI always has one free
 PEB reserved for the atomic LEB change operation, let it be
 <i>P<sub>2</sub></i>. Before the operation, <i>P<sub>1</sub></i> stores the
 contents of the LEB <i>L</i> and <i>P<sub>2</sub></i> is free (it contains only
-the EC header and <code>0xFF</code> bytes). The new data is written to
+the EC header and <code>0xFF</code> bytes). The new data are written to
 <i>P<sub>2</sub></i>, not to <i>P<sub>1</sub></i>, so should anything go wrong,
 the old contents of the LEB is always there.</p>
 

@@ -19,6 +19,8 @@
 	<li><a href="ubifs.html#L_usptools">User-space tools</a></li>
 	<li><a href="ubifs.html#L_scalability">Scalability</a></li>
 	<li><a href="ubifs.html#L_writeback">Write-back support</a></li>
+	<li><a href="ubifs.html#L_wb_knobs">Write-back knobs in Linux</a></li>
+	<li><a href="ubifs.html#L_writebuffer">UBIFS write-buffer</a></li>
 	<li><a href="ubifs.html#L_sync_exceptions">Synchronization exceptions for buggy applications</a></li>
 	<li><a href="ubifs.html#L_compression">Compression</a></li>
 	<li><a href="ubifs.html#L_checksumming">Checksumming</a></li>
@@ -124,7 +126,7 @@ subsystems involved:</p>
 	other tricks like multi-headed journal which make UBIFS perform
 	well;</li>
 
-	<li><b>on-the-flight compression</b> - the data is stored in compressed
+	<li><b>on-the-flight compression</b> - the data are stored in compressed
 	form on the flash media, which makes it possible to put considerably
 	more data to the flash than if the data were not compressed; this is very
 	similar to what JFFS2 has; UBIFS also allows to switch the compression
@@ -264,7 +266,7 @@ describes the issues in more details.</p>
 
 <tr>
 	<td>Mount time linearly depends on the file system contents</td>
-	<td>True, the more data is stored on the file system, the longer it
+	<td>True, the more data are stored on the file system, the longer it
 	    takes to mount it, because JFFS2 has to do more scanning work.</td>
 	<td>False, mount time does not depend on the file system contents. At
 	    the worst case (if there was an unclean reboot), UBIFS has to scan
@@ -290,10 +292,10 @@ describes the issues in more details.</p>
 <tr>
 	<td>Memory consumption linearly depends on file system contents</td>
 	<td>True. JFFS2 keeps a small data structure in RAM for each node on
-	    flash, so the more data is stored on the flash media, the more
+	    flash, so the more data are stored on the flash media, the more
 	    memory JFFS2 consumes.</td>
-	<td>False. UBIFS memory consumption does not depend on how much data is
-	    stored on the flash media.</td>
+	<td>False. UBIFS memory consumption does not depend on how much data
+	    are stored on the flash media.</td>
 </tr>
 
 <tr>
@@ -336,7 +338,7 @@ describes the issues in more details.</p>
 	<td>False. UBIFS always writes in 4KiB chunks. This does not hurt the
 	    performance much because of the write-back support: the data
 	    changes do not go to the flash straight away - they are instead
-	    deferred and are done later, when (hopefully) more data is changed
+	    deferred and are done later, when (hopefully) more data are changed
 	    at the same data page. And write-back usually happens in
 	    background.</td>
 </tr>
@@ -357,7 +359,7 @@ which is used by most file systems like <code>ext3</code> or
 JFFS2 file system changes go the flash synchronously. Well, this is not
 completely true and JFFS2 does have a small buffer of a NAND page size (if the
 underlying flash is NAND). This buffer contains last written data and is
-flushed once it is full. However, because the amount of cached data is very
+flushed once it is full. However, because the amount of cached data are very
 small, JFFS2 is very close to a synchronous file system.</p>
 
 <p>Write-back support requires the application programmers to take extra care
@@ -461,11 +463,115 @@ buffers, while <code>sync()</code>, <code>fsync()</code>, etc flush
 
 <p>Please, refer <a href="../faq/ubifs.html#L_atomic_change">this</a> FAQ
 entry for information about how to atomically update the contents of a
-file.</p>
-
-<p>Also, the
+file. Also, the
 <a href="http://thunk.org/tytso/blog/2009/03/15/dont-fear-the-fsync/">
 Theodore Tso's</a> article is a good reading.</p>
+
+
+
+<h2><a name="L_wb_knobs">Write-back knobs in Linux</a></h2>
+
+<p>Linux has several knobs in "<code>/proc/sys/vm</code>" which you may use to
+tune write-back. The knobs are global, so they affect all file-systems. Please,
+refer the "<code>Documentation/sysctl/vm.txt</code>" file fore more
+information. The file may be found in the Linux kernel source tree. Below are
+interesting knobs described in UBIFS context and in a simplified form.</p>
+
+<ul>
+	<li><code>dirty_writeback_centisecs</code> - how often the Linux
+	periodic write-back thread wakes up and writes out dirty data.
+	This is a mechanism which makes sure all dirty data hits the
+	media at some point.</li>
+
+	<li><code>dirty_expire_centisecs</code> - dirty data expire period.
+	This is maximum time data may stay dirty. After this period of time it
+	will be written back by the Linux periodic write-back thread. IOW, the
+	periodic write-back thread wakes up every
+	"<code>dirty_writeback_centisecs</code>" centi-seconds and synchronizes
+	data which was dirtied "<code>dirty_expire_centisecs</code>"
+	centi-seconds ago.</li>
+
+	<li><code>dirty_background_ratio</code> - maximum amount
+	of dirty data in percent of total memory. When the amount of dirty data
+	becomes larger, the periodic write-back thread starts synchronizing it
+	until it becomes smaller. Even non-expired data will be synchronized.
+	This may be used to set a "soft" limit for the amount of dirty data in
+	the system.</li>
+
+	<li><code>dirty_ratio</code> - maximum amount of dirty data at
+	which writers will first synchronize the existing dirty data before
+	adding more. IOW, this is a "hard" limit of the amount of dirty data in
+	the system.</li>
+</ul>
+
+<p>Note, UBIFS additionally has small
+<a href="ubifs.html#L_writebuffer">write-buffers</a> which are synchronized
+every 3-5 seconds. This means that most of the dirty data are delayed by
+<code>dirty_expire_centisecs</code> centi-seconds, but the last few KiB are
+additionally delayed by 3-5 seconds.</p>
+
+
+
+<h2><a name="L_writebuffer">UBIFS write-buffer</a></h2>
+
+<p>UBIFS is asynchronous file-system (read
+<a href="ubifs.html#L_writeback">this</a> section for more information). As
+other Linux file-system, it utilizes the page cache. The page cache is
+a generic Linux memory-management mechanism. It may be very large and cache a
+lot of data. When you write to a file, the data are written to the page cache,
+marked as dirty, and the write returns (unless the file is synchronous). Later
+the data are written-back.</p>
+
+<p>Write-buffer is an additional UBIFS buffer, which is implemented inside
+UBIFS, and it sits between the page cache and the flash. This means that
+write-back actually writes to the write-buffer, not directly to the flash.</p>
+
+<p>The write-buffer is designated to speed-up UBIFS on NAND flashes. NAND
+flashes consist of NAND pages, which are usually 512, 2KiB or 4KiB in size.
+NAND page is the minimal read/write unit of NAND flash (see
+<a href="ubi.html#L_min_io_unit">this</a> section).</p>
+
+<p>Write-buffer size is equivalent to NAND page size (so it is tiny comparing
+to the page cache). It's purpose is to accumulate small writes, and write full
+NAND pages instead of patially filled. Indeed, imagine we have to write 4
+512-byte nodes with half a second interval, and NAND page size is 2KiB. Without
+write-buffer we would have to write 4 NAND pages and waste 6KiB of flash space,
+while write-buffer allows us to write only once and waste nothing. This means
+we write less, we create less dirty space so UBIFS garbage collector will have
+to do less work, we save power.</p>
+
+<p>Well, the example shows an ideal situation, and even with the write-buffer
+we may waste space, for example in case of synchronous I/O, or if the data
+arrives with long time intervals. This is because the write-buffer has an
+associated timer, which flushes it every 3-5 seconds, even if it isn't full.
+We do this for data integrity reasons.</p>
+
+<p>Of course, when UBIFS has to write a lot of data, it does not use write
+buffer. Only the last part of the data which is smaller than the NAND page ends
+up in the write-buffer and waits more for data, until it is flushed by the
+timer.</p>
+
+<p>The write-buffer implementation is a little more complex, and we actually
+have several of them - one for each journal head. But this does not change the
+basic idea behind the write-buffer.</p>
+
+<p>Few notes with regards to synchronization:</p>
+
+<ul>
+	<li>"<code>sync()</code>" also synchronizes all write-buffers;</li>
+	<li>"<code>fsync(fd)</code>" also synchronizes all write-buffers which
+	contain pieces of "<code>fd</code>";</li>
+	<li><code>synchronous</code> files, as well as files opened with
+	"<code>O_SYNC</code>", bypass write-buffers, so the I/O is indeed
+	synchronous for this files;</li>
+	<li>write-buffers are also bypassed if the file-system is mounted with
+	the "<code>-o sync</code>" mount option.</li>
+</ul>
+
+<p>Take into account that write-buffers delay the data synchronization timeout
+defined by "<code>dirty_expire_centisecs</code>" (see
+<a href="ubifs.html#L_wb_knobs">here</a>) by 3-5 seconds. However, since
+write-buffers are small, only few data are delayed.</p>
 
 
 
@@ -491,7 +597,7 @@ There was no final agreement, but the "we cannot ignore the real world"
 argument found ext4 developers' understanding, and there were 2 ext4 changes
 which help both problems.</p>
 
-<p>Roughly speaking, the first chage made ext4 synchronize files on close if
+<p>Roughly speaking, the first change made ext4 synchronize files on close if
 they were previously truncated. This was a hack from file-system point
 of view, but it "fixed" applications which truncate files, write new
 contents, and close the files without synchronizing them.</p>
@@ -635,7 +741,7 @@ so UBIFS disables VFS read-ahead. But UBIFS has its own internal read-ahead,
 which we call "<i>bulk-read</i>". You may enable bulk-read using the
 "<code>bulk_read</code>" UBIFS mount option.</p>
 
-<p>Some flashes may read faster if the data is read at one go, rather than
+<p>Some flashes may read faster if the data are read at one go, rather than
 at several read requests. For example, OneNAND can do "read-while-load" if
 it reads more than one NAND page. So UBIFS may benefit from reading large
 data chunks at one go, and this is exactly what bulk-read does.</p>
@@ -807,10 +913,10 @@ less flash space.</p>
 <p>Here are the reasons why UBIFS reserves more space than it is needed.</p>
 
 <ul>
-	<li>One of the reasons is again related to the compression. The data is
-	stored in the uncompressed form in the cache, and UBIFS does know how
-	well it would compress, so it assumes the data wouldn't compress at all.
-	However, real-life data usually compresses quite well (unless it
+	<li>One of the reasons is again related to the compression. The data
+	are stored in the uncompressed form in the cache, and UBIFS does know
+	how well it would compress, so it assumes the data wouldn't compress at
+	all. However, real-life data usually compresses quite well (unless it
 	already compressed, e.g. it belongs to a <code>.tgz</code> or
 	<code>.mp3</code> file). This leads to major over-estimation of the
 	<i>X</i> component.</li>
@@ -848,7 +954,7 @@ the following numbers:</p>
 
 <p>Thus, if the vast majority of nodes on the flash were non-compressed data
 nodes, UBIFS would waste 1344 bytes at the ends of 126KiB LEBs. But real-life
-data is often compressible, so data node sizes vary, and the amount of wasted
+data are often compressible, so data node sizes vary, and the amount of wasted
 space at the ends of eraseblocks varies from 0 to 4255.</p>
 
 <p>UBIFS is doing some job to put small nodes like directory entries to the
@@ -856,7 +962,7 @@ ends of LEBs to lessen the amount of wasted space, but it is not ideal and
 UBIFS still may waste unnecessarily large chunks of flash space at the ends of
 eraseblocks.</p>
 
-<p>When reporting free space, UBIFS does not know which kind of data is going
+<p>When reporting free space, UBIFS does not know which kind of data are going
 to be written to the flash media, and in which sequence. Thus, it assumes the
 maximum possible wastage of 4255 bytes per LEB. This calculation is too
 pessimistic for most real-life situations and the average real-life

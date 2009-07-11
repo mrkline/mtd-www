@@ -60,7 +60,7 @@ should run fine. Let's consider some specific aspects of MLC NAND flashes:</p>
 	ECC codes which occupy whole OOB area; this is not a problem
 	for UBI/UBIFS, because neither UBIFS nor UBI use OOB area;</li>
 
-	<li>when the data is written to an eraseblock, it has to be written
+	<li>when the data are written to an eraseblock, they have to be written
 	sequentially, from the beginning of the eraseblock to the end of it;
 	this is also not a problem because it is exactly what UBI and UBIFS do
 	(see also <a href="ubi.html#L_restrict">this</a> section);</li>
@@ -603,7 +603,7 @@ be full. There are 2 main reasons for this:</p>
 	but due to compression and some other factors like wasting small pieces
 	of space at the end of eraseblocks, UBIFS does not exactly know how much
 	space the buffered dirty data would take on the flash media, so it uses
-	pessimistic calculations and assumes that the data is uncompressible.
+	pessimistic calculations and assumes that the data are uncompressible.
 	In many cases this is not true, but UBIFS has to assume
 	worst-case scenario. So when all free space on the file-system is
 	reserved for the buffered dirty data, but users want to write more,
@@ -666,7 +666,7 @@ dd if=/dev/urandom of=/mnt/ubifs/file bs=4096
 for the super-user (see <a href="../doc/ubifs.html#L_rootspace">here</a>), so
 it is better to be the root.</p>
 
-<p>UBIFS users should know that the more dirty cached FS data is there, the
+<p>UBIFS users should know that the more dirty cached FS data there are, the
 less precise is the <code>df</code> report. Try to create a big file, and
 look at the <code>df</code> report. Then synchronize the file-system (using the
 <code>sync</code> command) and look at the <code>df</code> report again. You
@@ -839,7 +839,7 @@ and then continues
 <h2><a name="L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></h2>
 
 <p>UBIFS journal is very different to ext3 journal. In case of ext3, the
-journal has fixed position on the block device. The data is first written
+journal has fixed position on the block device. The data are first written
 to the journal, and then copied to the file-system. This copying is done during
 the commit. After the commit, new data may be written to the journal, and so
 on. So in case of ext3 changing journal size would change file-system
