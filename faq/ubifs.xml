@@ -31,8 +31,9 @@
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
-	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
 	<li><a href="ubifs.html#L_empty_file">Why my file is empty after an unclean reboot?</a></li>
+	<li><a href="ubifs.html#L_bgt_thread">What does the "ubifs_bgt0_0" thread do?</a></li>
+	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
 	<li><a href="ubifs.html#L_study_ubifs">I want to study UBIFS - any recommendations?</a></li>
 </ol>
 
@@ -915,6 +916,33 @@ getting zero-length files by implementing a special hack. Please, refer
 <a href="../doc/ubifs.html#L_sync_exceptions">this</a> section for more
 information. UBIFS does not provide a similar hack, although we are planning
 to implement it.</p>
+
+
+
+<h2><a name="L_bgt_thread">What does the "ubifs_bgt0_0" thread do?</a></h2>
+
+<p>The UBIFS background thread is created for every mounted file-system and
+has "<i>ubifs_bgtX_Y</i>" name, where "<i>X</i>" is UBI device number and
+"<i>Y</i>" is UBI volume ID. For example, "<code>ubifs_bgt1_2</code>" is UBIFS
+background thread corresponding to the mounted volume 2 on UBI device 1.</p>
+
+<p>The background thread exists for optimization. One of its functions is
+background journal commit. It starts committing the journal in background when
+it is about 80% full. The idea is to make sure the journal is committed or
+almost committed by the time it becomes full, so writers would not have to wait
+for commit and keep writing data. The UBIFS presentetion slides and the UBIFS
+white-paper contain more information about the journal and committing, see
+<a href="../doc/ubifs.html#L_documentation">this</a> section.</p>
+
+<p>The other function of the background thread is flushing write-buffers. Each
+write-buffer has a timer, and when the timer expires, the background thread is
+woken up and the write-buffer is flushed. Please, refer
+<a href="../doc/ubifs.html#L_writebuffer">this</a> section for more information
+about UBIFS write-buffers.</p>
+
+<p>Another thing which the background thread could do is background garbage
+collection, just like in JFFS2. However, this is not implemented and UBIFS does
+not garbage-collect in background at the moment.</p>
 
 
 
