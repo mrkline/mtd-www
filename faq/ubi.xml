@@ -34,6 +34,7 @@
 	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
 	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
 	<li><a href="ubi.html#L_flasher">How to implement UBI flasher?</a></li>
+	<li><a href="ubi.html#L_bgt_tread">What does the "ubi_bgt0d" thread do?</a></li>
 	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
 </ol>
 
@@ -51,10 +52,10 @@ kernel or be built as a kernel module.</p>
 <h2><a name="L_attachmtd">How to attach an MTD device?</a></h2>
 
 <p>Each MTD device has a name and a number, which you may find out by
-examining the <code>/proc/mtd</code> file. The preferrable way to attach
+examining the <code>/proc/mtd</code> file. The preferable way to attach
 MTD devices is to attach them by name, not by number, because MTD device
 numbers may change if you change the layout of your flash, while the
-names will supposdly stay the same.</p>
+names will supposedly stay the same.</p>
 
 <p>If UBI is compiled as a kernel module, it is enough to specify the MTD
 device name or number to attach in the module arguments, e.g.</p>
@@ -541,7 +542,7 @@ sometimes you may want to ask UBI to ignore sub-pages, for example if you have
 an UBI image which was made for a similar NAND flash, but without sub-pages, or
 if you just want to disable sub-pages for testing purposes. You may do this
 by forcing UBI to read/write the VID header from/to the beginning of the second
-page, instead of the second sub-page (which is the default behaviour). And UBI
+page, instead of the second sub-page (which is the default behavior). And UBI
 uses sub-pages <i>only</i> for VID headers, so this is enough.</p>
 
 <p>If you attach MTD devices using the
@@ -576,7 +577,7 @@ $ modprobe ubi mtd=3,2048
 so that sub-pages are used, which means all VID headers sit at offsets 512
 (second sub-page of a 2048-byte NAND page), you cannot force UBI to stop using
 sub-pages (it will fail). You may do this only if you are attaching an empty
-MTD patrition, or if the flash is already formatted so that all VID headers
+MTD partition, or if the flash is already formatted so that all VID headers
 are at offset 2048. This means that if you use or
 <a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a>, you should
 avoid using the <code>-s</code> parameter.</p>
@@ -586,6 +587,34 @@ avoid using the <code>-s</code> parameter.</p>
 <h2><a name="L_flasher">How to implement UBI flasher?</a></h2>
 
 <p>Please, read <a href="../doc/ubi.html#L_format">here</a></p>
+
+
+
+<h2><a name="L_bgt_tread">What does the "ubi_bgt0d" thread do?</a></h2>
+
+<p>The UBI back-ground thread is a per-UBI device thread which has
+"<i>ubi_bgtXd</i>" name, where "<i>X</i>" is the UBI device number. For
+example, "<code>ubi_bgt0d</code>" is a background thread corresponding to UBI
+device 0.</p>
+
+<p>The UBI background thread is doing background physical eraseblock erasure.
+This is an important optimization which greatly improves UBI I/O throughput
+(applications do not have to wait for erasure completion). For example,
+UBI <a href="../doc/ubi.html#L_unmap">unmap</a> operation schedules physical
+eraseblocks for erasure.</p>
+
+<p>The background thread also
+<a href="../doc/ubi.html#L_torturing">tortures</a> faulty physical
+eraseblocks.</p>
+
+<p>The UBI background thread also moves data from more worn-out physical
+eraseblocks to less worn out, i.e., performs wear-leveling. It also moves data
+from physical eraseblocks which have bit-flips.  See the
+<a href="../doc/ubi.html#L_unmap">UBI overview</a> section for some more
+information.</p>
+
+<p>Note, UBI may work without the background thread, so the thread is just an
+optimization, although a very important one.</p>
 
 
 
