@@ -569,7 +569,7 @@ requirement and UBIFS satisfies it.</p>
 Although this is generally an application bug, the ext4 file-system
 has a hack which makes sure the data of the copy hits the disk before the
 re-name meta-data, which "fixes" buggy applications. However, UBIFS does not
-have this feature, altough we plan to implement it. Please, refer
+have this feature, although we plan to implement it. Please, refer
 <a href="../doc/ubifs.html#L_sync_exceptions">this</a> section.</p>
 
 
@@ -867,26 +867,54 @@ make any noticeable difference.</p>
 
 <h2><a name="L_empty_file">Why my file is empty after an unclean reboot?</a></h2>
 
-<p>The general answer to this is that you did not synchronized your file
-using something like <code>fsync()</code> <code>libc</code> function.
-You have to do this because UBIFS file-system is asynchronous and supports
-write-back. See <a href="../doc/ubifs.html#L_writeback">here</a> for more
-information about UBIFS write-back support. You may also take a look
-<a href="ubifs.html#L_atomic_change">here</a> for information about how
-to update the contents of files atomically.</p>
-
-<p>Zero-length files are a special case of corruptions which happen when
-applications first truncate files, then update them. The truncation is
-synchronous in UBIFS, so it is written to the flash media straight away. But
+<p>Zero-length files are a special case of corruption which happens when
+an application first truncates a file, then updates it. The truncation is
+synchronous in UBIFS, so it is written to the media straight away. But
 when the data are written, they go to the page cache, not to the flash media.
 So when an unclean reboot happens, the file becomes empty (truncated) because
-the data are lost. The solution for this is to use <code>fsync()</code>.</p>
+the data are lost.</p>
 
-<p>However, the ext4 file-system helps buggy applications to lessen the
-probability of getting zero-length files by implementing a special hack.
-Please, refer <a href="../doc/ubifs.html#L_sync_exceptions">this</a> section
-for more information. UBIFS does not provide a similar hack, although we are
-planning to implement it.</p>
+<p>Zero-length files also appear when an applicatio creates a new file, then
+writes to the file, and a power cut happens. The reason is similar - file
+creation is a synchronous operation, data writing is not.</p>
+
+<p>Well, the description is a bit simplified. Actually, when a file is
+created or truncated, the creation/truncation UBIFS information is writren to
+the <a href="../doc/ubifs.html#L_writebuffer">write-buffer</a>, not straignt to
+the media. So if a power cut happens before the write-buffer is synchronized,
+the file will disappear (cration case) or stay intact (truncation case). But
+since the write-buffer is small and all UBIFS writes go there, it is usually
+synchronized very soon. After this point the file is created/truncated for
+real.</p>
+
+<p>There are several ways to affect the situation.</p>
+
+<ol>
+	<li>Synchronize files using something like "<code>fsync()</code>" -
+	<a href="../doc/ubifs.html#L_writeback">this</a> section contains all
+	information about synchronization. But this does not guarantee
+	that unclean reboots will not corrupt the file. Indeed, if an unclean
+	reboot happens when only half of the data are written, the file will be
+	corrupted/inconsistent. But this lessens the probability of
+	corruptions.</li>
+
+	<li>If you gave up fixing all your applications, you may mount UBIFS in
+	synchronous mode - use "<code>-o sync</code>" mount option. But this
+	make UBIFS perform worse.</li>
+
+	<li>You may use the well-known atomic file update technique - see
+	<a href="ubifs.html#L_atomic_change">this</a> section.</li>
+
+	<li>You may use the Linux write-back knobs to lessen the dirty
+	write-back time-out - see <a href="ubifs.html#L_wb_knobs">this</a>
+	section.</li>
+</ol>
+
+<p>The ext4 file-system helps buggy applications to lessen the probability of
+getting zero-length files by implementing a special hack. Please, refer
+<a href="../doc/ubifs.html#L_sync_exceptions">this</a> section for more
+information. UBIFS does not provide a similar hack, although we are planning
+to implement it.</p>
 
 
 
