@@ -34,7 +34,7 @@
 	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
 	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
 	<li><a href="ubi.html#L_flasher">How to implement UBI flasher?</a></li>
-	<li><a href="ubi.html#L_bgt_tread">What does the "ubi_bgt0d" thread do?</a></li>
+	<li><a href="ubi.html#L_bgt_thread">What does the "ubi_bgt0d" thread do?</a></li>
 	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
 </ol>
 
@@ -590,7 +590,7 @@ avoid using the <code>-s</code> parameter.</p>
 
 
 
-<h2><a name="L_bgt_tread">What does the "ubi_bgt0d" thread do?</a></h2>
+<h2><a name="L_bgt_thread">What does the "ubi_bgt0d" thread do?</a></h2>
 
 <p>The UBI back-ground thread is a per-UBI device thread which has
 "<i>ubi_bgtXd</i>" name, where "<i>X</i>" is the UBI device number. For
