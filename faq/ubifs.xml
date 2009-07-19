@@ -53,8 +53,8 @@ the kernel or be built as a kernel module.</p>
 
 <h2><a name="L_ubifs_mlc">May UBIFS be used on MLC NAND flash?</a></h2>
 
-<p>UBIFS authors never tested UBI/UBIFS on MLC flash devices. However, it
-should run fine. Let's consider some specific aspects of MLC NAND flashes:</p>
+<p>UBIFS authors never tested UBI/UBIFS on MLC flash devices. Let's consider
+some specific aspects of MLC NAND flashes:</p>
 
 <ul>
 	<li>MLC NAND flashes are more "faulty" than SLC, so they use stronger
@@ -817,22 +817,26 @@ failures even at the situations which happen not very often. For example, when t
 master node is updated, or the log is changed. The probability to interrupt the
 system at those moments is very low in real-life.</p>
 
-<p>Real power-cut tests have also been done on OneNAND flash. We used Power
+<p>Real power-cut tests have also done on OneNAND flash. We used Power
 Node devices which are controlled via serial line and may switch the power of
 the connected device on and off. UBIFS survived more than 100000 power-cuts
 while running stress tests.</p>
 
-<p>UBIFS authors not tested UBIFS well on NOR, though. And there is a known
-issue which has not yet been fixed because the reporter has not provided
-enough information. Please, see the discussion at the
-<a href="../mail.html">MTD mailing list</a>. The had subject
-"<i>UBIFS Corrupt during power failure</i>". The beginning of the thread
+<p>We've also done real power-cut tests on Spansion NOR flash. Some problems
+were found, but they were fixed and the board survived 10000 power-cuts after
+this. Please, see realted discussions at the
+<a href="../mail.html">MTD mailing list</a>. The thread has
+"<i>UBIFS Corrupt during power failure</i>" subject. The beginning of the thread
 may be found
 <a href="http://lists.infradead.org/pipermail/linux-mtd/2009-March/024953.html">here</a>,
 then it continues
 <a href="http://lists.infradead.org/pipermail/linux-mtd/2009-April/025229.html">here</a>,
 and then continues
-<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-May/025609.html">here</a>.
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-May/025609.html">here</a>,
+and
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-June/025887.html">here</a>,
+and
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-July/026259.html">here</a>.
 </p>
 
 
