@@ -35,6 +35,7 @@
 	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
 	<li><a href="ubi.html#L_flasher">How to implement UBI flasher?</a></li>
 	<li><a href="ubi.html#L_bgt_thread">What does the "ubi_bgt0d" thread do?</a></li>
+	<li><a href="ubi.html#L_attach_faster">How do I speed up UBI initialization</a></li>
 	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
 </ol>
 
@@ -615,6 +616,53 @@ information.</p>
 
 <p>Note, UBI may work without the background thread, so the thread is just an
 optimization, although a very important one.</p>
+
+
+
+<h2><a name="L_attach_faster">How do I speed up UBI initialization</a></h2>
+
+<p>As <a href="../doc/ubi.html#L_scalability">this</a> section explains, UBI
+has scalability limitations imposed by its design, so there is no much you
+can do about it but without re-designing. Here are some ideas</p>
+
+<ul>
+	<li>When UBI attaches an MTD device, it reads a lot of data from the
+	media. If you manage to improve read speed on the driver level, you
+	will also speed up UBI initialization.</li>
+
+	<li>The MTD layer supplies upper layers (including UBI) with information
+	about bad PEBs. It keeps so-called bad block table in RAM, which is
+	usually 1 bit per PEB. When the driver initializes, it has to build
+	this table by scanning whole flash media, which normally includes
+	reading OOB area of 1st NAND page of each PEB. This takes time and may
+	be improved by using on-flash BBT (bad block table). In this case the
+	bad PEB map is stored on flash and MTD does not have to do any
+	scanning. See the <code>NAND_USE_FLASH_BBT</code> constant in the Linux
+	source codes. But note, bad PEB scanning is usually minor comparing to
+	the UBI scan time, so on-flash BBT is not probably going to give
+	much.</li>
+
+	<li>UBI scan time linearly depends on the number of PEB to read, which
+	means that you may speed it up by merging two or more PEB and treating
+	them as one composite PEB. Then from UBI POW PEB size will become
+	larger, and the amount of PEBs to Scan will become smaller. The best
+	way to do this is probably to teach UBI merging PEBs. It does not have
+        to merge adjacent PEB. Instead, UBI can store the paired PEB number in
+	the EC header. If one of the PEBs in the pair becomes bad, the pair may
+	be "re-constructed" by moving the good PEB somewhere else and
+	substituting the bad PEB by a good one from the pool of reserved
+	PEBs.</li>
+
+	<li>Design and implement UBI2. You may teach UBI to store erase
+	counters and mapping information in a separate internal volume, instead
+	of storing it in each PEB. Then you could implement the "anchor" idea
+	to quickly find that internal volume (see
+	<a href="../doc/JFFS3design.pdf">here</a>). This would solve slow UBI
+	attach problem, but not linear memory consumption problem. Later we
+	could have UBI3 which could solve more issues. This plan was suggested
+	<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-February/024437.html">
+	here</a>. Indeed, it is easier to solve one problem at a time.</li>
+</ul>
 
 
 
