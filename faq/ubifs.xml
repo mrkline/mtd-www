@@ -34,6 +34,7 @@
 	<li><a href="ubifs.html#L_empty_file">Why my file is empty after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_bgt_thread">What does the "ubifs_bgt0_0" thread do?</a></li>
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
+	<li><a href="ubifs.html#L_lebsz_mismatch">I see this UBIFS error: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"</a></li>
 	<li><a href="ubifs.html#L_study_ubifs">I want to study UBIFS - any recommendations?</a></li>
 </ol>
 
@@ -963,6 +964,26 @@ mode. The messages may shed some light on what happened. Feel free to ask for
 help from the <a href="../mail.html">MTD mailing list</a>. If you think this is
 an UBIFS bug, please, send a
 <a href="../doc/ubifs.html#L_how_send_bugreport">bug report</a>.</p>
+
+
+
+<h2><a name="L_lebsz_mismatch">
+I see this UBIFS error: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"
+</a></h2>
+
+<p>When you create an UBIFS image using the <code>mkfs.ubifs</code> utility,
+you specify LEB size using the <code>-e</code> option. This is a very improtant
+parameter and you should specify it correctly in order to have working UBIFS
+image. Indeed, LEB size is the major UBIFS storage unit, e.g., UBIFS nodes
+never cross LEB boundaries, garbage collection is performed on individual LEBs,
+etc. See <a href="ubifs.html#L_mkfubifs">this</a> section for more
+information.</p>
+
+<p>The error message means that LEB size infromation which is stored in the
+UBIFS superblock does not match the real LEB size, which UBIFS takes from UBI.
+The superblock was created by the <code>mkfs.ubifs</code> utility, therefore
+you failed to pass the correct LEB size to the utility. Fix this by passing
+correct LEB size via the <code>-e</code> option.</p>
 
 
 
