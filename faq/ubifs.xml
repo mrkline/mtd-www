@@ -29,6 +29,7 @@
 	<li><a href="ubifs.html#L_df_report">Why <code>df</code> reports too few free space?</a></li>
 	<li><a href="ubifs.html#L_comproff">How to disable compression?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
+	<li><a href="ubifs.html#L_ubifs_extract">How to extract files from an UBI/UBIFS image?</a></li>
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
 	<li><a href="ubifs.html#L_empty_file">Why my file is empty after an unclean reboot?</a></li>
@@ -227,14 +228,14 @@ before creating images:</p>
 	<li>logical eraseblock size.</li>
 </ul>
 
-<p>If you run linux kernel version <code>2.6.30</code> or higher, or you
+<p>If you run Linux kernel version <code>2.6.30</code> or higher, or you
 have the MTD sysfs support back-ported, then you may find all these parameters
 by running the <a href="../doc/ubi.html#L_usptools"><code>mtdinfo</code></a>
 tool with <code>-u</code> parameter. Of course, the tool has to be run on
 the target system.</p>
 
 <p>Please, refer <a href="ubi.html#L_find_min_io_size">this</a> for more
-information bout how to find these parameters.</p>
+information about how to find these parameters.</p>
 
 <p>And optionally, you should decide which compression algorithm you want
 to use for the file-system. UBIFS supports zlib and LZO (default) at the
@@ -473,7 +474,8 @@ something like</p>
 
 <pre>
 # Create a 1GiB emulated MTD device backed by regular file "my_image"
-$ modprobe nandsim cache_file=my_image first_id_byte=0xec second_id_byte=0xd3 third_id_byte=0x51 fourth_id_byte=0x95
+$ modprobe nandsim cache_file=my_image first_id_byte=0xec second_id_byte=0xd3 \
+  third_id_byte=0x51 fourth_id_byte=0x95
 </pre>
 
 <p>See <a href="ubifs.html#L_ubifs_nandsim">here</a> for more instructions
@@ -783,12 +785,14 @@ embedded systems.</p>
 <code>nandsim</code>, create an UBI volume and mount it.</p>
 
 <pre>
-# Create an 256MiB emulated NAND flash
+# Create an 256MiB emulated NAND flash with 2KiB NAND page size
+# (you should see the new MTD device in /proc/mtd)
 modprobe nandsim first_id_byte=0x20 second_id_byte=0xaa \
                  third_id_byte=0x00 fourth_id_byte=0x15
 
 # MTD is not LDM-enabled and udev does not create device
 # MTD device nodes automatically, so create /dev/mtd0
+# (we assume that you do not have other MTD devices)
 mknod /dev/mtd0 c 90 0
 
 # Load UBI module and attach mtd0
@@ -803,6 +807,56 @@ mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
 
 <p>For more information about nandsim see
 <a href="nand.html#L_nand_nandsim">here</a>.</p>
+
+
+
+<h2><a name="L_ubifs_extract">How to extract files from an UBI/UBIFS image?</a></h2>
+
+<p>Unfortunately, at the moment there are no user-space tools which can
+un-wrap UBI and UBIFS images. UBIFS cannot be loop-back mounted as well,
+because it does not work with block devices.</p>
+
+<p>However, there is a hacky way to un-wrap UBI/UBIFS images. But you have
+to make sure you have UBIFS support in your host machine. UBIFS is a relatively
+new file system and is not supported by all Linux distributions. But at least
+Fedora 11 does include it.</p>
+
+<p>Let's consider a simple example. Suppose you have an <code>ubi.img</code>
+file. This is an UBI image, which contains a single UBI volume, which in turn
+contains UBIFS file-system. In other words, this is an image which was
+created using the <code>mkfs.ubifs</code> and <code>ubinize</code> tools,
+just like it is described in <a href="ubifs.html#L_mkfubifs">this</a>
+section (the image is created for a 256MiB NAND flash with 2KiB NAND page
+size and which supports sub-pages). Here is what you can do:</p>
+
+<pre>
+# Create an 256MiB emulated NAND flash with 2KiB NAND page size
+# (you should see the new MTD device in /proc/mtd)
+modprobe nandsim first_id_byte=0x20 second_id_byte=0xaa \
+                 third_id_byte=0x00 fourth_id_byte=0x15
+
+# MTD is not LDM-enabled and udev does not create device
+# MTD device nodes automatically, so create /dev/mtd0
+# (we assume that you do not have other MTD devices)
+mknod /dev/mtd0 c 90 0
+
+# Copy the contents of your image to the emulated MTD device
+dd if=ubi.img of=/dev/mtd0 bs=2048
+
+# Load UBI module and attach mtd0
+modprobe ubi mtd=0
+
+# Mount UBIFS
+mount -t ubifs ubi0_0 /mnt/ubifs
+</pre>
+
+<p>Now you have the file-system in <code>/mnt/ubifs</code>. Use
+the following to get rid of it:</p>
+
+<pre>
+umount /mnt/ubifs
+rmmod ubifs ubi nandsim
+</pre>
 
 
 
@@ -825,7 +879,7 @@ while running stress tests.</p>
 
 <p>We've also done real power-cut tests on Spansion NOR flash. Some problems
 were found, but they were fixed and the board survived 10000 power-cuts after
-this. Please, see realted discussions at the
+this. Please, see related discussions at the
 <a href="../mail.html">MTD mailing list</a>. The thread has
 "<i>UBIFS Corrupt during power failure</i>" subject. The beginning of the thread
 may be found
@@ -880,15 +934,15 @@ when the data are written, they go to the page cache, not to the flash media.
 So when an unclean reboot happens, the file becomes empty (truncated) because
 the data are lost.</p>
 
-<p>Zero-length files also appear when an applicatio creates a new file, then
+<p>Zero-length files also appear when an application creates a new file, then
 writes to the file, and a power cut happens. The reason is similar - file
 creation is a synchronous operation, data writing is not.</p>
 
 <p>Well, the description is a bit simplified. Actually, when a file is
-created or truncated, the creation/truncation UBIFS information is writren to
-the <a href="../doc/ubifs.html#L_writebuffer">write-buffer</a>, not straignt to
+created or truncated, the creation/truncation UBIFS information is written to
+the <a href="../doc/ubifs.html#L_writebuffer">write-buffer</a>, not straight to
 the media. So if a power cut happens before the write-buffer is synchronized,
-the file will disappear (cration case) or stay intact (truncation case). But
+the file will disappear (creation case) or stay intact (truncation case). But
 since the write-buffer is small and all UBIFS writes go there, it is usually
 synchronized very soon. After this point the file is created/truncated for
 real.</p>
@@ -935,7 +989,7 @@ background thread corresponding to the mounted volume 2 on UBI device 1.</p>
 background journal commit. It starts committing the journal in background when
 it is about 80% full. The idea is to make sure the journal is committed or
 almost committed by the time it becomes full, so writers would not have to wait
-for commit and keep writing data. The UBIFS presentetion slides and the UBIFS
+for commit and keep writing data. The UBIFS presentation slides and the UBIFS
 white-paper contain more information about the journal and committing, see
 <a href="../doc/ubifs.html#L_documentation">this</a> section.</p>
 
@@ -972,14 +1026,14 @@ I see this UBIFS error: "validate_sb: LEB size mismatch: 129024 in superblock, 1
 </a></h2>
 
 <p>When you create an UBIFS image using the <code>mkfs.ubifs</code> utility,
-you specify LEB size using the <code>-e</code> option. This is a very improtant
+you specify LEB size using the <code>-e</code> option. This is a very important
 parameter and you should specify it correctly in order to have working UBIFS
 image. Indeed, LEB size is the major UBIFS storage unit, e.g., UBIFS nodes
 never cross LEB boundaries, garbage collection is performed on individual LEBs,
 etc. See <a href="ubifs.html#L_mkfubifs">this</a> section for more
 information.</p>
 
-<p>The error message means that LEB size infromation which is stored in the
+<p>The error message means that LEB size information which is stored in the
 UBIFS superblock does not match the real LEB size, which UBIFS takes from UBI.
 The superblock was created by the <code>mkfs.ubifs</code> utility, therefore
 you failed to pass the correct LEB size to the utility. Fix this by passing
