@@ -1160,7 +1160,7 @@ private e-mails to UBIFS authors, always CC the mailing list!</p>
 
 <p>Note, sometimes UBIFS bugs may appear to be UBI bugs. If you suspect
 there are UBI problems, please, also enable UBI debugging. Please, refer the
-<a href="../faq/ubi.html#L_how_debugt">UBI debugging</a>) section for more
+<a href="../faq/ubi.html#L_how_debugt">UBI debugging</a> section for more
 information.</p>
 
 
