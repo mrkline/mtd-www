@@ -1200,7 +1200,9 @@ function (just above the body of the function).</p>
 the kernel ring buffer, which may be collected using the <code>dmesg</code>
 utility or using <code>minicom</code> with serial console capturing. Please,
 describe how the problem can be reproduced (if it can be). The bugreport
-should be sent to the <a href="../mail.html">MTD mailing list</a>.</p>
+should be sent to the <a href="../mail.html">MTD mailing list</a>. Please,
+<b>do not</b> send private e-mails to UBI authors, always CC the mailing
+list!</p>
 
 
 <INCLUDE file="../inc/footer.tmpl" />
