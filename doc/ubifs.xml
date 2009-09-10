@@ -21,6 +21,7 @@
 	<li><a href="ubifs.html#L_writeback">Write-back support</a></li>
 	<li><a href="ubifs.html#L_wb_knobs">Write-back knobs in Linux</a></li>
 	<li><a href="ubifs.html#L_writebuffer">UBIFS write-buffer</a></li>
+	<li><a href="ubifs.html#L_sync_semantics">UBIFS in synchronous mode vs JFFS2</a></li>
 	<li><a href="ubifs.html#L_sync_exceptions">Synchronization exceptions for buggy applications</a></li>
 	<li><a href="ubifs.html#L_compression">Compression</a></li>
 	<li><a href="ubifs.html#L_checksumming">Checksumming</a></li>
@@ -395,7 +396,9 @@ following is a list of useful hints and advices.</p>
 <ul>
 	<li>If you want to switch into synchronous mode, use the
 	<code>-o sync</code> option when mounting UBIFS; however, the file
-	system performance will drop - be careful;</li>
+	system performance will drop - be careful; Also remember that UBIFS
+	mounted in synchronous mode provides less guarantees than JFFS2 - refer
+	<a href="ubi.html#L_sync_semantics">this</a> section for details.</li>
 
 	<li>Always keep in mind the above statement from the manual pages and
 	run <code>fsync()</code> for all important files you change; of
@@ -572,6 +575,88 @@ basic idea behind the write-buffer.</p>
 defined by "<code>dirty_expire_centisecs</code>" (see
 <a href="ubifs.html#L_wb_knobs">here</a>) by 3-5 seconds. However, since
 write-buffers are small, only few data are delayed.</p>
+
+
+
+<h2><a name="L_sync_semantics"></a>UBIFS in synchronous mode vs JFFS2</h2>
+
+<p>When UBIFS is mounted in synchronous mode (<code>-o sync</code> mount
+options) - all file system operations become synchronous. This means that all
+data are written to flash <i>before</i> the file-system operations return.</p>
+
+<p>For example, if you write 10MiB of data to a file <code>f.dat</code> using
+the <code>write()</code> call, and UBIFS is in synchronous mode, then UBIFS
+guarantees that all 10MiB of data and the meta-data (file size and date changes)
+will reach the flash media before <code>write()</code> returns. And if a
+power cut happens after the <code>write()</code> call returns, the file will
+contain the written data.</p>
+
+<p>The same is true for situations when <code>f.dat</code> has was opened
+with <code>O_SYNC</code> or has the <code>sync</code> flag (see
+<code>man 2 chattr</code>).</p>
+
+<p>It is well-known that the JFFS2 file-system is synchronous (except a small
+write-buffer). However, UBIFS in synchronous mode is not the same as JFFS2 and
+provides somewhat less guarantees that JFFS2 does with respect to sudden power
+cuts.</p>
+
+<p>In JFFS2 all the meta-data (like inode
+<code>atime</code>/<code>mtime</code>/<code>ctime</code>, inode size, UID/GID,
+etc) are stored in the data node headers. Data nodes carry 4KiB of (compressed)
+data. This means that the meta-data information is duplicated in many places,
+but this also means that every time JFFS2 writes a data node to the flash
+media, it updates inode size as well.</p>
+
+<p>In practice this means that JFFS2 will write these 10MiB of data
+sequentially, from the beginning to the end. And if you have a power cut, you
+will just loose some amount of data at the end of the inode. For example, if
+JFFS2 starts writing those 10MiB of data, write 5MiB, and a power cut happens,
+you will end up with a 5MiB <code>f.dat</code> file. You loose only the last
+5MiB.</p>
+
+<p>Things are a little bit more complex in case of UBIFS, where data are stored
+in data nodes and meta-data are stored in (separate) inode nodes. The meta-data
+are not duplicated in each data node, like in JFFS2. Lets consider an
+example.</p>
+
+<ul>
+	<li>User creates an empty file <code>f.dat</code>. The file is
+	synchronous, or UBIFS is mounted in synchronous mode. User calls the
+	<code>write()</code> function with a 10MiB buffer.</li>
+
+	<li>The kernel first copies all 10MiB of the data to the page cache.
+	Inode size is changed to 10MiB as well and the inode is marked as
+	dirty. Nothing has been written to the flash media so far. If a power
+	cut happens at this point, the user will end up with an empty
+	<code>f.dat</code> file.</li>
+
+	<li>UBIFS sees that the I/O has to be synchronous, and starts
+	synchronizing the inode. First of all, it writes the inode node to the
+	flash media. If a power cut happens at this moment, the user will end
+	up with a 10MiB file which contains no data (hole), and if he read
+	this file, he will get 10MiB of zeroes.</li>
+
+	<li>UBIFS starts writing the data. If a power cut happens at this
+	point, the user will end up with a 10MiB file containing a hole at the
+	end.</li>
+</ul>
+
+<p>Note, if the I/O was not synchronous, UBIFS would skip the last step and
+would just return. And the actual write-back would then happen in back-ground.
+But power cuts during write-back could anyway lead to files with holes at the
+end.</p>
+
+<p>Thus, synchronous I/O in UBIFS provides less guarantees than JFFS2 I/O -
+UBIFS has an effect of holes at the end of files. In ideal world applications
+should not assume anything about the contents of files which were not
+synchronized before a power-cut has happened. And "mainstream" file-systems
+like <code>ext3</code> do not provide JFSS2-like guarantees.</p>
+
+<p>However, UBIFS is sometimes used as a JFFS2 replacement and people may
+want it to behave the same way as JFFS2 if it is mounted synchronously. This is
+doable, but needs some non-trivial development, so this was not implemented so
+far. On the other hand, there was no strong demand. You may implement this as
+an excercise, or you may try to convince UBIFS authors to do this.</p>
 
 
 

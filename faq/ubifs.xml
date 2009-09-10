@@ -33,6 +33,7 @@
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
 	<li><a href="ubifs.html#L_empty_file">Why my file is empty after an unclean reboot?</a></li>
+	<li><a href="ubifs.html#L_end_hole">Why my file has zeroes at the end after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_bgt_thread">What does the "ubifs_bgt0_0" thread do?</a></li>
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
 	<li><a href="ubifs.html#L_lebsz_mismatch">I see this UBIFS error: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"</a></li>
@@ -936,7 +937,7 @@ the data are lost.</p>
 
 <p>Zero-length files also appear when an application creates a new file, then
 writes to the file, and a power cut happens. The reason is similar - file
-creation is a synchronous operation, data writing is not.</p>
+creation is a synchronous operation, data writing is not. </p>
 
 <p>Well, the description is a bit simplified. Actually, when a file is
 created or truncated, the creation/truncation UBIFS information is written to
@@ -960,7 +961,11 @@ real.</p>
 
 	<li>If you gave up fixing all your applications, you may mount UBIFS in
 	synchronous mode - use "<code>-o sync</code>" mount option. But this
-	make UBIFS perform worse.</li>
+	makes UBIFS perform worse. And unfortunatelly, this also does not save
+	you from all possible corruptions - you may still end up with holes
+	(zeroes) at the end of files. See
+	<a href="../doc/ubifs.html#L_sync_semantics">this</a> section for more
+	information.</li>
 
 	<li>You may use the well-known atomic file update technique - see
 	<a href="ubifs.html#L_atomic_change">this</a> section.</li>
@@ -975,6 +980,20 @@ getting zero-length files by implementing a special hack. Please, refer
 <a href="../doc/ubifs.html#L_sync_exceptions">this</a> section for more
 information. UBIFS does not provide a similar hack, although we are planning
 to implement it.</p>
+
+
+
+<h2><a name="L_end_hole">Why my file has zeroes at the end after an unclean reboot?</a></h2>
+
+<p>Power cuts often lead to holes at the end of files. Holes are areas of
+the file which contain no data. For example, if you truncate a file to a lagrer
+size and synchronize it - you end up with a hole. Holes are read as zeroes.
+Often files with holes are referred to as sparce files. People sometimes
+deliberately create sparse files in order to save space - this is sometimes
+better than filling files with lots of zeroes.</p>
+
+<p>Please, read more information about how unclean reboots relult in holes
+in <a href="../doc/ubifs.html#L_sync_semantics">this</a> section.</p>
 
 
 
