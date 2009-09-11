@@ -609,9 +609,9 @@ media, it updates inode size as well.</p>
 
 <p>In practice this means that JFFS2 will write these 10MiB of data
 sequentially, from the beginning to the end. And if you have a power cut, you
-will just loose some amount of data at the end of the inode. For example, if
+will just lose some amount of data at the end of the inode. For example, if
 JFFS2 starts writing those 10MiB of data, write 5MiB, and a power cut happens,
-you will end up with a 5MiB <code>f.dat</code> file. You loose only the last
+you will end up with a 5MiB <code>f.dat</code> file. You lose only the last
 5MiB.</p>
 
 <p>Things are a little bit more complex in case of UBIFS, where data are stored
@@ -1353,7 +1353,7 @@ requirements.</p>
 	But this does not mean that all USB flash drives are bad, but you just
 	should be careful.</li>
 
-	<li>We have heard reports that MMC, eMMC, and SD cards corrupt and loose
+	<li>We have heard reports that MMC, eMMC, and SD cards corrupt and lose
 	data if power is cut during writing. Even the data which were there long
 	time before may corrupt or disappear. This means that they have bad FTL
 	which does not do things properly. But again, this does not have to be
@@ -1365,7 +1365,7 @@ requirements.</p>
 	video. FAT file system is not reliable by definition, which suggests
 	that FTL devices may also be not very reliable, just because
 	historically this was not really required. Indeed, it is not a big deal
-	to loose a couple of photos. However, it is crucial to make sure that
+	to lose a couple of photos. However, it is crucial to make sure that
 	system libraries do not corrupt because of power-cuts.</li>
 
 	<li>Good FTL, especially if it deals with MLC NAND (which is used in

@@ -397,7 +397,7 @@ there is an <code>mtd0</code> MTD device, the following will work:</p>
 
 <pre>
 # Wipe the MTD device out. Note, we could use flash_eraseall, but we do not
-# want to loose erase counters
+# want to lose erase counters
 ubiformat /dev/mtd0
 
 # Load UBI module

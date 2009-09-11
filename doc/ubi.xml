@@ -129,7 +129,7 @@ hidden from upper layes.</p>
 	of an UBI volume, but UBI will spread this to all physical
 	eraseblocks of the flash chip);</li>
 	<li>UBI transparently handles bad physical eraseblocks;</li>
-	<li>UBI minimizes chances to loose data by means of scrubbing.</li>
+	<li>UBI minimizes chances to lose data by means of scrubbing.</li>
 </ul>
 
 <p>Here is a comparison of MTD partitions and UBI volumes. They are somewhat
@@ -575,7 +575,7 @@ different for different flashes:</p>
 counters on the flash media. Namely, each physical eraseblock has so-called
 erase counter header which stores the amount of times this physical eraseblock
 has been erased (see <a href="ubi.html#L_ubi_headers">here</a>). And of course,
-it is important not to loose the erase counters, which means that the tools
+it is important not to lose the erase counters, which means that the tools
 you use to erase the flash and to write UBI images have to be UBI-aware. The
 <a href="ubi.html#L_usptools">mtd-utils</a> repository contains the
 <code>ubiformat</code> utility which takes things right.</p>

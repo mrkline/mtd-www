@@ -183,8 +183,8 @@ just automatically formats it.</p>
 flash and try to attach it to UBI - it will work. UBI will just automatically
 format the flash. The formatting process takes time, though.</p>
 
-<p>But keep in mind that every time you erase the flash, you loose erase
-counters, so you loose wearing information. Doing this over and over again may
+<p>But keep in mind that every time you erase the flash, you lose erase
+counters, so you lose wearing information. Doing this over and over again may
 wear out some eraseblocks. This is especially dangerous on MLC NAND flashes
 which have very low eraseblock life-cycle. Try to use UBI-aware utilities and
 flashing programs (see <a href="../doc/ubi.html#L_format">here</a>).</p>
