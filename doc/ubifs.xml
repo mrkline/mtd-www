@@ -536,7 +536,7 @@ NAND page is the minimal read/write unit of NAND flash (see
 
 <p>Write-buffer size is equivalent to NAND page size (so it is tiny comparing
 to the page cache). It's purpose is to accumulate small writes, and write full
-NAND pages instead of patially filled. Indeed, imagine we have to write 4
+NAND pages instead of partially filled. Indeed, imagine we have to write 4
 512-byte nodes with half a second interval, and NAND page size is 2KiB. Without
 write-buffer we would have to write 4 NAND pages and waste 6KiB of flash space,
 while write-buffer allows us to write only once and waste nothing. This means
@@ -605,7 +605,8 @@ cuts.</p>
 etc) are stored in the data node headers. Data nodes carry 4KiB of (compressed)
 data. This means that the meta-data information is duplicated in many places,
 but this also means that every time JFFS2 writes a data node to the flash
-media, it updates inode size as well.</p>
+media, it updates inode size as well. So when JFFS2 mounts it scans the flash
+media, finds the latest data node, and fetches the inode size from there.</p>
 
 <p>In practice this means that JFFS2 will write these 10MiB of data
 sequentially, from the beginning to the end. And if you have a power cut, you
@@ -616,8 +617,13 @@ you will end up with a 5MiB <code>f.dat</code> file. You lose only the last
 
 <p>Things are a little bit more complex in case of UBIFS, where data are stored
 in data nodes and meta-data are stored in (separate) inode nodes. The meta-data
-are not duplicated in each data node, like in JFFS2. Lets consider an
-example.</p>
+are not duplicated in each data node, like in JFFS2. UBIFS never writes data
+nodes beyond the on-flash inode size. If it has to write a data node and the
+data node is beyond the on-flash inode size (the in-memory inode has up-to-data
+size, but it is dirty and was not flushed yet), then UBIFS first writes the
+inode to the media, and then it starts writing the data. And if you have an
+interrupt, you lose data nodes and you have holes (or old data nodes, if you
+are overwriting). Lets consider an example.</p>
 
 <ul>
 	<li>User creates an empty file <code>f.dat</code>. The file is
@@ -656,7 +662,7 @@ like <code>ext3</code> do not provide JFSS2-like guarantees.</p>
 want it to behave the same way as JFFS2 if it is mounted synchronously. This is
 doable, but needs some non-trivial development, so this was not implemented so
 far. On the other hand, there was no strong demand. You may implement this as
-an excercise, or you may try to convince UBIFS authors to do this.</p>
+an exercise, or you may try to convince UBIFS authors to do this.</p>
 
 
 
@@ -672,7 +678,7 @@ files properly. And there was a huge war between user-space and kernel
 developers related to ext4 delayed allocation feature. Please, see the
 <a href="http://thunk.org/tytso/blog/2009/03/12/delayed-allocation-and-the-zero-length-file-problem/">
 Theodore Tso's blog post</a>. More information may be found in this
-<a href="http://lwn.net/Articles/326471/">LNW article</a>.</p>
+<a href="http://lwn.net/Articles/326471/">LWN article</a>.</p>
 
 <p>In short, the flame war was about 2 cases. The first case was about the
 <a href="../faq/ubifs.html#L_atomic_change">atomic re-name</a>, where many
