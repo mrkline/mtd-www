@@ -1,126 +1,160 @@
 <PAGE>
-	<VAR match="VAR_ORIGIN" replace="../" />
-	<VAR match="VAR_CVSID" replace="Last updated: 14 Oct 2008, dedekind"/>
-	<INCLUDE file="../inc/header.tmpl" />
+<VAR match="VAR_ORIGIN" replace="../" />
+<VAR match="VAR_CVSID" replace="Last updated: 14 Oct 2008, dedekind"/>
+<INCLUDE file="../inc/header.tmpl" />
+<VAR match="VAR_SEL_DOC" replace="selected" />
+<VAR match="VAR_SEL_GENERAL" replace="selected" />
+<PARSE file="../menu1.xml" />
 
-	<VAR match="VAR_SEL_DOC" replace="selected" />
-	<VAR match="VAR_SEL_GENERAL" replace="selected" />
-	<PARSE file="../menu1.xml" />
+<INCLUDE file="../inc/content.tmpl" />
 
-	<INCLUDE file="../inc/content.tmpl" />
+<h1>General MTD documentation</h1>
 
-    <h2><a name="documentation">Documentation</a></h2>
-    <p>Various pieces of documentation are available. Some of them
-    are really out of date and have been moved to the <a href="../archive/index.html">
-    Archive Section</a></p>
-    <p>Up to date documents available:</p>
-    <div>
-    <ul>
-    <li>General information on this page</li>
-    <li><a href="nand.html">NAND Flash</a>technical paper</li>
-    <li><a href="../tech/mtdnand/index.html">NAND Flash API</a> documentation</li>
-    <li><a href="onenand.html">OneNAND Flash</a>technical paper</li>
-    <li><a href="jffs2.html">JFFS2</a>documentation section</li>
-    <li><a href="ubi.html">UBI</a>documentation section</li>
-    <li><a href="ubifs.html">UBIFS</a>documentation section</li>
-    <li><a href="logfs.html">logfs</a>documentation section</li>
-    </ul>
-    </div>	
+<h2>Table of contents</h2>
+<ol>
+	<li><a href="general.html#L_overview">MTD overview</a></li>
+	<li><a href="general.html#L_mtd_tests">MTD tests</a></li>
+	<li><a href="general.html#L_mtdblock">The <code>mtdblock</code> driver</a></li>
+	<li><a href="general.html#L_old_docs">Old MTD documentation</a></li>
+</ol>
 
-    <hr size="2" />
-    
-    <h2>MTD <i>User</i> modules</h2>
-    <div>	
-    <p>These are the modules which provide interfaces that can be used
-      directly from userspace. The user modules currently planned include:
-    </p>
-    <ul>
-      <li><b>Raw character access:</b><br />
-	A character device which allows direct access to the underlying 
-	memory. Useful for creating filesystems on the devices, before 
-	using some of the translation drivers below, or for raw storage 
-	on infrequently-changed flash, or RAM devices.
-      </li>
-      <li><b><a name="mtdblock">Raw block access</a></b><br />
-	A block device driver which allows you to pretend that the flash
-	is a normal device with sensible sector size. It actually works
-	by caching a whole flash erase block in RAM, modifying it as
-	requested, then erasing the whole block and writing back the modified
-	data.<br />
-	This allows you to use normal filesystems on flash parts. Obviously
-	it's not particularly robust when you are writing to it - you lose
-	a whole erase block's worth of data if your read/modify/erase/rewrite
-	cycle actually goes read/modify/erase/poweroff. But for development,
-	and for setting up filesystems which are actually going to be
-	mounted read-only in production units, it should be fine.
-	<br />
-	There is also a read-only version of this driver which doesn't have
-	the capacity to do the caching and erase/writeback, mainly for use
-	with uCLinux where the extra RAM requirement was considered too
-	large.
-      </li>
-      <li><b>Flash Translation Layer (FTL)</b></li>
-      <li><b>NFTL</b><br />
-	Block device drivers which implement an FTL/NFTL filesystem on the 
-	underlying memory device. FTL is fully functional. NFTL is currently
-	working for both reading and writing, but could probably do with 
-	some more field testing before being used on production systems. 
-      </li>
-      <li><b>Journalling Flash File System, v2</b><br />
-	This provides a filesystem directly on the 
-	flash, rather than emulating a block device. For more information,
-	see <a href="http://sources.redhat.com/jffs2/">sources.redhat.com</a>.
-      </li>
-    </ul>
-    </div>	
-    
-    <hr size="2" />
-    
-    <h2>MTD hardware device drivers</h2>
-    <p>These provide physical access to memory devices, and are not used 
-      directly - they are accessed through the <i>user</i> modules above.</p>
-    <div>	
-    <ul>
-      <li><b>On-board memory</b><br />
-	Many PC chipsets are incapable of correctly caching system memory
-	above 64M or 512M. A driver exists which allows you to use this
-	memory with the linux-mtd system.
-      </li>
-      <li><b>PCMCIA devices</b><br />
-	PCMCIA flash (not CompactFlash but <em>real</em> flash) cards are
-	now supported by the <tt>pcmciamtd</tt> driver in CVS.
-      </li>	
-      <li><b>Common Flash Interface (
-        <a href="http://www.pentium.com/design/flcomp/technote/cfi_1_1.htm">CFI</a>)
-	  onboard NOR flash</b><br />
-	This is a common solution and is well-tested and supported, most
-	often using JFFS2 or cramfs file systems.
-      </li>
-      <li><b>Onboard NAND flash</b><br />
-	NAND flash is rapidly overtaking NOR flash due to its larger size 
-	and lower cost; MTD support for NAND flash has production
-	quality.
-      </li>
-      <li><b>M-Systems' DiskOnChip 2000 and Millennium</b><br />
-	The DiskOnChip 2000, Millennium and Millennium Plus devices should
-	be fully supported, using their native NFTL and INFTL 'translation
-	layers'. Support for JFFS2 on DiskOnChip 2000 and Millennium is 
-	also operational although lacking proper support for bad block 
-	handling.
-     </li>
-    </ul>
-    </div>	
-    <p>
-      <b>CompactFlash</b> - 
-      <a href="http://www.compactflash.org/">http://www.compactflash.org/</a><br />
-	CompactFlash emulates an IDE disk, either through the PCMCIA-ATA 
-	standard, or by connecting directly to an IDE interface.
-	<br />As such, it has no business being on this page, as to the best of
-	my knowledge it doesn't have any alternative method of accessing the 
-	flash - you <i>have</i> to use the IDE emulation - I mention it here
-	for completeness.
-     </p>
 
-	
-	<INCLUDE file="../inc/footer.tmpl" />
+
+<h2><a name="L_overview">MTD overview</a></h2>
+
+<p>MTD subsystem (stands for Memory Technology Devices) provides an abstraction
+layer for raw flash devices. It makes it possible to use the same API when
+working with different flash types and technologies, e.g. NAND, OneNAND, NOR,
+AG-AND, ECC'd NOR, etc.</p>
+
+<p>MTD subsystem does not deal with block devices like MMC, eMMC, SD,
+CompactFlash, etc. These devices are not raw flashes but they have a Flash
+Translation layer inside, which makes them look like block devices. These
+devices are subject of the Linux block subsystem, not MTD. Please, refer
+<a href="../faq/general.html#L_mtd_vs_hdd">this</a> FAQ section for a short
+list of the main differences between block and MTD devices. And the
+<a href="ubifs.html#L_raw_vs_ftl">raw flash vs. FTL devices</a> UBIFS section
+discusses this in more details.</p>
+
+<p>MTD subsystem has the following interfaces.</p>
+
+<ul>
+	<li>MTD character devices - usually referred to as
+	<code>/dev/mtd0</code>, <code>/dev/mtd1</code>, and so on. These
+	character devices provide I/O access to the raw flash. They support a
+	number of <code>ioctl</code> calls for erasing eraseblocks, marking
+	them as bad or checking if an eraseblock is bad, getting information
+	about MTD devices, etc.</li>
+
+	<li>The <code>sysfs</code> interface is relatively and it provides full
+	information about each MTD device in the system. This interface is
+	easily extensible and developers are encouraged to use the
+	<code>sysfs</code> interface instead of older <code>ioctl</code> or
+	<code>/proc/mtd</code> interfaces, when possible.</li>
+
+	<li>The <code>/proc/mtd</code> proc file system file provides general
+	MTD information. This is a legacy interface and the sysfs interface
+	provide more information.</li>
+</ul>
+
+<p>MTD subsystem supports bare <a href="nand.html">NAND</a> flashes with
+software and hardware ECC, <a href="onenand.html">OneNAND flashes</a>, CFI
+(<a href="http://www.pentium.com/design/flcomp/technote/cfi_1_1.htm">Common Flash Interface</a>)
+NOR flashes, and other flash types.</p>
+
+<p>Additionally, MTD supports legacy FTL/NFTL "translation layers",
+M-Systems' DiskOnChip 2000 and Millennium chips, and PCMCIA flashes
+(<code>pcmciamtd</code> driver). But the corresponding drivers are very old and
+not maintained very much.</p>
+
+
+
+<h2><a name="L_mtd_tests">MTD tests</a></h2>
+
+<p>The MTD subsystem includes a set of tests which you may run to verify your
+flash hardware and drivers. The tests are available in the mainline kernels
+starting from kernel version <code>2.6.29</code> and they live in the
+<code>drivers/mtd/tests</code> directory of the linux kernel source codes. You
+may compile the tests as kernel modules by enabling them in the kernel
+configuration menu by marking: "<b>Device Drivers</b>" ->
+"<b>Memory Technology Devices (MTD)</b>" -> "<b>MTD tests support</b>" (or
+the <code>MTD_TESTS</code> symbol in the <code>.config</code> file).</p>
+
+<p>If you have a pre-<code>2.6.29</code> kernel, you may find the tests
+here:</p>
+<pre>
+git://git.infradead.org/users/ahunter/nand-tests.git
+</pre>
+
+<p>The MTD test-suite contains the following tests:</p>
+<ul>
+	<li><b>mtd_speedtest</b>: measures and reports read/write/erase speed
+	of the MTD device.</li>
+
+	<li><b>mtd_stresstest</b>: performs random read/write/erase operations
+	and validates the MTD device I/O capabilities.</li>
+
+	<li><b>mtd_readtest</b>: this tests reads whole MTD device, one NAND
+	page at a time including OOB (or 512 bytes at a time in case of flashes
+	like NOR) and checks that reading works properly.</li>
+
+	<li><b>mtd_pagetest</b>: relevant only for NAND flashes, tests NAND page
+	writing and reading in different sizes and order; this test was
+	originally developed for testing the OneNAND driver, so it might be a
+	little OneNAND-oriented, but must work on any NAND flash.</li>
+
+	<li><b>mtd_oobtest</b>: relevant only for NAND flashes, tests that the
+	OOB area I/O works properly by writing data to different offsets and
+	verifying it.</li>
+
+	<li><b>mtd_subpagetest</b>: relevant only for NAND flashes, tests
+	<a href="ubi.html#L_subpage">sub-page</a> I/O.</li>
+
+	<li><b>mtd_torturetest</b>: this test is designed to wear out flash
+	eraseblocks. It repeatedly writes and erases the same group of
+	eraseblocks until an I/O error happens, so be careful! The test
+	supports a number of options (see <code>modinfo mtd_torturetest</code>)
+	which allow you to set the amount of eraseblocks to torture and how the
+	torturing is done. You may limit the amount of torturing cycles using
+	the <code>cycles_count</code> module parameter. It may be very god idea
+	to run this test for some time and validate your flash driver and HW,
+	providing you have a spare device. For example, we caught rather rare
+	and nasty DMA issues on an OMAP2 board with OneNAND flash, just by
+	running this tests for few hours.</li>
+</ul>
+
+
+
+<h2><a name="L_mtdblock">The mtdblock driver</a></h2>
+
+<p>The <code>mtdblock</code> driver available in the MTD is an archaic tool
+which emulates block devices on top of MTD devices. It does not even have
+bad eraseblock handling, so it is not really usable with NAND flashes. And it
+works by caching a whole flash erase block in RAM, modifying it as requested,
+then erasing the whole block and writing back the modified. This means that
+<code>mtdblock</code> does not try to do any optimizations, and that you will
+lose lots of data in case of power cuts. And last, but not least,
+<code>mtdblock</code> does not do any wear-leveling.</p>
+
+<p>Often people consider <code>mtdblock</code> as general FTL layer and try to
+use block-based file systems on top of bare flashes using
+<code>mtdblock</code>. This is wrong in most cases. The <code>mtdblock</code>
+In other words, please, <b>do not use</b> <code>mtdblock</code> unless you
+know exactly what you are doing.</p>
+
+<p>There is also a read-only version of this driver which doesn't have the
+capacity to do the caching and erase/writeback, mainly for use with uCLinux
+where the extra RAM requirement was considered too large.</p>
+
+
+
+<h2><a name="L_old_docs">Old MTD documentation</a></h2>
+
+<p>Old MTD web site and old MTD documentation is available
+<a href="../archive/index.html">here</a>. Old NAND flash interface description
+is available <a href="../tech/mtdnand/index.html">here</a>.</p>
+
+
+
+<INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
