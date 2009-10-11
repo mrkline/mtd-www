@@ -19,6 +19,7 @@
 	<li><a href="ubifs.html#L_mkfubifs">How to create an UBIFS image?</a></li>
 	<li><a href="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</a></li>
 	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of -c (--max-leb-cnt) mkfs.ubifs option?</a></li>
+	<li><a href="ubifs.html#L_why_ubiformat">Why I have to use ubiformat?</a></li>
 	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></li>
 	<li><a href="ubifs.html#L_favor_lzo">What is "favor LZO" compression?</a></li>
 	<li><a href="ubifs.html#L_loop_mount">Can UBIFS mount loop-back devices?</a></li>
@@ -376,9 +377,12 @@ vol_flags=autoresize
 </pre>
 
 <p>To flash UBI images, please use the <code>ubiformat</code> utility
-(see <a href="ubi.html#L_flash_img">here</a>) or use/implement a custom
-flasher program (<a href="../doc/ubi.html#L_format">here</a> you may find some
-hints).</p>
+(see <a href="ubi.html#L_flash_img">here</a>) or use/implement a
+<b>proper</b> custom flasher program.
+(<a href="../doc/ubi.html#L_flasher_algo">here</a> you may find some
+hints). Please, read
+<a href="ubifs.html#L_why_ubiformat">this</a> section for more information
+why you should use <code>ubiformat</code>.</p>
 
 
 
@@ -532,6 +536,52 @@ a file to the UBIFS file-system, it will be compressed only by the LZO
 compressor. So favor LZO is actually useful only for read-only files which are
 not going to be over-written. However, it should be easy to implement favor LZO
 in the kernel.</p>
+
+
+
+<h2><a name="L_why_ubiformat">Why I have to use ubiformat?</a></h2>
+
+<p>The first obvious reason is that <code>ubiformat</code> preserves erase
+counters, so you do not lose your wear-leveling information when flashing new
+images.</p>
+
+<p>The other reason is more subtle, and specific to NAND flashes which have
+ECC calculation algorithm which produces ECC code not equivalent to all
+<code>0xFF</code> bytes if the NAND page contains only <code>0xFF</code> bytes.
+Consider an example.</p>
+
+<ul>
+	<li>We erase whole flash, so everything is <code>0xFF</code>'ed
+	now.</li>
+
+	<li>We write an UBI/UBIFS image to flash using
+	<code>nandwrite</code>.</li>
+
+	<li>Some eraseblocks in the UBIFS image may contain several empty NAND
+	pages at the end, and UBIFS will write to them when it is run.</li>
+
+	<li>The <code>nandwrite</code> utility writes whole image, and it
+	explicitely writes <code>0xFF</code> bytes to those NAND pages.</li>
+
+	<li>The ECC checksums are calculated for these <code>0xFF</code>'ed
+	NAND pages and are stored in the OOB area. The ECC codes are not
+	<code>0xFF</code>'ed. This is often the case for HW ECC calculation
+	engines, and it is difficult to fix this. Normally, ECC codes should
+	be <code>0xFF</code>'ed for such pages.</li>
+
+	<li>When later UBIFS runs, it writes data to these NAND pages, which
+	means that a new ECC code is calculated, and written on top of the
+	existing one (unsuccessfully, of course). This may trigger an error
+	straight away, but usually at this point no error is triggered.</li>
+
+	<li>At some point UBIFS is trying to read from these pages, and gets
+	and an ECC error (<code>-EBADMSG</code> = <code>-74</code>).</li>
+</ul>
+
+<p>In fewer words, <code>ubiformat</code> makes sure that every NAND page is
+written once and only once after the erasure. If you use
+<code>nandwrite</code>, some pages are written twice - once by
+<code>nandwrite</code>, and once by UBIFS.</p>
 
 
 

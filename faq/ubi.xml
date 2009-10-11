@@ -187,7 +187,7 @@ format the flash. The formatting process takes time, though.</p>
 counters, so you lose wearing information. Doing this over and over again may
 wear out some eraseblocks. This is especially dangerous on MLC NAND flashes
 which have very low eraseblock life-cycle. Try to use UBI-aware utilities and
-flashing programs (see <a href="../doc/ubi.html#L_format">here</a>).</p>
+flashing programs.</p>
 
 
 
@@ -212,7 +212,7 @@ ubiformat: formatting eraseblock 4095 -- 100 % complete
 MTD does not support sysfs, you have to pass "<code>-s</code>" argument to
 <code>ubiformat</code>.</p>
 
-<p><a href="../doc/ubi.html#L_format">This</a> section has some hints
+<p><a href="../doc/ubi.html#L_flasher_algo">This</a> section has some hints
 for those who implement a custom UBI flasher.</p>
 
 
@@ -312,7 +312,7 @@ padding.</p>
 <a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a> utility to
 flash the resulting UBI image. Also, you can find detailed description of how
 UBI-aware flashing programs should work in
-<a href="../doc/ubi.html#L_format_det">this</a> section.</p>
+<a href="../doc/ubi.html#L_flasher_algo">this</a> section.</p>
 
 
 
@@ -363,8 +363,17 @@ ubiformat: flashing eraseblock 50 -- 100 % complete
 ubiformat: formatting eraseblock 4095 -- 100 % complete
 </pre>
 
-<p>Note, <a href="../doc/ubi.html#L_format">this</a> has some hints for those
-who implement a custom UBI-aware flasher program.</p>
+<p>Note, <a href="../doc/ubi.html#L_flasher_algo">this</a> section has
+describes how UBI-aware flasher program has to work.</p>
+
+<p><b>Important!</b>: even if you do not care about erasecounters, do not use
+<code>dd</code> for flashing UBI images to NAND flashes, because
+<code>dd</code> does handle bad eraseblocks.</p>
+
+<p><b>Important!</b>: even if you do not care about erasecounters, do not use
+<code>nandwrite</code> for flashing UBI images containing UBIFS file-system to
+NAND flashes, read <a href="../faq/ubifs.html#L_why_ubiformat">here</a> for
+more information.</p>
 
 
 
@@ -587,7 +596,7 @@ avoid using the <code>-s</code> parameter.</p>
 
 <h2><a name="L_flasher">How to implement UBI flasher?</a></h2>
 
-<p>Please, read <a href="../doc/ubi.html#L_format">here</a></p>
+<p>Please, read <a href="../doc/ubi.html#L_flasher_algo">here</a></p>
 
 
 

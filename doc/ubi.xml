@@ -26,9 +26,8 @@
 	<li><a href="ubi.html#L_subpage">NAND flash sub-pages</a></li>
 	<li><a href="ubi.html#L_hdr_pos">UBI headers position</a></li>
 	<li><a href="ubi.html#L_overhead">Flash space overhead</a></li>
-	<li><a href="ubi.html#L_format">Saving erase counters</a>
-		<ul><li><a href="ubi.html#L_format_det">UBI flasher details</a></li></ul>
-	</li>
+	<li><a href="ubi.html#L_format">Saving erase counters</a></li>
+	<li><a href="ubi.html#L_flasher_algo">How UBI flasher should work</a></li>
 	<li><a href="ubi.html#L_torturing">Marking eraseblocks as bad</a></li>
 	<li><a href="ubi.html#L_scalability">Scalability issues</a>
 		<ul><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ul>
@@ -580,7 +579,7 @@ you use to erase the flash and to write UBI images have to be UBI-aware. The
 <a href="ubi.html#L_usptools">mtd-utils</a> repository contains the
 <code>ubiformat</code> utility which takes things right.</p>
 
-<h4><a name="L_format_det">UBI flasher details</a></h4>
+<h2><a name="L_flasher_algo">How UBI flasher should work</a></h2>
 
 <p>The following is a list of what the UBI flasher program has to do when
 erasing the flash or when flashing UBI images.</p>
