@@ -640,7 +640,11 @@ provably want the file-system doing inode updates every time they are read.</p>
 
 <h2><a name="L_nfs">Does UBIFS support NFS?</a></h2>
 
-<p>Not so far, but it is planned to be implemented.</p>
+<p>Not, it does not, which means you cannot exprot UBIFS file-system via NFS.
+We did make an attempt to support NFS, but the support was not exactly correct
+so it was dropped, and we have never find time to come back to that. Please,
+refer <a href="http://marc.info/?l=linux-next&amp;m=121852228611051&amp;w=2">this tread</a>
+for some more details. The original patch can also be found there.</p>
 
 
 
