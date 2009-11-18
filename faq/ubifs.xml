@@ -39,6 +39,7 @@
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
 	<li><a href="ubifs.html#L_lebsz_mismatch">I see this UBIFS error: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"</a></li>
 	<li><a href="ubifs.html#L_ecc_error">I see this UBI error: "ubi_io_read: error -74 while reading 126976 bytes from PEB 47:4096, read 126976 bytes"</a></li>
+	<li><a href="ubifs.html#L_pdflush_blocked">I see this error: "INFO: task pdflush:110 blocked for more than 120 seconds"</a></li>
 	<li><a href="ubifs.html#L_study_ubifs">I want to study UBIFS - any recommendations?</a></li>
 </ol>
 
@@ -562,7 +563,7 @@ Consider an example.</p>
 	pages at the end, and UBIFS will write to them when it is run.</li>
 
 	<li>The <code>nandwrite</code> utility writes whole image, and it
-	explicitely writes <code>0xFF</code> bytes to those NAND pages.</li>
+	explicitly writes <code>0xFF</code> bytes to those NAND pages.</li>
 
 	<li>The ECC checksums are calculated for these <code>0xFF</code>'ed
 	NAND pages and are stored in the OOB area. The ECC codes are not
@@ -640,7 +641,7 @@ provably want the file-system doing inode updates every time they are read.</p>
 
 <h2><a name="L_nfs">Does UBIFS support NFS?</a></h2>
 
-<p>Not, it does not, which means you cannot exprot UBIFS file-system via NFS.
+<p>Not, it does not, which means you cannot export UBIFS file-system via NFS.
 We did make an attempt to support NFS, but the support was not exactly correct
 so it was dropped, and we have never find time to come back to that. Please,
 refer <a href="http://marc.info/?l=linux-next&amp;m=121852228611051&amp;w=2">this tread</a>
@@ -1016,7 +1017,7 @@ real.</p>
 
 	<li>If you gave up fixing all your applications, you may mount UBIFS in
 	synchronous mode - use "<code>-o sync</code>" mount option. But this
-	makes UBIFS perform worse. And unfortunatelly, this also does not save
+	makes UBIFS perform worse. And unfortunately, this also does not save
 	you from all possible corruptions - you may still end up with holes
 	(zeroes) at the end of files. See
 	<a href="../doc/ubifs.html#L_sync_semantics">this</a> section for more
@@ -1041,13 +1042,13 @@ to implement it.</p>
 <h2><a name="L_end_hole">Why my file has zeroes at the end after an unclean reboot?</a></h2>
 
 <p>Power cuts often lead to holes at the end of files. Holes are areas of
-the file which contain no data. For example, if you truncate a file to a lagrer
+the file which contain no data. For example, if you truncate a file to a larger
 size and synchronize it - you end up with a hole. Holes are read as zeroes.
-Often files with holes are referred to as sparce files. People sometimes
+Often files with holes are referred to as sparse files. People sometimes
 deliberately create sparse files in order to save space - this is sometimes
 better than filling files with lots of zeroes.</p>
 
-<p>Please, read more information about how unclean reboots relult in holes
+<p>Please, read more information about how unclean reboots result in holes
 in <a href="../doc/ubifs.html#L_sync_semantics">this</a> section.</p>
 
 
@@ -1144,6 +1145,40 @@ your flashing program skips 0xFF properly (see
 <a href="../doc/ubi.html#L_subpage">sub-page</a>, but does not actually support
 them properly. In that case the <code>-74</code> error happens when reading the
 first NAND page.</p>
+
+
+<h2><a name="L_pdflush_blocked">
+I see this error: "INFO: task pdflush:110 blocked for more than 120 seconds"
+</a></h2>
+
+<p>If this happens with a NOR flash, then this is a known issue and is about
+the UBI background thread doing a lot of erasures. When you attach to empty
+flash to UBI, it will format the flash in background, in the context of the
+UBI background thread (see <a href="ubi.html#L_bgt_thread">here</a>). Formatting
+means that for each eraseblock it does the following:
+<ul>
+	<li>erases (very slow on NOR!)</li>
+	<li>writes the UBI headers</li>
+</ul>
+
+Depending on your MTD/CFI chip driver the "MTD/CFI chip lock" may be held for
+the time it needs to erase an eraseblock. User-space applications which
+manipulate files on the UBIFS file-system may then also be blocked on the same
+"MTD/CFI chip lock. This causes pdflush to block as well since it tries to
+acquire the UBIFS journal mutex, which is already locked by the process which
+is waiting on the "MTD/CFI chip lock". See
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-November/027993.html">this</a>
+discussion for some more details.
+
+The ways to solve this:
+<ol>
+	<li>Use <code>ubiformat</code> and format the NOR partition before
+	attaching it to UBI. But this will not help in situations when you
+	delete may files, and starts erasing many eraseblocks, so the "MTD/CFI
+	chip lock" becomes very condtended.</li>
+	<li>Use erase-suspend for writing (if your chip supports this).</li>
+</ol>
+</p>
 
 
 
