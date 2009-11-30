@@ -182,9 +182,9 @@ Yes, you can. The requirements are the same as for boot-loaders
 
 <P>
 NAND simulator (<CODE>nandsim</CODE>) is an extremely useful debugging and
-development tool which simulates NAND flashes in RAM. To select the simulated
-flash type one should specify ID bytes of your flashe - the onese which are
-returned by the "Read ID" command (<CODE>0x90</CODE>) - consult the
+development tool which simulates NAND flashes in RAM or a file. To select the
+simulated flash type one should specify ID bytes of your flashe - the onese
+which are returned by the "Read ID" command (<CODE>0x90</CODE>) - consult the
 flash manual. The following are examples of input parameters:
 </P>
 
@@ -230,6 +230,10 @@ flash manual. The following are examples of input parameters:
 	- 1GiB, 2048 bytes page;
 </LI>
 </OL>
+
+<P>If you do not have enough RAM, you can make <CODE>nandsim</CODE> emulate the
+flash on top of a file. Please, use the <CODE>cache_file</CODE> nandsim module
+parameter.</P>
 
 <P><CODE>nandsim</CODE> can emulate various errors and report wear statistics,
 which is extrimely useful when testing how flash software handles errors (e.g.,

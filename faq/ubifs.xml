@@ -471,13 +471,13 @@ large <code>--max-leb-cnt</code> value to achieve better performance.</p>
 regular files), while UBIFS works on top of UBI devices
 (see <a href="../doc/ubifs.html#L_rednote">here</a>).</p>
 
-<p>However, there is a very hacky way to make UBIFS work with a file-backed
+<p>However, there is an unusual way to make UBIFS work with a file-backed
 image using NAND simulator (see <a href="nand.html#L_nand_nandsim">here</a>).
-Originally <code>nandsim</code> has been created to emulate NAND flashes in
-RAM, but there is a
-<a href="http://lists.infradead.org/pipermail/linux-mtd/2008-May/021810.html">patch</a>
-which teaches <code>nandsim</code> to use a file instead of memory. Try
-something like</p>
+If your image is not very big, then you can create a RAM-backed
+<code>nandsim</code> MTD device, then copy your image to that emulated MTD
+device. If the image is large and you do not have that much RAM, you can create
+a file-backed <code>nandsim</code> MTD device using the <code>cache_file</code>
+<code>nandsim</code> module option. Below is an example:</p>
 
 <pre>
 # Create a 1GiB emulated MTD device backed by regular file "my_image"
@@ -487,10 +487,6 @@ $ modprobe nandsim cache_file=my_image first_id_byte=0xec second_id_byte=0xd3 \
 
 <p>See <a href="ubifs.html#L_ubifs_nandsim">here</a> for more instructions
 about using UBIFS with nandsim.</p>
-
-<p>But be warned that this patch has not been well tested, it is not in
-mainline yet, and it has been created for development and debugging purposes,
-but not for production use.</p>
 
 
 
