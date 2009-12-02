@@ -182,19 +182,15 @@ to main-line. The <code>linux-next</code> branch is never re-based. Thus,
 unless you are an active UBIFS developer, use the <code>linux-next</code>
 branch.</p>
 
-<p>There are also <code>2.6.24</code>, <code>2.6.25</code>, <code>2.6.26</code>
-<code>2.6.27</code>, <code>2.6.28</code>, <code>2.6.29</code>,
-<code>2.6.30</code>, and <code>2.6.31</code> kernel back-ports which may be
-found here:</p>
+<p>There are also <code>2.6.28</code>, <code>2.6.29</code>,
+<code>2.6.30</code>, <code>2.6.31</code>, and <code>2.6.32</code> kernel
+back-ports which may be found here:</p>
 
+<code>git://git.infradead.org/~dedekind/ubifs-v2.6.32.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.31.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.30.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.29.git</code><br/>
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.28.git</code><br/>
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.27.git</code><br/>
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.26.git</code><br/>
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.25.git</code><br/>
-<code>git://git.infradead.org/~dedekind/ubifs-v2.6.24.git</code>
+<code>git://git.infradead.org/~dedekind/ubifs-v2.6.28.git</code>
 
 
 
