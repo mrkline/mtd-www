@@ -123,11 +123,22 @@ appreciated.</p>
 
 <h2><a name="L_mount_ubifs">How to mount UBIFS?</a></h2>
 
-<p>UBIFS mounts UBI volumes, not UBI devices, not MTD devices. There are no
-block device nodes corresponding to UBI volumes and UBIFS uses device-less
-mount, just like <code>procfs</code> or <code>sysfs</code>. The volume to
-mount is specified using <code>ubiX_Y</code> or <code>ubiX:NAME</code>
-syntax, where</p>
+<p>The modern way of mounting UBIFS is mounting UBI volume character device
+nodes, e.g.:</p>
+
+<pre>
+$ mount -t ubifs /dev/ubi0_0 /mnt/ubifs
+</pre>
+
+<p>will mount UBIFS to UBI volume 0 on UBI device 0. This is the easiest way to
+mount UBIFS, but it is supported only in kernels starting from version
+<code>2.6.32</code>. The UBIFS back-port trees (see
+<a href="../doc/ubifs.html#L_source">here</a>) also support this mounting
+method.</p>
+
+<p>The old method is to use device-less mount, just like <code>procfs</code> or
+<code>sysfs</code>. The volume to mount is specified using <code>ubiX_Y</code>
+or <code>ubiX:NAME</code> syntax, where</p>
 
 <ul>
 	<li><code>X</code> - UBI device number;</li>
