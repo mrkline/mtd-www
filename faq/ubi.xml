@@ -707,7 +707,7 @@ $ modprobe nandsim second_id_byte=0x36
 <p>See <a href="nand.html#L_nand_nandsim">here</a> for more information about
 the NAND simulator.</p>
 
-<p>To ensure that you have fake MTD devices, run "<code>cat /prof/mtd</code>".
+<p>To ensure that you have fake MTD devices, run "<code>cat /proc/mtd</code>".
 It should print something like</p>
 
 <pre>
