@@ -866,7 +866,7 @@ modprobe ubi mtd=0
 ubimkvol /dev/ubi0 -N ubifs-vol -s 200MiB
 
 # Mount UBIFS
-mount -t ubifs ubi0:ubifs-vol /mnt/ubifs
+mount -t ubifs /dev/ubi0_0 /mnt/ubifs
 </pre>
 
 <p>For more information about nandsim see
@@ -911,7 +911,7 @@ dd if=ubi.img of=/dev/mtd0 bs=2048
 modprobe ubi mtd=0
 
 # Mount UBIFS
-mount -t ubifs ubi0_0 /mnt/ubifs
+mount -t ubifs /dev/ubi0_0 /mnt/ubifs
 </pre>
 
 <p>Now you have the file-system in <code>/mnt/ubifs</code>. Use

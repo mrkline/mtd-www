@@ -919,7 +919,7 @@ does not write them to the target file-system image.</p>
 <p>Example:</p>
 
 <pre>
-$ mount -t ubifs -o no_chk_data_crc ubi0:rootfs /mnt/ubifs
+$ mount -o no_chk_data_crc /dev/ubi0_0 /mnt/ubifs
 </pre>
 
 <p>mounts UBIFS file-system to <code>/mnt/ubifs</code> and disables data CRC
