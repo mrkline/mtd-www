@@ -600,9 +600,10 @@ written once and only once after the erasure. If you use
 <i>uuid</i> libraries. The former two are used for compressing the data, and the
 latter one is used for generating <i>universally unique ID number</i> for the
 file-system. In Fedora install <code>zlib-devel</code>, <code>lzo-devel</code>,
-and <code>e2fsprogs-devel</code> (<code>libuuid</code> is provided
-there, strangely) packages, in Debian install <code>zlib1g-dev</code>,
-<code>liblzo2-dev</code> and <code>uuid-dev</code> packages.</p>
+and <code>uuid-devel</code>. Old Fedora distributions had the <i>uuid</i>
+library in the <code>e2fsprogs-devel</code> package. In Debian install
+<code>zlib1g-dev</code>, <code>liblzo2-dev</code> and <code>uuid-dev</code>
+packages.</p>
 
 <p>Note, <a href="../faq/general.html#L_compile_mtd">this</a> section provides
 information about other dependencies in the  <code>mtd-utils</code> tree.</p>
