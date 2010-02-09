@@ -79,7 +79,7 @@ also block devices.</P>
 
 <TABLE cellpadding="5" cellspacing="0" border="1">
 	<TR>
-		<TD><B>Block drives</B></TD>
+		<TD><B>Block device</B></TD>
 		<TD><B>MTD device</B></TD>
 	</TR>
 	<TR>
@@ -104,7 +104,7 @@ also block devices.</P>
 		<TD>
 			Bad sectors are re-mapped and hidden by hardware (at
 			least in modern LBA hard drives); in case of FTL
-			devices it is the resposibility of FTL to provide this
+			devices it is the responsibility of FTL to provide this
 		</TD>
 		<TD>
 			Bad eraseblocks are not hidden and should be dealt with
@@ -164,7 +164,7 @@ device nodes.
 
 <P>
 But in many cases using <CODE>mtdblock</CODE> is a very bad idea because what
-it basically does if you change any sector of you mtdblockX device, it reads
+it basically does if you change any sector of your mtdblockX device, it reads
 the whole corresponding eraseblock into the memory, erases the eraseblock,
 changes the sector in RAM, and writes the whole eraseblock back. This is very
 straightforward. If you have a power failure when the eraseblock is being
@@ -183,7 +183,7 @@ UBI.
 <P>
 It makes sense to use <CODE>mtdblock_ro</CODE> for read-only file systems or
 read-only mounts. For example, one may use SquashFS as it compresses data quite
-well. But think twice before using <CODE>mtdblock</CODE> in read-write more.
+well. But think twice before using <CODE>mtdblock</CODE> in read-write mode.
 And don't try to use it on NAND flash as it is does not handle bad
 eraseblocks.
 </P>
