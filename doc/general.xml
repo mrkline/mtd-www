@@ -30,7 +30,7 @@ AG-AND, ECC'd NOR, etc.</p>
 <p>MTD subsystem does not deal with block devices like MMC, eMMC, SD,
 CompactFlash, etc. These devices are not raw flashes but they have a Flash
 Translation layer inside, which makes them look like block devices. These
-devices are subject of the Linux block subsystem, not MTD. Please, refer
+devices are the subject of the Linux block subsystem, not MTD. Please, refer to
 <a href="../faq/general.html#L_mtd_vs_hdd">this</a> FAQ section for a short
 list of the main differences between block and MTD devices. And the
 <a href="ubifs.html#L_raw_vs_ftl">raw flash vs. FTL devices</a> UBIFS section
@@ -46,15 +46,15 @@ discusses this in more details.</p>
 	them as bad or checking if an eraseblock is bad, getting information
 	about MTD devices, etc.</li>
 
-	<li>The <code>sysfs</code> interface is relatively and it provides full
-	information about each MTD device in the system. This interface is
+	<li>The <code>sysfs</code> interface is relatively newer and it provides
+	full information about each MTD device in the system. This interface is
 	easily extensible and developers are encouraged to use the
 	<code>sysfs</code> interface instead of older <code>ioctl</code> or
 	<code>/proc/mtd</code> interfaces, when possible.</li>
 
 	<li>The <code>/proc/mtd</code> proc file system file provides general
 	MTD information. This is a legacy interface and the sysfs interface
-	provide more information.</li>
+	provides more information.</li>
 </ul>
 
 <p>MTD subsystem supports bare <a href="nand.html">NAND</a> flashes with
@@ -77,7 +77,7 @@ starting from kernel version <code>2.6.29</code> and they live in the
 <code>drivers/mtd/tests</code> directory of the linux kernel source codes. You
 may compile the tests as kernel modules by enabling them in the kernel
 configuration menu by marking: "<b>Device Drivers</b>" ->
-"<b>Memory Technology Devices (MTD)</b>" -> "<b>MTD tests support</b>" (or
+"<b>Memory Technology Device (MTD) support</b>" -> "<b>MTD tests support</b>" (or
 the <code>MTD_TESTS</code> symbol in the <code>.config</code> file).</p>
 
 <p>If you have a pre-<code>2.6.29</code> kernel, you may find the tests
