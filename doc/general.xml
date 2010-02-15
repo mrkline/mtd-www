@@ -138,7 +138,7 @@ lose lots of data in case of power cuts. And last, but not least,
 
 <p>Often people consider <code>mtdblock</code> as general FTL layer and try to
 use block-based file systems on top of bare flashes using
-<code>mtdblock</code>. This is wrong in most cases. The <code>mtdblock</code>
+<code>mtdblock</code>. This is wrong in most cases.
 In other words, please, <b>do not use</b> <code>mtdblock</code> unless you
 know exactly what you are doing.</p>
 
