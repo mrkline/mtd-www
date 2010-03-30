@@ -124,7 +124,7 @@ git://git.infradead.org/users/ahunter/nand-tests.git
 
 	<li><b>mtd_nandecctest</b>: a simple test that checks correctess of the
 	built-in software ECC for 256 and 512-byte buffers; this test is not
-	dirver-specific but tests general NAND support code.</li>
+	driver-specific but tests general NAND support code.</li>
 </ul>
 
 
