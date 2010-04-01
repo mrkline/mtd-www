@@ -134,7 +134,7 @@ Owing to peculiarities of flash devices, JFFS2 is very different to
 conventional HDD-oriented file system. And one of its drawbacks is that mount
 time as well as memory consumption grow linearly with growing flash size. So
 beware you may end up with tremendous amount memory eaten and huge mount time if
-your block device is very large. Also, JFFS2 implements only write-trough
+your block device is very large. Also, JFFS2 implements only write-through
 caching (while convectional FS-es have write-back) and does many thing which are
 not really needed in case of hard drives.
 </P>
@@ -275,7 +275,7 @@ filesystem.
 <P>
 There are two cases where this does not work. The first is when JFFS2 is used
 as a root filesystem. For now, this requires the mtdblock device to be
-specified for <CODE>root=</CODE> on the kernel commandline. The second case is
+specified for <CODE>root=</CODE> on the kernel command line. The second case is
 when the mount binary that is being used does not play nicely with the above
 format. The busybox version of mount is known to not work without the mtdblock
 device.
@@ -411,7 +411,7 @@ time.
 <H2>How to compile mkfs.jffs2?</H2>
 </A>
 
-<p>The <code>mkfs.jffs2</code> utility requres the <code>ACL</code> and
+<p>The <code>mkfs.jffs2</code> utility requires the <code>ACL</code> and
 <code>zlib</code> libraries. In Fedora, please, install the
 <code>libacl-devel</code> and <code>zlib-devel</code> packages. In Debian,
 please, install the <code>libacl1-dev</code> and <code>zlib1g-dev</code>
