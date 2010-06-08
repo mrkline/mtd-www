@@ -22,7 +22,6 @@
 	<li><a href="ubi.html#L_ubierase">How to erase flash and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_ubi_mkimg">How to create UBI images?</a></li>
 	<li><a href="ubi.html#L_find_min_io_size">How to find out min. I/O unit size, sub-page size, and LEB size?</a></li>
-	<li><a href="ubifs.html#L_find_lebsz">How to find out LEB size?</a></li>
 	<li><a href="ubi.html#L_flash_img">How to flash UBI images and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_restrict">Can UBI logical eraseblocks be written randomly?</a></li>
 	<li><a href="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</a></li>
@@ -32,7 +31,7 @@
 	<li><a href="ubi.html#L_subpage">What is sub-page?</a></li>
 	<li><a href="ubi.html#L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></li>
 	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
-	<li><a href="ubifs.html#L_ecc_error">I get: "ubi_io_read: error -74 (ECC error) while reading 126976 bytes from PEB 47:4096, read 126976 bytes"</a></li>
+	<li><a href="ubi.html#L_ecc_error">I get: "ubi_io_read: error -74 (ECC error) while reading 126976 bytes from PEB 47:4096, read 126976 bytes"</a></li>
 	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
 	<li><a href="ubi.html#L_flasher">How to implement UBI flasher?</a></li>
 	<li><a href="ubi.html#L_bgt_thread">What does the "ubi_bgt0d" thread do?</a></li>
