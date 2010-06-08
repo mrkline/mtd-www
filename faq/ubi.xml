@@ -32,6 +32,7 @@
 	<li><a href="ubi.html#L_subpage">What is sub-page?</a></li>
 	<li><a href="ubi.html#L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></li>
 	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
+	<li><a href="ubifs.html#L_ecc_error">I get: "ubi_io_read: error -74 (ECC error) while reading 126976 bytes from PEB 47:4096, read 126976 bytes"</a></li>
 	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
 	<li><a href="ubi.html#L_flasher">How to implement UBI flasher?</a></li>
 	<li><a href="ubi.html#L_bgt_thread">What does the "ubi_bgt0d" thread do?</a></li>
@@ -541,6 +542,37 @@ the header supposed to be there. This probably means some corruption.</p>
 (<code>CONFIG_MTD_UBI_DEBUG_MSG_BLD=y</code>), you may see a lot of these
 messages and they are harmless. They are just debugging messages in this
 case.</p>
+
+
+
+<h2><a name="L_ecc_error">
+I see this UBI error: "ubi_io_read: error -74 (ECC error) while reading 126976 bytes from PEB 47:4096, read 126976 bytes"
+</a></h2>
+
+<p>The <code>-74</code> error code is <code>-EBADMSG</code> and means an ECC
+error. In other words, UBI tried to read some data from the flash, but the
+flash driver found that there is an uncorrectable ECC error, and returned
+<code>-EBADMSG</code>.</p>
+
+<p>There may be many reasons for this. It may be because your NAND driver is
+buggy, or you HW is buggy. We recommend you to validate the driver using the
+<a href="../doc/general.xml#L_mtd_tests">MTD tests</a>.</p>
+
+<p>The other possibility is that you failed to flash your UBI/UBIFS image
+properly. Try to erase your flash, then attach it to UBI/UBIFS without writing
+any image, and check if you still have these errors.</p>
+
+<p>If you do not have errors when you mount empty flash, it is probably indeed
+related to how you flash the UBI/UBIFS images. One typical problem is related
+to ECC calculation algorithm - read
+<a name="ubifs.html#L_why_ubiformat">here</a> for more information. Make sure
+that you use <a name="../doc/ubifs.html#L_usptools">ubiformat</a>), or make sure
+your flashing program skips 0xFF properly (see
+<a href="../doc/ubi.html#L_flasher_algo">here</a>).</p>
+
+<p>Another possibility is that your flash reports that it supports
+<a href="../doc/ubi.html#L_subpage">sub-pages</a>, but does not actually support
+them properly.</p>
 
 
 

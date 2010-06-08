@@ -37,9 +37,8 @@
 	<li><a href="ubifs.html#L_end_hole">Why my file has zeroes at the end after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_bgt_thread">What does the "ubifs_bgt0_0" thread do?</a></li>
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
-	<li><a href="ubifs.html#L_lebsz_mismatch">I see this UBIFS error: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"</a></li>
-	<li><a href="ubifs.html#L_ecc_error">I see this UBI error: "ubi_io_read: error -74 while reading 126976 bytes from PEB 47:4096, read 126976 bytes"</a></li>
-	<li><a href="ubifs.html#L_pdflush_blocked">I see this error: "INFO: task pdflush:110 blocked for more than 120 seconds"</a></li>
+	<li><a href="ubifs.html#L_lebsz_mismatch">I get: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"</a></li>
+	<li><a href="ubifs.html#L_pdflush_blocked">I get: "INFO: task pdflush:110 blocked for more than 120 seconds"</a></li>
 	<li><a href="ubifs.html#L_study_ubifs">I want to study UBIFS - any recommendations?</a></li>
 </ol>
 
@@ -1122,37 +1121,6 @@ The superblock was created by the <code>mkfs.ubifs</code> utility, therefore
 you failed to pass the correct LEB size to the utility. Fix this by passing
 correct LEB size via the <code>-e</code> option.</p>
 
-
-
-<h2><a name="L_ecc_error">
-I see this UBI error: "ubi_io_read: error -74 while reading 126976 bytes from PEB 47:4096, read 126976 bytes"
-</a></h2>
-
-<p>The <code>-74</code> error code is <code>-EBADMSG</code> and means an ECC
-error. In other words, UBI tried to read some data from the flash, but the
-flash driver found that there is an uncorrectable ECC error, and returned
-<code>-EBADMSG</code>.</p>
-
-<p>There may be many reasons for this. It may be because your NAND driver is
-buggy, or you HW is buggy. We recommend you to validate the driver using the
-<a href="../doc/general.xml#L_mtd_tests">MTD tests</a>.</p>
-
-<p>The other possibility is that you failed to flash your UBI/UBIFS image
-properly. Try to erase your flash, then attach it to UBI/UBIFS without writing
-any image, and check if you still have these errors.</p>
-
-<p>If you do not have errors when you mount empty flash, it is probably indeed
-related to how you flash the UBI/UBIFS images. One typical problem is related
-to ECC calculation algorithm - read
-<a name="ubifs.html#L_why_ubiformat">here</a> for more information. Make sure
-that you use <a name="../doc/ubifs.html#L_usptools">ubiformat</a>), or make sure
-your flashing program skips 0xFF properly (see
-<a href="../doc/ubi.html#L_flasher_algo">here</a>).</p>
-
-<p>Another possibility is that your flash does reports that it supports
-<a href="../doc/ubi.html#L_subpage">sub-page</a>, but does not actually support
-them properly. In that case the <code>-74</code> error happens when reading the
-first NAND page.</p>
 
 
 <h2><a name="L_pdflush_blocked">
