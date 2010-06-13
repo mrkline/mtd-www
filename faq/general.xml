@@ -225,7 +225,7 @@ release the chip again.
 Some NOR chips power on with all of the eraseblocks in a locked state.
 The MTD layer doesn't unlock these devices by default. If you are accessing
 these devices from user-space, you can use the <CODE>flash_unlock</CODE> tool to
-unlock the MTD device(s). If you are using the MTD device as aw rite-able root
+unlock the MTD device(s). If you are using the MTD device as a write-able root
 file-system you will either need to have the boot loader unlock the eraseblocks
 before booting the kernel, or add code to the MTD map driver for your board to
 unlock them.
