@@ -37,6 +37,7 @@
 	<li><a href="ubifs.html#L_end_hole">Why my file has zeroes at the end after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_bgt_thread">What does the "ubifs_bgt0_0" thread do?</a></li>
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
+	<li><a href="ubifs.html#L_detect_ro">How to detect if UBIFS became read-only?</a></li>
 	<li><a href="ubifs.html#L_lebsz_mismatch">I get: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"</a></li>
 	<li><a href="ubifs.html#L_pdflush_blocked">I get: "INFO: task pdflush:110 blocked for more than 120 seconds"</a></li>
 	<li><a href="ubifs.html#L_study_ubifs">I want to study UBIFS - any recommendations?</a></li>
@@ -1100,6 +1101,17 @@ mode. The messages may shed some light on what happened. Feel free to ask for
 help from the <a href="../mail.html">MTD mailing list</a>. If you think this is
 an UBIFS bug, please, send a
 <a href="../doc/ubifs.html#L_how_send_bugreport">bug report</a>.</p>
+
+
+
+<h2><a name="L_detect_ro">How to detect if UBIFS became read-only?</a></h2>
+
+<p>If you use up-to-date UBIFS which includes
+<code>2fde99cb55fb9d9b88180512a5e8a5d939d27fec</code>
+(<code>UBIFS: mark VFS SB RO too</code>), then you should be able to find this
+out from <code>/proc/mounts</code>. You should also be able to use something
+like <code>inotify</code> if you want to catch events when UBIFS became R/O
+(e.g., due to some errors).</p>
 
 
 
