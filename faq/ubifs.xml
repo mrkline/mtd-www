@@ -1106,11 +1106,11 @@ an UBIFS bug, please, send a
 
 <h2><a name="L_detect_ro">How to detect if UBIFS became read-only?</a></h2>
 
-<p>If you use up-to-date UBIFS which includes
+<p>If you use up-to-date UBIFS which includes commit
 <code>2fde99cb55fb9d9b88180512a5e8a5d939d27fec</code>
 (<code>UBIFS: mark VFS SB RO too</code>), then you should be able to find this
 out from <code>/proc/mounts</code>. You should also be able to use something
-like <code>inotify</code> if you want to catch events when UBIFS became R/O
+like <code>inotify</code> to catch events when UBIFS becomes R/O
 (e.g., due to some errors).</p>
 
 
