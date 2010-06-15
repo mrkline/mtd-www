@@ -40,6 +40,7 @@
 	<li><a href="ubifs.html#L_detect_ro">How to detect if UBIFS became read-only?</a></li>
 	<li><a href="ubifs.html#L_lebsz_mismatch">I get: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"</a></li>
 	<li><a href="ubifs.html#L_pdflush_blocked">I get: "INFO: task pdflush:110 blocked for more than 120 seconds"</a></li>
+	<li><a href="ubifs.html#L_few_lebs">I get: "init_constants_early: too few LEBs (12), min. is 17"</a></li>
 	<li><a href="ubifs.html#L_study_ubifs">I want to study UBIFS - any recommendations?</a></li>
 </ol>
 
@@ -1167,6 +1168,20 @@ The ways to solve this:
 	<li>Use erase-suspend for writing (if your chip supports this).</li>
 </ol>
 </p>
+
+
+
+<h2><a name="L_few_lebs">
+I get: "init_constants_early: too few LEBs (12), min. is 17"
+</a></h2>
+
+<p>This error means that you are trying to mount too small UBI volume.
+Probably because you flash is too small? Try to use JFFS2 then, becasue it
+suits small flashes better since it has much lower space overhead. Indeed,
+UBIFS sotores much more indexing information on the flash media than JFFS2, so
+it has much higher overhead. Also, UBI has some overhead (see
+<a href="../doc/ubi.html#L_overhead">here</a>). Thus, if you have a small flash
+device (e.g., about 64MiB), it makes sense to consider using JFFS2.</p>
 
 
 
