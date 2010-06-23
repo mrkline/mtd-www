@@ -19,7 +19,7 @@
 	<LI><A HREF="general.html#L_ext2_mtd">Can I mount ext2 over an MTD device?</A></LI>
 	<LI><A HREF="general.html#L_point">What are the point() and unpoint() functions used for?</A></LI>
 	<LI><A HREF="general.html#L_unlock">I keep getting errors whenever I try to write or erase to my MTD device</A></LI>
-	<LI><A HREF="general.html#L_compile_mtd">How to compile the mtd-utils tree?</A></LI>
+	<LI><A HREF="general.html#L_compile_mtd">How do I compile the mtd-utils tree?</A></LI>
 </OL>
 
 
@@ -113,7 +113,7 @@ also block devices.</P>
 	</TR>
 	<TR>
 		<TD>Sectors are devoid of the wear-out property (in FTL devices
-			it is the resposibility of FTL to provide this) </TD>
+			it is the responsibility of FTL to provide this) </TD>
 		<TD>
 			Eraseblocks wear-out and become bad and unusable after
 			about 10<SUP>3</SUP> (for MLC NAND) - 10<SUP>5</SUP>
@@ -250,7 +250,7 @@ unlock them.
 
 
 <A NAME="L_compile_mtd">
-<H2>How to compile the mtd-utils tree?</H2>
+<H2>How do I compile the mtd-utils tree?</H2>
 </A>
 
 <p>You have to install libraries the tools depend on. Please, find

@@ -31,7 +31,7 @@
 	<li><a href="ubifs.html#L_mountopts">Mount options</a></li>
 	<li><a href="ubifs.html#L_spaceacc">Flash space accounting issues</a></li>
 	<li><a href="ubifs.html#L_documentation">Documentation</a></li>
-	<li><a href="ubifs.html#L_how_send_bugreport">How to send an UBIFS bugreport?</a></li>
+	<li><a href="ubifs.html#L_how_send_bugreport">How do I send an UBIFS bug report?</a></li>
 	<li><a href="ubifs.html#L_raw_vs_ftl">Raw flash vs. FTL devices</a></li>
 </ol>
 
@@ -328,7 +328,7 @@ describes the issues in more details.</p>
 	    bytes to the flash. If there are many random small writes all
 	    over the place, the file system becomes fragmented. JFFS2 merges
 	    small fragments to 4KiB chunks, which involves re-compression and
-	    re-writing the data. But this "de-fragmentation" is happening
+	    re-writing the data. But this "defragmentation" is happening
 	    during garbage collection and at random time, because JFFS2
 	    wear-leveling algorithm is based on random eraseblock selection. So
 	    if there were a lot of small writes, JFFS2 becomes slower some time
@@ -716,8 +716,8 @@ do this :-).</p>
 
 <h2><a name="L_compression">Compression</a></h2>
 
-<p>UBIFS supports on-the-flight compression, which means it compresses data
-before writing them to the flash media, and de-compresses before reading them,
+<p>UBIFS supports on-the-fly compression, which means it compresses data
+before writing them to the flash media, and decompresses before reading them,
 and this is absolutely transparent to the users. UBIFS compresses only regular
 files data. Directories, device nodes and so on are not compressed. Meta-data
 and the indexing information are not compressed as well.</p>
@@ -856,11 +856,11 @@ it will already be in the cache.</p>
 you should be careful. It is also worth noting that bulk-read feature cannot
 help on highly fragmented file-systems. Although UBIFS does not fragment
 file-systems (e.g., the Garbage-Collector does not re-order data nodes), but
-UBIFS does not try to de-fragment them. For example, if you write a file
+UBIFS does not try to defragment them. For example, if you write a file
 sequentially, it won't be fragmented. But if you write more than one file at
 a time, they may become fragmented (well, this also depends on how write-back
-flushes the changes), and UBIFS won't automatically de-fragment them. However,
-it is possible to implement a background de-fragmentator. It is also possible
+flushes the changes), and UBIFS won't automatically defragment them. However,
+it is possible to implement a background defragmenter. It is also possible
 to have per-inode journal head and avoid mixing data nodes belonging to
 different inodes in the same LEB. So there is room for improvements.</p>
 
@@ -1208,7 +1208,7 @@ at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 
 
 
-<h2><a name="L_how_send_bugreport">How to send an UBIFS bugreport?</a></h2>
+<h2><a name="L_how_send_bugreport">How do I send an UBIFS bug report?</a></h2>
 
 <p>Before sending a bug report, please, try to do the following:</p>
 <ol>
@@ -1446,7 +1446,7 @@ requirements.</p>
 	hints about unused sectors. Nevertheless, in general, UBIFS should do
 	better job on a bare NAND, than a traditional FS on an FTL device with
 	a similar NAND chip. On the other hand, FTL devices may	include
-	multiple NAND chips, highly parallelise things and provide fast I/O.
+	multiple NAND chips, highly parallelize things and provide fast I/O.
 	Probably SSD is a good example.</li>
 
 	<li>Obviously, the advantage of FTL devices is that you use old and

@@ -13,12 +13,12 @@
 <OL>
 	<LI><A HREF="nand.html#L_nand_boot">Can I boot from NAND flash?</A></LI>
 	<LI><A HREF="nand.html#L_nand_32bit">Is there support for 32-bit wide NAND flash ?</A></LI>
-	<LI><A HREF="nand.html#L_nand_erase">How to erase my MTD partition on NAND flash?</A></LI>
+	<LI><A HREF="nand.html#L_nand_erase">How do I erase my MTD partition on NAND flash?</A></LI>
 	<LI><A HREF="nand.html#L_nand_copyimg">Can I copy a JFFS2 image to NAND via /dev/mtdX?</A></LI>
 	<LI><A HREF="nand.html#L_nand_srw">Can I use seek/read/write on /dev/mtdX?</A></LI>
 	<LI><A HREF="nand.html#L_nand_bootloader">Must my boot-loader be aware of NAND flash?</A></LI>
 	<LI><A HREF="nand.html#L_nand_jtag">Can I program NAND via JTAG?</A></LI>
-	<LI><A HREF="nand.html#L_nand_nandsim">How to use NAND simulator?</A></LI>
+	<LI><A HREF="nand.html#L_nand_nandsim">How do I use NAND simulator?</A></LI>
 </OL>
 
 
@@ -69,7 +69,7 @@ neither.
 
 
 <A NAME="L_nand_erase">
-<H2>How to erase my MTD partition on NAND flash?</H2>
+<H2>How do I erase my MTD partition on NAND flash?</H2>
 </A>
 
 <P>
@@ -78,7 +78,7 @@ utilities may be used. If you are going to use this partition with JFFS2, then
 it is recommended to use <CODE>-j</CODE> or <CODE>--jffs2</CODE> options. This
 will write the so called "clean-marker" to the out of band area, so you can
 mount the file-system and no further formatting is needed. This is also
-necessary before you copy a FS-image to the chip.
+necessary before you copy a filesystem image to the chip.
 </P>
 
 
@@ -177,7 +177,7 @@ Yes, you can. The requirements are the same as for boot-loaders
 
 
 <A NAME="L_nand_nandsim">
-<H2>How to use NAND simulator?</H2>
+<H2>How do I use NAND simulator?</H2>
 </A>
 
 <P>
@@ -236,10 +236,10 @@ flash on top of a file. Please, use the <CODE>cache_file</CODE> nandsim module
 parameter.</P>
 
 <P><CODE>nandsim</CODE> can emulate various errors and report wear statistics,
-which is extrimely useful when testing how flash software handles errors (e.g.,
+which is extremely useful when testing how flash software handles errors (e.g.,
 what does JFFS2 do in case of bit-flips or write errors).</P>
 
-<P>Note, theoretically <CODE>nandsim</CODE> can emulate 16-bit bus witdth
+<P>Note, theoretically <CODE>nandsim</CODE> can emulate 16-bit bus width
 devices, but it this may not work.</P>
 
 <INCLUDE file="../inc/footer.tmpl" />

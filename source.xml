@@ -103,7 +103,7 @@ or not.</P>
   thing. Please don't ask us about it though.</P>
 
 <P>If you are using the ancient 2.4 kernel, that's probably
-because you're interested in stabliity -- it is old and long-tested
+because you're interested in stablity -- it is old and long-tested
 code. If that's what you want, then you should use the original JFFS2
 code which is part of the 2.4 kernel. It's old and slow and doesn't
 support NAND flash, but it <em>is</em> stable, and is maintained.</P>

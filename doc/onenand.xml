@@ -50,35 +50,35 @@ Nand chips with 2048 byte pagesize and 64 byte OOB size</h4>
 <table border="1" cellpadding="2" cellspacing="0">
 <tr><td><b>Offset</b></td><td><b>Content</b></td><td><b>Comment</b></td></tr>
 <tr><td>0x02</td><td>Clean marker byte 0</td><td>This byte indicates that a 
-block was erased under JFFS2 control. If the page was succesfully erased 
+block was erased under JFFS2 control. If the page was successfully erased 
 this byte in the first page of a block is programmed to 0x85. In the remaining 
 pages this byte is reserved</td></tr>
 <tr><td>0x03</td><td>Clean marker byte 1</td><td>This byte indicates that a 
-block was erased under JFFS2 control. If the page was succesfully erased 
+block was erased under JFFS2 control. If the page was successfully erased 
 this byte in the first page of a block is programmed to 0x19. In the remaining 
 pages this byte is reserved</td></tr>
 <tr><td>0x04</td><td>Clean marker byte 2</td><td>This byte indicates that a 
-block was erased under JFFS2 control. If the page was succesfully erased 
+block was erased under JFFS2 control. If the page was successfully erased 
 this byte in the first page of a block is programmed to 0x03. In the remaining 
 pages this byte is reserved</td></tr>
 <tr><td>0x0e</td><td>Clean marker byte 3</td><td>This byte indicates that a 
-block was erased under JFFS2 control. If the page was succesfully erased 
+block was erased under JFFS2 control. If the page was successfully erased 
 this byte in the first page of a block is programmed to 0x20. In the remaining 
 pages this byte is reserved</td></tr>
 <tr><td>0x0f</td><td>Clean marker byte 4</td><td>This byte indicates that a 
-block was erased under JFFS2 control. If the page was succesfully erased 
+block was erased under JFFS2 control. If the page was successfully erased 
 this byte in the first page of a block is programmed to 0x08. In the remaining 
 pages this byte is reserved</td></tr>
 <tr><td>0x12</td><td>Clean marker byte 5</td><td>This byte indicates that a 
-block was erased under JFFS2 control. If the page was succesfully erased 
+block was erased under JFFS2 control. If the page was successfully erased 
 this byte in the first page of a block is programmed to 0x00. In the remaining 
 pages this byte is reserved</td></tr>
 <tr><td>0x13</td><td>Clean marker byte 6</td><td>This byte indicates that a 
-block was erased under JFFS2 control. If the page was succesfully erased 
+block was erased under JFFS2 control. If the page was successfully erased 
 this byte in the first page of a block is programmed to 0x00. In the remaining 
 pages this byte is reserved</td></tr>
 <tr><td>0x14</td><td>Clean marker byte 7</td><td>This byte indicates that a 
-block was erased under JFFS2 control. If the page was succesfully erased 
+block was erased under JFFS2 control. If the page was successfully erased 
 this byte in the first page of a block is programmed to 0x00. In the remaining 
 pages this byte is reserved</td></tr>
 </table>
@@ -211,7 +211,7 @@ JFFS2 write-buffering enabled buffer (2048) erasesize (126976)<br />
 <h2>Yaffs2</h2>
 
 <p>The yaffs2 can run on OneNAND</p>
-<p>If your yaffs2 dosen't work, please check this <a href="http://git.infradead.org/?p=users/vwool/mtd-2.6.git;a=commitdiff;h=ee5b82bdacf2a69d247eca93271da2c72acdc950">patch</a></p>
+<p>If your yaffs2 doesn't work, please check this <a href="http://git.infradead.org/?p=users/vwool/mtd-2.6.git;a=commitdiff;h=ee5b82bdacf2a69d247eca93271da2c72acdc950">patch</a></p>
 
 <hr size="2" />
 		

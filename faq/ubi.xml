@@ -13,35 +13,35 @@
 
 <h2>Table of contents</h2>
 <ol>
-	<li><a href="ubi.html#L_enable_ubi">How to enable UBI?</a></li>
-	<li><a href="ubi.html#L_attachmtd">How to attach an MTD device?</a></li>
-	<li><a href="ubi.html#L_mkvol">How to create/delete UBI volumes?</a></li>
-	<li><a href="ubi.html#L_run_jffs2">How to run JFFS2 on top of an UBI volume?</a></li>
+	<li><a href="ubi.html#L_enable_ubi">How do I enable UBI?</a></li>
+	<li><a href="ubi.html#L_attachmtd">How do I attach an MTD device?</a></li>
+	<li><a href="ubi.html#L_mkvol">How do I create/delete UBI volumes?</a></li>
+	<li><a href="ubi.html#L_run_jffs2">How do I run JFFS2 on top of an UBI volume?</a></li>
 	<li><a href="ubi.html#L_ext2_over_ubi">Can I run ext2 on top of UBI?</a></li>
 	<li><a href="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</a></li>
-	<li><a href="ubi.html#L_ubierase">How to erase flash and preserve erase counters?</a></li>
-	<li><a href="ubi.html#L_ubi_mkimg">How to create UBI images?</a></li>
-	<li><a href="ubi.html#L_find_min_io_size">How to find out min. I/O unit size, sub-page size, and LEB size?</a></li>
-	<li><a href="ubi.html#L_flash_img">How to flash UBI images and preserve erase counters?</a></li>
+	<li><a href="ubi.html#L_ubierase">How do I erase flash and preserve erase counters?</a></li>
+	<li><a href="ubi.html#L_ubi_mkimg">How do I create UBI images?</a></li>
+	<li><a href="ubi.html#L_find_min_io_size">How do I find out min. I/O unit size, sub-page size, and LEB size?</a></li>
+	<li><a href="ubi.html#L_flash_img">How do I flash UBI images and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_restrict">Can UBI logical eraseblocks be written randomly?</a></li>
 	<li><a href="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</a></li>
 	<li><a href="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</a></li>
 	<li><a href="ubi.html#L_mlc">May UBI be used on MLC flash?</a></li>
 	<li><a href="ubi.html#L_vid_offset_mismatch">Why does ubiattach on a freshly formatted device fail with "Invalid argument"?</a></li>
-	<li><a href="ubi.html#L_subpage">What is sub-page?</a></li>
+	<li><a href="ubi.html#L_subpage">What is a sub-page?</a></li>
 	<li><a href="ubi.html#L_subpage_verify_fail">I get "ubi_io_write: error -5 while writing 512 bytes to PEB 5:512"</a></li>
 	<li><a href="ubi.html#L_no_vid_header">I get "no VID header found at PEB 7923, only 0xFF bytes"</a></li>
 	<li><a href="ubi.html#L_ecc_error">I get: "ubi_io_read: error -74 (ECC error) while reading 126976 bytes from PEB 47:4096, read 126976 bytes"</a></li>
-	<li><a href="ubi.html#L_force_no_subpage">How to force UBI to ignore sub-pages?</a></li>
-	<li><a href="ubi.html#L_flasher">How to implement UBI flasher?</a></li>
+	<li><a href="ubi.html#L_force_no_subpage">How do I force UBI to ignore sub-pages?</a></li>
+	<li><a href="ubi.html#L_flasher">How do I implement UBI flasher?</a></li>
 	<li><a href="ubi.html#L_bgt_thread">What does the "ubi_bgt0d" thread do?</a></li>
 	<li><a href="ubi.html#L_attach_faster">How do I speed up UBI initialization</a></li>
-	<li><a href="ubi.html#L_how_debug">How to debug UBI?</a></li>
+	<li><a href="ubi.html#L_how_debug">How do I debug UBI?</a></li>
 </ol>
 
 
 
-<h2><a name="L_enable_ubi">How to enable UBI?</a></h2>
+<h2><a name="L_enable_ubi">How do I enable UBI?</a></h2>
 
 <p>In the Linux configuration menu, go to "<b>Device Drivers</b>" ->
 "<b>Memory Technology Devices (MTD)</b>" -> "<b>UBI - Unsorted block images</b>",
@@ -50,7 +50,7 @@ kernel or be built as a kernel module.</p>
 
 
 
-<h2><a name="L_attachmtd">How to attach an MTD device?</a></h2>
+<h2><a name="L_attachmtd">How do I attach an MTD device?</a></h2>
 
 <p>Each MTD device has a name and a number, which you may find out by
 examining the <code>/proc/mtd</code> file. The preferable way to attach
@@ -112,7 +112,7 @@ numbers.</p>
 
 
 
-<h2><a name="L_mkvol">How to create/delete UBI volumes?</a></h2>
+<h2><a name="L_mkvol">How do I create/delete UBI volumes?</a></h2>
 
 <p>Use the <code>ubimkvol</code> and <code>ubirmvol</code>
 <a href="../doc/ubi.html#L_usptools">utilities</a>. For example, the below command
@@ -133,7 +133,7 @@ $ ubirmvol /dev/ubi0 -n 0
 
 
 
-<h2><a name="L_run_jffs2">How to run JFFS2 on top of an UBI volume?</a></h2>
+<h2><a name="L_run_jffs2">How do I run JFFS2 on top of an UBI volume?</a></h2>
 
 <p>There is an additional driver called <code>gluebi</code> which can emulate
 fake MTD devices for each UBI volume and JFFS2 can be used with these emulated
@@ -192,7 +192,7 @@ flashing programs.</p>
 
 
 <h2><a name="L_ubierase">
-	How to erase flash and preserve erase counters?
+	How do I erase flash and preserve erase counters?
 </a></h2>
 
 <p>Use the <a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a>
@@ -217,7 +217,7 @@ for those who implement a custom UBI flasher.</p>
 
 
 
-<h2><a name="L_ubi_mkimg">How to create UBI images?</a></h2>
+<h2><a name="L_ubi_mkimg">How do I create UBI images?</a></h2>
 
 <p>UBI images may be created using the
 <a href="../doc/ubi.html#L_usptools"><code>ubinize</code></a> utility. This
@@ -317,7 +317,7 @@ UBI-aware flashing programs should work in
 
 
 <h2><a name="L_find_min_io_size">
-	How to find out min. I/O unit size, sub-page size, and LEB size?
+	How do I find out min. I/O unit size, sub-page size, and LEB size?
 </a></h2>
 
 <p>If you run kernel version <code>2.6.30</code> or later, the easiest
@@ -347,7 +347,7 @@ there).</p>
 
 
 <h2><a name="L_flash_img">
-	How to flash UBI images and preserve erase counters?
+	How do I flash UBI images and preserve erase counters?
 </a></h2>
 
 <p>Use the <a href="../doc/ubi.html#L_usptools"><code>ubiformat</code></a>
@@ -515,7 +515,7 @@ ubi.mtd=0,2048
 
 
 
-<h2><a name="L_subpage">What is sub-page?</a></h2>
+<h2><a name="L_subpage">What is a sub-page?</a></h2>
 
 <p>Please, refer <a href="../doc/ubi.html#L_subpage">this</a> section.</p>
 
@@ -575,7 +575,7 @@ them properly.</p>
 
 
 
-<h2><a name="L_force_no_subpage">How to force UBI to ignore sub-pages?"</a></h2>
+<h2><a name="L_force_no_subpage">How do I force UBI to ignore sub-pages?"</a></h2>
 
 <p>If your NAND flash supports
 <a href="../doc/ubi.html#L_subpage">sub-pages</a>, UBI will use them. But
@@ -625,7 +625,7 @@ avoid using the <code>-s</code> parameter.</p>
 
 
 
-<h2><a name="L_flasher">How to implement UBI flasher?</a></h2>
+<h2><a name="L_flasher">How do I implement UBI flasher?</a></h2>
 
 <p>Please, read <a href="../doc/ubi.html#L_flasher_algo">here</a></p>
 
@@ -706,7 +706,7 @@ can do about it but without re-designing. Here are some ideas</p>
 
 
 
-<h2><a name="L_how_debug">How to debug UBI?</a></h2>
+<h2><a name="L_how_debug">How do I debug UBI?</a></h2>
 
 <h3><a name="L_how_debug_fake_mtd">Use fake MTD device</a></h3>
 

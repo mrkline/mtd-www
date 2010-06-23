@@ -46,7 +46,7 @@
 		</ol>
 	</li>
 	<li><a href="ubi.html#L_ubidoc">More documentation</a></li>
-	<li><a href="ubi.html#L_how_send_bugreport">How to send a bugreport?</a></li>
+	<li><a href="ubi.html#L_how_send_bugreport">How do I send a bug report?</a></li>
 </ol>
 
 
@@ -117,7 +117,7 @@ Bit-flips are corrected by ECC checksums, but they may accumulate over
 time and cause data loss. UBI handles this by moving data from physical
 eraseblocks which have bit-flips to other physical eraseblocks. This process is
 called <b>scrubbing</b>. Scrubbing is done transparently in background and is
-hidden from upper layes.</p>
+hidden from upper layers.</p>
 
 <p>Here is a short list of the main UBI features:</p>
 <ul>
@@ -343,7 +343,7 @@ table records</b>. Each record contains the following information:</p>
 	<li><code>CRC-32</code> checksum for this record.</li>
 </ul>
 
-<p>Each record descripes one UBI volume and record index in the volume table
+<p>Each record describes one UBI volume and record index in the volume table
 array corresponds to the volume ID. I.e, UBI volume 0 is described by record 0
 in the volume table, and so on. Count of records in the volume table is limited
 by the LEB size, but cannot be greater than 128. This means that UBI devices
@@ -377,7 +377,7 @@ volumes.</p>
 </ul>
 
 <p>When attaching the MTD device, UBI makes sure that the 2 volume table copies
-are equivalent. If they are not equevalent, which may be caused by an unclean
+are equivalent. If they are not equivalent, which may be caused by an unclean
 reboot, UBI picks the one from LEB0 and copies it to LEB1 of the layout volume
 (because it is newer). If one of the volume table copies is corrupted, UBI
 restores it from the other volume table copy.</p>
@@ -817,7 +817,7 @@ order to build in-RAM EC and EBA tables.</p>
 <p>The drawbacks of this design are poor scalability and relatively high
 overhead on NAND flashes (e.g., the overhead is 1.5%-3% of flash space in case
 of a NAND flash with 2KiB NAND page and 128KiB eraseblock). The advantages are
-simple binary format and robustness, as the result of symplicity.</p>
+simple binary format and robustness, as the result of simplicity.</p>
 
 <p>Nonetheless, it is always possible to create UBI2 which would maintain the
 tables in separate flash areas. UBI2 would not be compatible with UBI because
@@ -1182,7 +1182,7 @@ function (just above the body of the function).</p>
 
 
 
-<h2><a name="L_how_send_bugreport">How to send an UBI bugreport?</a></h2>
+<h2><a name="L_how_send_bugreport">How do I send an UBI bug report?</a></h2>
 
 <p>Before sending a bug report:</p>
 <ul>
@@ -1227,7 +1227,7 @@ function (just above the body of the function).</p>
 <p>Please, attach all the bug-related messages including the UBI messages from
 the kernel ring buffer, which may be collected using the <code>dmesg</code>
 utility or using <code>minicom</code> with serial console capturing. Please,
-describe how the problem can be reproduced (if it can be). The bugreport
+describe how the problem can be reproduced (if it can be). The bug report
 should be sent to the <a href="../mail.html">MTD mailing list</a>. Please,
 <b>do not</b> send private e-mails to UBI authors, always CC the mailing
 list!</p>

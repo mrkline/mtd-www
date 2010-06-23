@@ -13,31 +13,31 @@
 
 <h2>Table of contents</h2>
 <ol>
-	<li><a href="ubifs.html#L_enable_ubifs">How to enable UBIFS?</a></li>
+	<li><a href="ubifs.html#L_enable_ubifs">How do I enable UBIFS?</a></li>
 	<li><a href="ubifs.html#L_ubifs_mlc">May UBIFS be used on MLC NAND flash?</a></li>
-	<li><a href="ubifs.html#L_mount_ubifs">How to mount UBIFS?</a></li>
-	<li><a href="ubifs.html#L_mkfubifs">How to create an UBIFS image?</a></li>
+	<li><a href="ubifs.html#L_mount_ubifs">How do I mount UBIFS?</a></li>
+	<li><a href="ubifs.html#L_mkfubifs">How do I create an UBIFS image?</a></li>
 	<li><a href="ubifs.html#L_emptyflash">May an empty UBI volume be mounted?</a></li>
 	<li><a href="ubifs.html#L_max_leb_cnt">What is the purpose of -c (--max-leb-cnt) mkfs.ubifs option?</a></li>
-	<li><a href="ubifs.html#L_why_ubiformat">Why I have to use ubiformat?</a></li>
-	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></li>
+	<li><a href="ubifs.html#L_why_ubiformat">Why do I have to use ubiformat?</a></li>
+	<li><a href="ubifs.html#L_mkfs_ubifs_comp">How do I compile mkfs.ubifs?</a></li>
 	<li><a href="ubifs.html#L_favor_lzo">What is "favor LZO" compression?</a></li>
 	<li><a href="ubifs.html#L_loop_mount">Can UBIFS mount loop-back devices?</a></li>
-	<li><a href="ubifs.html#L_atomic_change">How to change a file atomically?</a></li>
+	<li><a href="ubifs.html#L_atomic_change">How do I change a file atomically?</a></li>
 	<li><a href="ubifs.html#L_atime">Does UBIFS support atime?</a></li>
 	<li><a href="ubifs.html#L_nfs">Does UBIFS support NFS?</a></li>
 	<li><a href="ubifs.html#L_slow_when_full">Does UBIFS become slower when it is full?</a></li>
 	<li><a href="ubifs.html#L_df_report">Why <code>df</code> reports too few free space?</a></li>
-	<li><a href="ubifs.html#L_comproff">How to disable compression?</a></li>
-	<li><a href="ubifs.html#L_ubifs_nandsim">How to use UBIFS with nandsim?</a></li>
-	<li><a href="ubifs.html#L_ubifs_extract">How to extract files from an UBI/UBIFS image?</a></li>
+	<li><a href="ubifs.html#L_comproff">How do I disable compression?</a></li>
+	<li><a href="ubifs.html#L_ubifs_nandsim">How do I use UBIFS with nandsim?</a></li>
+	<li><a href="ubifs.html#L_ubifs_extract">How do I extract files from an UBI/UBIFS image?</a></li>
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
 	<li><a href="ubifs.html#L_empty_file">Why is my file empty after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_end_hole">Why does my file have zeroes at the end after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_bgt_thread">What does the "ubifs_bgt0_0" thread do?</a></li>
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
-	<li><a href="ubifs.html#L_detect_ro">How to detect if UBIFS became read-only?</a></li>
+	<li><a href="ubifs.html#L_detect_ro">How do I detect if UBIFS became read-only?</a></li>
 	<li><a href="ubifs.html#L_lebsz_mismatch">I get: "validate_sb: LEB size mismatch: 129024 in superblock, 126976 real"</a></li>
 	<li><a href="ubifs.html#L_pdflush_blocked">I get: "INFO: task pdflush:110 blocked for more than 120 seconds"</a></li>
 	<li><a href="ubifs.html#L_few_lebs">I get: "init_constants_early: too few LEBs (12), min. is 17"</a></li>
@@ -46,7 +46,7 @@
 
 
 
-<h2><a name="L_enable_ubifs">How to enable UBIFS?</a></h2>
+<h2><a name="L_enable_ubifs">How do I enable UBIFS?</a></h2>
 
 <p>Since UBIFS works on top of UBI, you have to enable UBI first (see
 <a href="ubi.html#L_enable_ubi">here</a>).</p>
@@ -122,7 +122,7 @@ appreciated.</p>
 
 
 
-<h2><a name="L_mount_ubifs">How to mount UBIFS?</a></h2>
+<h2><a name="L_mount_ubifs">How do I mount UBIFS?</a></h2>
 
 <p>The modern way of mounting UBIFS is mounting UBI volume character device
 nodes, e.g.:</p>
@@ -196,7 +196,7 @@ UBI volumes.</p>
 
 
 
-<h2><a name="L_mkfubifs">How to create an UBIFS image?</a></h2>
+<h2><a name="L_mkfubifs">How do I create an UBIFS image?</a></h2>
 
 <p>Creating UBIFS images might be a little trickier than creating JFFS2 images.
 First of all, you have to understand that UBIFS works on top of UBI which works
@@ -549,7 +549,7 @@ in the kernel.</p>
 
 
 
-<h2><a name="L_why_ubiformat">Why I have to use ubiformat?</a></h2>
+<h2><a name="L_why_ubiformat">Why do I have to use ubiformat?</a></h2>
 
 <p>The first obvious reason is that <code>ubiformat</code> preserves erase
 counters, so you do not lose your wear-leveling information when flashing new
@@ -595,7 +595,7 @@ written once and only once after the erasure. If you use
 
 
 
-<h2><a name="L_mkfs_ubifs_comp">How to compile mkfs.ubifs?</a></h2>
+<h2><a name="L_mkfs_ubifs_comp">How do I compile mkfs.ubifs?</a></h2>
 
 <p>The <code>mkfs.ubifs</code> utility requires <i>zlib</i>, <i>lzo</i> and
 <i>uuid</i> libraries. The former two are used for compressing the data, and the
@@ -611,7 +611,7 @@ information about other dependencies in the  <code>mtd-utils</code> tree.</p>
 
 
 
-<h2><a name="L_atomic_change">How to change a file atomically?</a></h2>
+<h2><a name="L_atomic_change">How do I change a file atomically?</a></h2>
 
 <p>Changing a file atomically means changing its contents in a way that unclean
 reboots could not lead to any corruption or inconsistency in the file. The only
@@ -778,7 +778,7 @@ the <code>df</code> report is changing, you will notice that the amount of free
 space continuously grows until reaches its final value. This happens because the
 kernel starts writing the dirty data back by time-out (5 sec by default) and
 the amount of dirty data goes down, making the <code>df</code> report more
-precize.</p>
+precise.</p>
 
 <p>If you want to have as precise free space prediction as possible -
 synchronize the file-system. This not only flushes dirty data to the media,
@@ -806,7 +806,7 @@ accurate is free space reporting.</p>
 
 
 
-<h2><a name="L_comproff">How to disable compression?</a></h2>
+<h2><a name="L_comproff">How do I disable compression?</a></h2>
 
 <p>UBIFS compression may be disabled for whole file system during the image
 creation time using the "<code>-x none</code>" <a
@@ -845,7 +845,7 @@ embedded systems.</p>
 
 
 
-<h2><a name="L_ubifs_nandsim">How to use UBIFS with nandsim?</a></h2>
+<h2><a name="L_ubifs_nandsim">How do I use UBIFS with nandsim?</a></h2>
 
 <p>The same way as with any MTD device. Here is an example of how to load
 <code>nandsim</code>, create an UBI volume and mount it.</p>
@@ -876,13 +876,13 @@ mount -t ubifs /dev/ubi0_0 /mnt/ubifs
 
 
 
-<h2><a name="L_ubifs_extract">How to extract files from an UBI/UBIFS image?</a></h2>
+<h2><a name="L_ubifs_extract">How do I extract files from an UBI/UBIFS image?</a></h2>
 
 <p>Unfortunately, at the moment there are no user-space tools which can
-un-wrap UBI and UBIFS images. UBIFS cannot be loop-back mounted as well,
+unwrap UBI and UBIFS images. UBIFS cannot be loop-back mounted as well,
 because it does not work with block devices.</p>
 
-<p>However, there is a hacky way to un-wrap UBI/UBIFS images. But you have
+<p>However, there is a hacky way to unwrap UBI/UBIFS images. But you have
 to make sure you have UBIFS support in your host machine. UBIFS is a relatively
 new file system and is not supported by all Linux distributions. But at least
 Fedora 11 does include it.</p>
@@ -1105,7 +1105,7 @@ an UBIFS bug, please, send a
 
 
 
-<h2><a name="L_detect_ro">How to detect if UBIFS became read-only?</a></h2>
+<h2><a name="L_detect_ro">How do I detect if UBIFS became read-only?</a></h2>
 
 <p>If you use up-to-date UBIFS which includes commit
 <code>2fde99cb55fb9d9b88180512a5e8a5d939d27fec</code>
@@ -1178,7 +1178,7 @@ I get: "init_constants_early: too few LEBs (12), min. is 17"
 <p>This error means that you are trying to mount too small UBI volume.
 Probably because your flash is too small? Try to use JFFS2, then, because it
 suits small flashes better since it has much lower space overhead. Indeed,
-UBIFS sotores much more indexing information on the flash media than JFFS2, so
+UBIFS stores much more indexing information on the flash media than JFFS2, so
 it has much higher overhead. Also, UBI has some overhead (see
 <a href="../doc/ubi.html#L_overhead">here</a>). Thus, if you have a small flash
 device (e.g., about 64MiB), it makes sense to consider using JFFS2.</p>

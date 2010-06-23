@@ -19,11 +19,11 @@
 	<LI><A HREF="jffs2.html#L_loopback">I cannot loop mount a JFFS2 image</A></LI>
 	<LI><A HREF="jffs2.html#L_mtdblock">Do I need to use mtdblock to mount my JFFS2 filesystem?</A></LI>
 	<LI><A HREF="jffs2.html#L_rootfs">How do I get the 2.6 kernel to recognize JFFS2 as my rootfs?</A></LI>
-	<LI><A HREF="jffs2.html#L_writewell">How is ensured, that data is written to flash?</A></LI>
-	<LI><A HREF="jffs2.html#L_putimage">How to program an image to FLASH?</A></LI>
+	<LI><A HREF="jffs2.html#L_writewell">How do I ensure that data is written to flash?</A></LI>
+	<LI><A HREF="jffs2.html#L_putimage">How do I program an image to flash?</A></LI>
 	<LI><A HREF="jffs2.html#L_bbhandle">How does JFFS2 handle a block going bad in NAND flash?</A></LI>
 	<LI><A HREF="jffs2.html#L_clmarker">What is cleanmarker and what it is used for?</A></LI>
-	<LI><A HREF="jffs2.html#L_mkfs_jffs2_comp">How to compile mkfs.jffs2?</A></LI>
+	<LI><A HREF="jffs2.html#L_mkfs_jffs2_comp">How do I compile mkfs.jffs2?</A></LI>
 </OL>
 
 
@@ -135,8 +135,8 @@ conventional HDD-oriented file system. And one of its drawbacks is that mount
 time as well as memory consumption grow linearly with growing flash size. So
 beware you may end up with tremendous amount memory eaten and huge mount time if
 your block device is very large. Also, JFFS2 implements only write-through
-caching (while convectional FS-es have write-back) and does many thing which are
-not really needed in case of hard drives.
+caching (while conventional filesystems have write-back) and does many things which are
+not really needed in the case of hard drives.
 </P>
 
 <P>
@@ -295,7 +295,7 @@ the kernel command line to use it as a root filesystem
 
 
 <A NAME="L_writewell">
-<H2>How is ensured, that data is written to flash?</H2>
+<H2>How do I ensure that data is written to flash?</H2>
 </A>
 
 <P>On <B>NOR FLASH</B> each write goes directly into the FLASH.</P>
@@ -321,14 +321,14 @@ dismounted, the filesystem should be remounted read only on shutdown. In the
 case of JFFS2 this will cause the garbage collector to flush its write buffers.
 Failure to do this may cause the filesystem to generate warnings regarding bad
 CRC. These are partially collected garbage blocks which will be rescheduled
-for garbage collection some time later. This kind of behaviour may also be
+for garbage collection some time later. This kind of behavior may also be
 observed after a system crash.
 </P>
 
 
 
 <A NAME="L_putimage">
-<H2>How to program an image to FLASH?</H2>
+<H2>How do I program an image to flash?</H2>
 </A>
 
 <P>There are several possibilities to do so:</P>
@@ -408,7 +408,7 @@ time.
 
 
 <A NAME="L_mkfs_jffs2_comp">
-<H2>How to compile mkfs.jffs2?</H2>
+<H2>How do I compile mkfs.jffs2?</H2>
 </A>
 
 <p>The <code>mkfs.jffs2</code> utility requires the <code>ACL</code> and
