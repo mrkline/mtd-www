@@ -33,8 +33,8 @@
 	<li><a href="ubifs.html#L_ubifs_extract">How to extract files from an UBI/UBIFS image?</a></li>
 	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
-	<li><a href="ubifs.html#L_empty_file">Why my file is empty after an unclean reboot?</a></li>
-	<li><a href="ubifs.html#L_end_hole">Why my file has zeroes at the end after an unclean reboot?</a></li>
+	<li><a href="ubifs.html#L_empty_file">Why is my file empty after an unclean reboot?</a></li>
+	<li><a href="ubifs.html#L_end_hole">Why does my file have zeroes at the end after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_bgt_thread">What does the "ubifs_bgt0_0" thread do?</a></li>
 	<li><a href="ubifs.html#L_sudden_ro">UBIFS suddenly became read-only - what is this?</a></li>
 	<li><a href="ubifs.html#L_detect_ro">How to detect if UBIFS became read-only?</a></li>
@@ -986,12 +986,12 @@ size.</p>
 
 <p>To put it simple, the amount of available space on UBIFS does not really
 depend on the journal size. There is very weak dependency, though, because for
-bigger journal we need bigger log, but it is really something which does not
-make any noticeable difference.</p>
+a bigger journal we need a bigger log, but it really does not make a
+noticeable difference.</p>
 
 
 
-<h2><a name="L_empty_file">Why my file is empty after an unclean reboot?</a></h2>
+<h2><a name="L_empty_file">Why is my file empty after an unclean reboot?</a></h2>
 
 <p>Zero-length files are a special case of corruption which happens when
 an application first truncates a file, then updates it. The truncation is
@@ -1048,7 +1048,7 @@ to implement it.</p>
 
 
 
-<h2><a name="L_end_hole">Why my file has zeroes at the end after an unclean reboot?</a></h2>
+<h2><a name="L_end_hole">Why does my file have zeroes at the end after an unclean reboot?</a></h2>
 
 <p>Power cuts often lead to holes at the end of files. Holes are areas of
 the file which contain no data. For example, if you truncate a file to a larger
@@ -1176,7 +1176,7 @@ I get: "init_constants_early: too few LEBs (12), min. is 17"
 </a></h2>
 
 <p>This error means that you are trying to mount too small UBI volume.
-Probably because you flash is too small? Try to use JFFS2 then, becasue it
+Probably because your flash is too small? Try to use JFFS2, then, because it
 suits small flashes better since it has much lower space overhead. Indeed,
 UBIFS sotores much more indexing information on the flash media than JFFS2, so
 it has much higher overhead. Also, UBI has some overhead (see

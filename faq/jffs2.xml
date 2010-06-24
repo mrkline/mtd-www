@@ -277,8 +277,8 @@ There are two cases where this does not work. The first is when JFFS2 is used
 as a root filesystem. For now, this requires the mtdblock device to be
 specified for <CODE>root=</CODE> on the kernel command line. The second case is
 when the mount binary that is being used does not play nicely with the above
-format. The busybox version of mount is known to not work without the mtdblock
-device.
+format. The BusyBox version of <CODE>mount</CODE> is known to not work without
+the mtdblock device.
 </P>
 
 
