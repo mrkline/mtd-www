@@ -2,7 +2,7 @@
 CONV 	= "./html.py"
 
 TARGETS	= index.html archive.html mail.html source.html fellows.html
-SUBDIRS = doc faq misc
+SUBDIRS = doc faq misc nand-data
 
 
 all: $(TARGETS) subdirs

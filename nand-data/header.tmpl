@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>NAND Flash Table</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<style type="text/css">
+	body {
+		font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+		font-size: small;
+	}
+	table { border: 1px solid; border-collapse: collapse; }
+	table td, table th {
+		border-left: 1px dotted;
+		border-right: 1px dotted;
+		border-bottom: 1px solid;
+		border-top: 1px solid;
+		font-family: "Courier New",courier,monospace;
+		padding: 0px 5px 0px 5px;
+		font-size: small;
+		white-space: nowrap;
+	}
+	table th { background-color: #eee; }
+	.wrong-size { color: #0066FF; }
+	.exception { color: red; }
+	#footer { text-align: left; }
+</style>
+<!--
+    NAND Flash Table
+    Copyright (C) 2010 Brian Norris
+
+    This document is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This document is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this document.  If not, see <http://www.gnu.org/licenses/>.
+-->
+</head>
+<body>
+<h1>NAND Flash Support Table</h1>
+<p>This table is a list of many different flash chips of varying types and an
+assessment of their detection in the MTD subsystem of the current Linux kernel.
+It is not an exhaustive list by any means, and it certainly has a few holes
+(especially on newer parts) but it is well beyond the scope of anything I have
+found in other materials.
+</p>
+<p>This table is currently sorted by the order in which I came across the chips.
+This leaves many of the chips in grouping by datasheet and similar type, but it
+may overall seem disorganized. I may choose to improve the nature of this catalog
+in the future.
+</p>
+<p>One should note that <span class="wrong-size">rows in blue represent chips that
+are detected properly except for their total size (perhaps because they are
+multi-die chips that should be detected by their sub-chipsize)</span> and
+<span class="exception">rows in red represent chips that are not detected
+properly</span>. Note in the columns with boolean values (i.e., TRUE or FALSE),
+a TRUE with an asterisk (*) represents a value that is TRUE only with support from
+patches which have not yet been accepted into the mainline kernel (e.g., support
+for detection of new Toshiba or Samsung ID decoding methods).
+</p>
