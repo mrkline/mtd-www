@@ -9,6 +9,13 @@
 
 	<INCLUDE file="../inc/content.tmpl" />
 
+
+<h2>NAND data</h2>
+
+<p>Please, find <a href="../nand-data/nanddata.html">here the table</a> describing
+different characteristics of various NAND flashes.</p>
+
+
 <h2>NAND vs. NOR</h2>
 <div>
 <p>Beside the different silicon cell design, the most important difference between 
