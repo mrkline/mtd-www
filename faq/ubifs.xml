@@ -275,7 +275,7 @@ writes to the same NAND page, which is quite typical for SLC flashes). The
 resulting image will have only one UBI volume storing UBIFS file-system.</p>
 
 <pre>
-$ mkfs.ubifs -r root-fs -m 2048 -e 129024 -c 2047 -o ubifs.img
+$ mkfs.ubifs -q -r root-fs -m 2048 -e 129024 -c 2047 -o ubifs.img
 $ ubinize -o ubi.img -m 2048 -p 128KiB -s 512 ubinize.cfg
 </pre>
 
@@ -347,7 +347,7 @@ information and for more possibilities to tweak the generated images.</p>
 eraseblock size.</p>
 
 <pre>
-$ mkfs.ubifs -r root-fs -m 1 -e 130944 -c 255 -o ubifs.img
+$ mkfs.ubifs -q -r root-fs -m 1 -e 130944 -c 255 -o ubifs.img
 $ ubinize -o ubi.img -m 1 -p 128KiB ubinize.cfg
 </pre>
 
@@ -371,7 +371,7 @@ eraseblock size, 2048 bytes NAND page size and no sub-page write
 support.</p>
 
 <pre>
-$ mkfs.ubifs -r root-fs -m 2048 -e 126976 -c 4095 -o ubifs.img
+$ mkfs.ubifs -q -r root-fs -m 2048 -e 126976 -c 4095 -o ubifs.img
 $ ubinize -o ubi.img -m 2048 -p 128KiB ubinize.cfg
 </pre>
 
@@ -528,7 +528,7 @@ threshold is configurable via the "<code>-X</code> <code>mkfs.ubifs</code>
 option, so you may make it 10% or anything else. Example:</p>
 
 <pre>
-$ mkfs.ubifs -r rootfs -m 2048 -e 129024 -c 2047 -x favor_lzo -X 5 -o ubifs.img
+$ mkfs.ubifs -q -r rootfs -m 2048 -e 129024 -c 2047 -x favor_lzo -X 5 -o ubifs.img
 </pre>
 
 <p>This command creates an UBIFS image containing the <code>rootfs</code>
