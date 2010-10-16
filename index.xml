@@ -24,6 +24,7 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>15 Oct 2010:  mtd-utils version <code>1.4.1</code> is out (<code>mkfs.jffs2</code> bug fixed)</li>
 	<li>24 Sep 2010: mtd-utils version <code>1.4.0</code> is out</li>
 	</ul>
 
