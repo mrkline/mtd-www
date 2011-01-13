@@ -182,9 +182,10 @@ to main-line. The <code>linux-next</code> branch is never re-based. Thus,
 unless you are an active UBIFS developer, use the <code>linux-next</code>
 branch.</p>
 
-<p>There are also <code>2.6.28</code> - <code>2.6.36</code>
+<p>There are also <code>2.6.28</code> - <code>2.6.37</code>
 kernel back-ports which may be found here:</p>
 
+<code>git://git.infradead.org/~dedekind/ubifs-v2.6.37.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.36.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.35.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v2.6.34.git</code><br/>
