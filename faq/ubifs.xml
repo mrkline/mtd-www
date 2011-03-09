@@ -934,10 +934,11 @@ tolerant to power-cuts, and they were designed with this property in mind.</p>
 
 <p>UBIFS has internal debugging infrastructure to emulate power failures and
 the authors used it for extensive testing. It was tested for long time with
-power-fail emulation. The advantage of the emulation is that it emulates power
-failures even at the situations which happen not very often. For example, when the
-master node is updated, or the log is changed. The probability to interrupt the
-system at those moments is very low in real-life.</p>
+power-fail emulation (see <a href="ubifs.html#L_how_debug_test_modes">here</a>).
+The advantage of the emulation is that it emulates power failures even at the
+situations which happen not very often. For example, when the master node is
+updated, or the log is changed. The probability to interrupt the system at
+those moments is very low in real-life.</p>
 
 <p>Real power-cut tests have also done on OneNAND flash. We used Power
 Node devices which are controlled via serial line and may switch the power of
@@ -1345,7 +1346,7 @@ general checks and TNC checks. But for testing, it is better to just enable
 all checks: "<code>echo 127 > /sys/module/ubifs/parameters/debug_chks</code>".</p>
 
 
-<h3>Test modes</h3>
+<h3><a name="L_how_debug_test_modes">Test modes</a></h3>
 
 <p>UBIFS currently supports 2 test modes:</p>
 <ul>
