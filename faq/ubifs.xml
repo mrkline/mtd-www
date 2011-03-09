@@ -1292,6 +1292,11 @@ following message types are supported:</p>
 <p>E.g., "<code>echo 4097 > /sys/module/ubifs/parameters/debug_tsts</code>"
 enables general and recovery messages.</p>
 
+<p>UBIFS may print huge amount of debugging messages and slow down your system
+considerably. You might also end up losing them if your ring buffer is not
+large enough. <a href="ubi.html#L_how_debug_printks">This</a> section explains
+how to make the ring buffer larger.</p>
+
 
 <h3>Extra self-checks</h3>
 

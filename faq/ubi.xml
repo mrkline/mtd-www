@@ -776,9 +776,11 @@ For example, UBI attach time may become very long.</p>
 <p>Sometimes it is necessary to make UBI print about what it is doing. You may
 enable various UBI debugging messages in the "<b>Additional UBI	debugging
 messages</b> configuration menu. When the messages are enabled, UBI prints a
-lot to the kernel ring buffer and this makes it slower. This section describes
-few tricks and techniques which might be useful when debugging with kernel
-messages.</p>
+lot to the kernel ring buffer and this makes it slower. The following section
+describes few tricks and techniques which might be useful when debugging with
+kernel messages.</p>
+
+<h3><a name="L_how_debug_printks">Capturing debugging messages</a></h3>
 
 <p>The Linux kernel has internal ring buffer where all the debugging prints go.
 User-space applications like <code>syslogd</code> usually read data from the
