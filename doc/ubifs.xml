@@ -1220,15 +1220,9 @@ at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 	<a href="general.html#L_mtd_tests">here</a>);</li>
 
 	<li>enable the UBIFS extra self checks and try to reproduce the
-	problem; to enable the extra self-checks, you have to first mark the
-	<b>Enable debugging</b> check-box in the UBIFS kernel configuration
-	menu (<code>CONFIG_UBIFS_FS_DEBUG=y</code> in <code>.config</code>);
-	then mark the "Enable extra checks" check-box
-	(<code>CONFIG_UBIFS_FS_DEBUG_CHKS=y</code>); do not touch the
-	"Default message level" (<code>CONFIG_UBIFS_FS_DEBUG_MSG_LVL</code>)
-	option unless you know what you are doing. For more information about
-	how to play with UBIFS debugging option, read the
-	<code>Documentation/filesystems/ubifs.txt</code> file.</li>
+	problem. See
+	<a href="../faq/ubifs.html#L_how_debug_self_checks">this</a>
+	chapter for more information about how to enable self-checks.</li>
 </ol>
 
 <p>When sending a bug report, please:</p>
@@ -1240,14 +1234,12 @@ at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 	<li>make sure you have compiled the kernel symbols in
 	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
 
-	<li>mark the <b>Enable debugging</b> check-box in the UBIFS kernel
-	configuration menu (<code>CONFIG_UBIFS_FS_DEBUG=y</code> in
+	<li>mark the <b>Enable debugging support</b> check-box in the UBIFS
+	kernel configuration menu (<code>CONFIG_UBIFS_FS_DEBUG=y</code> in
 	<code>.config</code>); this option will make UBIFS print more
-	informative error messages; please, do not enable other UBIFS debugging
-	sub-options like extra debugging messages unless you know what you are
-	doing; <b>note</b>, you should enable UBIFS debugging, not UBI
-	debugging - distinguish between UBI and UBIFS please, they are
-	different things;</li>
+	informative error messages; <b>note</b>, you should enable UBIFS
+	debugging, not UBI debugging - distinguish between UBI and UBIFS please,
+	they are different things;</li>
 
 	<li>include all the messages UBIFS prints, not only those you see at
 	the console, but also those you see when running <code>dmesg</code>; or
@@ -1256,10 +1248,8 @@ at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 	to go to the console; another possibility is to boot the kernel
 	with <code>ignore_loglevel</code> option, in which makes the kernel
 	print all messages to the console unconditionally;
-	<a href="../faq/ubi.xml#L_how_debug">this</a> section contains some
-	more information about how the messages can be collected (it is for
-	UBI, but the part about collecting the messages is not
-	UBI-specific).</li>
+	<a href="../faq/ubi.html#L_how_debug_printks">this</a> section contains
+	some more information about how the messages can be collected.</li>
 
 	<li>explicitly tell about whether you did any checking as described in
 	the previous list of "actions before sending a bug-report" (running MTD
@@ -1267,8 +1257,8 @@ at the <a href="ubifs.html#L_ml">UBIFS mailing list.</a></p>
 	saw any errors/warnings, describe them and include all corresponding
 	prints from tests / UBIFS / etc;</li>
 
-	<li>provide UBIFS configuration from you your <code>.config</code>
-	file, or just attach whole file;</li>
+	<li>provide UBIi and UBIFS configuration from you your
+	<code>.config</code> file, or just attach whole file;</li>
 
 	<li>describe your flash device, attach the
 	"<code>cat /proc/mtd</code>" output;</li>

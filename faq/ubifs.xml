@@ -1298,7 +1298,7 @@ large enough. <a href="ubi.html#L_how_debug_printks">This</a> section explains
 how to make the ring buffer larger.</p>
 
 
-<h3>Extra self-checks</h3>
+<h3><a name="L_how_debug_self_checks">Extra self-checks</a></h3>
 
 <p>UBIFS contains various internal self-check functions which are often
 very useful for debugging or testing. However, the self-checks are very
