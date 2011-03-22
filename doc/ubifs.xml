@@ -178,7 +178,7 @@ incomplete, buggy, or not tested very well. This branch may be re-based from
 time to time. The <code>linux-next</code> branch contains stable UBIFS updates
 and fixes. This branch is included to the
 <a href="http://linux.f-seidel.de/linux-next/">linux-next</a> git tree and goes
-to main-line. The <code>linux-next</code> branch is never re-based. Thus,
+to main-line. This branch contains more or less stable patches. Thus,
 unless you are an active UBIFS developer, use the <code>linux-next</code>
 branch.</p>
 
@@ -1452,7 +1452,7 @@ requirements.</p>
 	eMMC either. What happened was that power cuts sometimes left some
 	eMMC sectors not readable - the read operation returned ECC errors.
 	But for ext3 read errors are fatal - it is not designed to handle
-	them. The <code>ckfs.ext3</code> tool also refused to repair a file
+	them. The <code>fsck.ext3</code> tool also refused to repair a file
 	system which had unreadable sectors.</li>
 </ul>
 

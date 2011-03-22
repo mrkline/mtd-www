@@ -201,8 +201,7 @@ well. This branch is re-based from time to time. Please, do not use it unless
 you are an UBI developer. The <code>linux-next</code> branch contains stable
 UBI changes which are going to be merged upstream soon. This branch is included
 to the <a href="http://linux.f-seidel.de/linux-next/">linux-next</a>
-git tree. The <code>linux-next</code> branch is never re-based. Please, use
-this branch.</p>
+git tree. Please, use this branch unless you are an UBI developer.</p>
 
 
 
