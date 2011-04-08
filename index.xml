@@ -24,6 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>08 Apr 2011: UBIFS does not check data CRC by default starting from linux
+	    kernel version <code>2.6.39</code>, see <a href="doc/ubifs.html#L_checksumming">here</a></li>
 	<li>02 Apr 2011: mtd-utils version <code>1.4.4</code> is out ("<code>flash_eraseall -j"</code>
 	    <a href="http://lists.infradead.org/pipermail/linux-mtd/2011-March/034505.html">bug</a> fixed)</li>
 	<li>28 Mar 2011: Software BCH ECC library merged upstream</li>
