@@ -153,9 +153,10 @@ subsystems involved:</p>
 	<li><b>integrity</b> - UBIFS (as well as UBI) checksums everything it
 	writes to the flash media to guarantee data integrity, UBIFS does not
 	leave data or meta-data corruptions unnoticed (JFFS2 is doing the same);
-	however, you may disable CRC checking for data to improve file-system
-	read speed and lessen CPU usage - read
-	<a href="ubifs.html#L_checksumming">this</a> section.</li>
+	By default, UBIFS checks only meta-data CRC when it reads from the
+	media, but not the data CRC; however, you may force CRC checking for
+	data using one of the UBIFS mount options - see
+	<a href="ubifs.html#L_checksumming">here</a>.</li>
 </ul>
 
 
@@ -769,43 +770,36 @@ compression speed is a bit faster.</p>
 
 <h2><a name="L_checksumming">Checksumming</a></h2>
 
-<p>Every piece of information UBIFS writes to the media has a CRC-32 checksum,
-and UBIFS verifies the checksum for every piece of information it reads from
-the media. CRC-32 is quite strong function and any data corruption will most
-probably be noticed. The same is true for UBI.</p>
+<p>Every piece of information UBIFS writes to the media has a CRC-32 checksum.
+UBIFS protects both data and meta-data with CRC. Every time the meta-data is
+read, the CRC checksum is verified. CRC-32 is quite strong function and any
+data corruption will most probably be noticed. The same is true for UBI,
+by the way, it verifies every piece of meta-data.</p>
 
-<p>CRC-32 loads the CPU and makes the file-system slower - this is the price we
-pay for providing very high data integrity level. But UBIFS allows to switch the
-data checksumming off using the <code>no_chk_data_crc</code> mount option. If
-UBIFS is mounted with this option, it does not check CRC-32 checksum for data,
-but it does check it for the internal indexing information. And this option
-only affects reading, not writing, because UBIFS always calculates CRC-32 when
-writing the data.</p>
-
-<p>Disabling checksum verification for data speeds-up file-system read
-speed and reduces CPU usage. But of course, it also lowers the file-system
-integrity level, so you should decide whether you want to use it or
-not depending on your system requirements. In general, if you use SLC NAND
-flash or NOR flash, it is probably fine to disable CRC-32. In case of MLC NAND
-flash, you should probably be more careful. However, see
-<a href="../faq/ubifs.html#L_ubifs_mlc">this</a> FAQ section for more
-information about UBIFS on MLC NAND.</p>
+<p>The data CRC is not verified by default. We do this to improve the default
+file-system read speed. But UBIFS allows to switch the data verification on
+using the <code>chk_data_crc</code> mount option. This decreases UBIFS read
+speed a little, but provides better integrity protection. With this option on
+you may be sure that any piece of information UBIFS reads from the media
+will be verified and any corruption will most probably be noticed.</p>
 
 <p>Note, currently UBIFS cannot disable CRC-32 calculations on write, because
 UBIFS recovery process depends on in. When recovering from an unclean reboot
 and re-playing the journal, UBIFS has to be able to detect broken and
 half-written UBIFS nodes and drop them, and UBIFS depends on the CRC-32
-checksum here. So the <code>no_chk_data_crc</code> mount option does not
-improve UBIFS write speed. However, UBIFS writes speed should not be a problem
-for a great deal of standard work-loads because of
-<a href="ubifs.html#L_writeback">write-back</a> support.</p>
+checksum here.</p>
 
 <p>In other words, if you use UBIFS with data CRC-32 checking disabled, you
 still have the CRC-32 checksum attached to each piece of data, and you may
-mount UBIFS with default options to enable CRC-32 checking at any time (e.g.,
-when you suspect the file-system might be corrupted because you visited the
-<a href="http://en.wikipedia.org/wiki/Large_Hadron_Collider">Large Hadron
-Collider</a> and exposed your flash to proton beams).</p>
+mount UBIFS with the <code>chk_data_crc</code> option to enable CRC-32 checking
+at any time (e.g., when you suspect the file-system might be corrupted because
+you visited the
+<a href="http://en.wikipedia.org/wiki/Large_Hadron_Collider">
+Large Hadron Collider</a> and exposed your flash to proton beams).</p>
+
+<p><b>NOTE!</b>: before 2.6.39 the default UBIFS behavior was the oppsite -
+it did check data CRC-32 by default and the <code>no_chk_data_crc</code>
+had to be used.</p>
 
 
 
