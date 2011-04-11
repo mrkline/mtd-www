@@ -36,6 +36,8 @@
 	<li><a href="ubi.html#L_flasher">How do I implement UBI flasher?</a></li>
 	<li><a href="ubi.html#L_bgt_thread">What does the "ubi_bgt0d" thread do?</a></li>
 	<li><a href="ubi.html#L_attach_faster">How do I speed up UBI initialization</a></li>
+	<li><a href="ubi.html#L_dyn_faster">Why a dynamic volume is faster to access than a static volume of the
+same size?</a></li>
 	<li><a href="ubi.html#L_how_debug">How do I debug UBI?</a></li>
 </ol>
 
@@ -704,6 +706,25 @@ can do about it but without re-designing. Here are some ideas</p>
 	here</a>. Indeed, it is easier to solve one problem at a time.</li>
 </ul>
 
+
+<h2><a name="L_dyn_faster">
+Why a dynamic volume is faster to access than a static volume of the same size?
+</a></h2>
+
+<p>Static UBI volumes were originally designed to store blobs of data like
+configuration files. Static volumes provide CRC-32 protection for the stored
+data, and static volumes know how much data they store. E.g., if you have a
+static volume <code>/dev/ubi0_1</code> of 254KiB in size consisting of 2
+127KiB LEBs, and you store a 200KiB file there, and you read whole
+<code>/dev/ubi0_1</code> , you'll get exactly 200KiB. If
+<code>/dev/ubi0_1</code>  was a dynamic volume, you'd read 254KiB. So static
+volumes make it easier to store blobs of data.</p>
+
+<p>Thus, static volumes are slower to access (comparing to dynamic
+volumes) because UBI has to check the data CRC-32 checksum. And note, it is not
+a good idea to use static volumes with R/O UBIFS because UBIFS also protects
+all the information it stores in the UBI volume with CRC-32 checksums, and
+using static volumes with UBIFS would only slow down UBIFS mount speed.</p>
 
 
 <h2><a name="L_how_debug">How do I debug UBI?</a></h2>
