@@ -567,9 +567,11 @@ any image, and check if you still have these errors.</p>
 related to how you flash the UBI/UBIFS images. One typical problem is related
 to ECC calculation algorithm - read
 <a name="ubifs.html#L_why_ubiformat">here</a> for more information. Make sure
-that you use <a name="../doc/ubifs.html#L_usptools">ubiformat</a>), or make sure
-your flashing program skips 0xFF properly (see
-<a href="../doc/ubi.html#L_flasher_algo">here</a>).</p>
+that you use <a href="../doc/ubifs.html#L_usptools">ubiformat</a>, or make sure
+either that your flashing program skips <code>0xFF</code> properly (see
+<a href="../doc/ubi.html#L_flasher_algo">here</a>) or that your UBIFS image
+was generated with the "free space fixup" flag set (see
+<a href="ubifs.html#L_free_space_fixup">here</a>).</p>
 
 <p>Another possibility is that your flash reports that it supports
 <a href="../doc/ubi.html#L_subpage">sub-pages</a>, but does not actually support

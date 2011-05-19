@@ -699,6 +699,12 @@ and the writes did not fail. But later we observed weird ECC errors. It took a
 while to find out the problem. In other words, this is also relevant to JFFS2
 images.</p>
 
+<p>An alternative to this approach is to enable the "free space fixup" option
+when generating the UBIFS file system using <code>mkfs.ubifs</code>.  This will
+allow your flasher to not have to worry about <code>0xFF</code> bytes at the end
+of PEBs, which is particularly useful if you need to use an industrial flash
+programmer to write a UBI image.  More information is available
+<a href="../faq/ubifs.html#L_free_space_fixup">here</a>.</p>
 
 
 <h2><a name="L_torturing">Marking eraseblocks as bad</a></h2>
