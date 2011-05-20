@@ -707,6 +707,7 @@ programmer to write a UBI image.  More information is available
 <a href="../faq/ubifs.html#L_free_space_fixup">here</a>.</p>
 
 
+
 <h2><a name="L_torturing">Marking eraseblocks as bad</a></h2>
 
 <p>This section is relevant for NAND flashes and other flashes which admit of

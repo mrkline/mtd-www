@@ -24,6 +24,9 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>20 May 2011: UBIFS now can fixup free space to work around the
+	    "dumb flasher" issue, see
+	    <a href="faq/ubifs.html#L_free_space_fixup">here</a>.</li>
 	<li>18 Apr 2011: <code>CONFIG_MTD_PARTITIONS</code> is prohibited, see
 	    <a href="doc/general.html#L_partitions_ban">here</a></li>
 	<li>08 Apr 2011: UBIFS does not check data CRC by default starting from linux

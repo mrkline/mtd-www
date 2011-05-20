@@ -398,9 +398,7 @@ vol_flags=autoresize
 (<a href="../doc/ubi.html#L_flasher_algo">here</a> you may find some
 hints). Please, read
 <a href="ubifs.html#L_why_ubiformat">this</a> section for more information
-why you should use <code>ubiformat</code>, or generate your UBIFS images with
-the <a href="ubifs.html#L_free_space_fixup">free space fixup</a> flag if that
-is not possible.</p>
+why you should use <code>ubiformat</code>.</p>
 
 
 
@@ -602,8 +600,10 @@ written once and only once after the erasure. If you use
 <a href="ubifs.html#L_free_space_fixup">here</a>).</p>
 
 
-<h2><a name="L_free_space_fixup">What is the the purpose of the -F
-(--space-fixup) mkfs.ubifs option?</a></h2>
+
+<h2><a name="L_free_space_fixup">
+What is the the purpose of the -F (--space-fixup) mkfs.ubifs option?
+</a></h2>
 
 <p>Because of subtle ECC errors that can arise when programming NAND flash
 (see <a href="ubifs.html#L_why_ubiformat">here</a>), <code>ubiformat</code>
@@ -620,11 +620,20 @@ This ensures that NAND pages which contain all <code>0xFF</code> data get
 fully erased, which removes any problematic non-<code>0xFF</code> data from
 their OOB areas.</p>
 
+<p>Of course it is not possible to re-erase individual NAND pages, and entire
+PEBs are erised.  UBIFS performs this procedure by reading the useful
+(non 0xFF'ed) contents of LEBs and then invoking the
+<a href="ubi.html#L_lebchange">atomic LEB change</a> UBI operation. Obviously,
+this means that UBIFS has to read and write a lot of LEBs which takes
+time. But this happens only once, and the "free space fixup" procedure then
+unsets the "fixup" UBIFS superblock flag.</p>
+
 <p>This option is supported if you are running a kernel version
-<code>2.6.40</code> or higher.  Note that <code>ubiformat</code> is still the
-preferred flashing method if the image is not being flashed for the first time,
-since it preserves existing erase counters (while using <code>nandwrite</code>
-or its equivalent does not).</p>
+<code>2.6.40</code> or higher, or if you have pulled the changes from a UBIFS
+<a href="../doc/ubifs.html#L_source">back-port tree</a>.  Note that
+<code>ubiformat</code> is still the preferred flashing method if the image is
+not being flashed for the first time, since it preserves existing erase
+counters (while using <code>nandwrite</code> or its equivalent does not).</p>
 
 
 
