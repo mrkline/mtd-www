@@ -688,7 +688,7 @@ can do about it but without re-designing. Here are some ideas</p>
 
 	<li>UBI scan time linearly depends on the number of PEB to read, which
 	means that you may speed it up by merging two or more PEB and treating
-	them as one composite PEB. Then from UBI POW PEB size will become
+	them as one composite PEB. Then from UBI POV PEB size will become
 	larger, and the amount of PEBs to Scan will become smaller. The best
 	way to do this is probably to teach UBI merging PEBs. It does not have
         to merge adjacent PEB. Instead, UBI can store the paired PEB number in
