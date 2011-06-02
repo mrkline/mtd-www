@@ -629,7 +629,7 @@ time. But this happens only once, and the "free space fixup" procedure then
 unsets the "fixup" UBIFS superblock flag.</p>
 
 <p>This option is supported if you are running a kernel version
-<code>2.6.40</code> or higher, or if you have pulled the changes from a UBIFS
+<code>3.0</code> or higher, or if you have pulled the changes from a UBIFS
 <a href="../doc/ubifs.html#L_source">back-port tree</a>.  Note that
 <code>ubiformat</code> is still the preferred flashing method if the image is
 not being flashed for the first time, since it preserves existing erase
