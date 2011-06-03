@@ -24,18 +24,17 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li> 29 May 2011: <code>CONFIG_MTD_PARTITIONS</code> was removed by
+	    Jamie Iles.</li>
 	<li>20 May 2011: UBIFS now can fixup free space to work around the
 	    "dumb flasher" issue, see
 	    <a href="faq/ubifs.html#L_free_space_fixup">here</a>.</li>
-	<li>18 Apr 2011: <code>CONFIG_MTD_PARTITIONS</code> is prohibited, see
-	    <a href="doc/general.html#L_partitions_ban">here</a></li>
 	<li>08 Apr 2011: UBIFS does not check data CRC by default starting from linux
 	    kernel version <code>2.6.39</code>, see <a href="doc/ubifs.html#L_checksumming">here</a></li>
 	<li>02 Apr 2011: mtd-utils version <code>1.4.4</code> is out ("<code>flash_eraseall -j"</code>
 	    <a href="http://lists.infradead.org/pipermail/linux-mtd/2011-March/034505.html">bug</a> fixed)</li>
 	<li>28 Mar 2011: Software BCH ECC library merged upstream</li>
 	<li>28 Mar 2011: Swap on top of MTD device (<code>mtdswap</code> driver) merged upstream</li>
-	<li>18 Mar 2011: mtd-utils version <code>1.4.3</code> is out</li>
 	</ul>
 
 	<INCLUDE file="inc/footer.tmpl" />

@@ -16,7 +16,6 @@
 	<li><a href="general.html#L_mtd_tests">MTD tests</a></li>
 	<li><a href="general.html#L_mtdblock">The <code>mtdblock</code> driver</a></li>
 	<li><a href="general.html#L_old_docs">Old MTD documentation</a></li>
-	<li><a href="general.html#L_partitions_ban">CONFIG_MTD_PARTITIONS is prohibited</a></li>
 </ol>
 
 
@@ -159,35 +158,6 @@ where the extra RAM requirement was considered too large.</p>
 <a href="../archive/index.html">here</a>. Old NAND flash interface description
 is available <a href="../tech/mtdnand/index.html">here</a>.</p>
 
-
-
-<h2><a name="L_partitions_ban">CONFIG_MTD_PARTITIONS is prohibited</a></h2>
-
-<p>Currently (as of 18 Apr 2011) the MTD partitions support has a configuration
-option which allows to compile it into the kernel or compile it out. The
-corresponding macro is <code>CONFIG_MTD_PARTITIONS</code>. The MTD partitions
-support binary size is 7KiB in size when it is compiled for ARM. Probably in
-the past this was considered a lot, but nowadays this is not a lot for most
-embedded systems.</p>
-
-<p>The problem with <code>CONFIG_MTD_PARTITIONS</code> is that it introduces
-mess. Indeed, you can find 128 references to this configuration option in the
-MTD subsystem in the Linux kernel version 2.6.39-rc3:</p>
-
-<pre>
-[linux-2.6.39-rc3]$ grep -r CONFIG_MTD_PARTITIONS drivers/mtd/* | wc -l
-128
-</pre>
-
-<p>This is huge amount for a single configuration option. And we (the MTD
-community) have decided to kill this option. We do not accept patches which
-add more of these "<code>#ifdef CONFIG_MTD_PARTITIONS</code>" statements or
-shuffle them. Instead, someone have to make MTD partitions support to be
-integral part of the linux kenrel and thus, just remove the configuration
-option, and amend all the drivers which currently make use of it. In other
-words, if you want your driver/patch to go it, you are forced to do that
-clean-up. Sorry, this is more work for you, but this is the way the
-Linux development works.</p>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
