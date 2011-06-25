@@ -24,7 +24,8 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
-	<li> 29 May 2011: <code>CONFIG_MTD_PARTITIONS</code> was removed by
+	<li>25 Jun 2011: mtd-utils version <code>1.4.5</code> is out</li>
+	<li>29 May 2011: <code>CONFIG_MTD_PARTITIONS</code> was removed by
 	    Jamie Iles.</li>
 	<li>20 May 2011: UBIFS now can fixup free space to work around the
 	    "dumb flasher" issue, see
