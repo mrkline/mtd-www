@@ -312,7 +312,6 @@ maintainer to include it</p>
 if one of these settings is missing.</p>
 				
 <p>CONFIG_MTD=y<br />
-CONFIG_MTD_PARTITIONS=y<br />
 CONFIG_MTD_CHAR=y<br />
 CONFIG_MTD_BLOCK=y<br />
 CONFIG_MTD_NAND=y<br />
