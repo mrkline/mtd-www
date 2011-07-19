@@ -240,7 +240,7 @@ which is extremely useful when testing how flash software handles errors (e.g.,
 what does JFFS2 do in case of bit-flips or write errors).</P>
 
 <P>Note, theoretically <CODE>nandsim</CODE> can emulate 16-bit bus width
-devices, but it this may not work.</P>
+devices, but it may not work.</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
