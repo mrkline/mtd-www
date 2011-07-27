@@ -32,13 +32,16 @@ Not from a bare NAND chip. You need a glue logic around, which gives you memory
 access to the chip on boot-up, like the DiskOnChip devices do. This will be a
 quite complex CPLD. An alternative is to use a small e.g. 1MB NOR flash, which
 contains the boot code and maybe a compressed kernel image. Then you can use
-JFFS2 on NAND as your root file-system.
+JFFS2 or UBIFS on NAND as your root file-system.
 </P>
 
 <P>
-Some newer chips make the first page available for reading after power up. This
-could be helpful for starting a small 256/512/2048 byte boot-code. At the time
-of this writing there is no tested implementation of this.
+Some chips have internal circuitry which is capable of reading and booting from
+the first page of NAND after power up. This allows you to boot a small
+(e.g. 256/512/2048 byte) boot code, which can initialize SDRAM, then read and
+execute a more complete bootloader from subsequent NAND blocks.  An example is
+U-Boot, which can be built as a 2-stage "initial" and "secondary" bootloader
+for use with NAND.
 </P>
 
 <P>
