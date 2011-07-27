@@ -440,7 +440,7 @@ reboots.</p>
 
 <p>Yes, it may, as long as the flash is supported by the MTD layer. UBI does
 not use OOB and it requires data to be written sequentially (see
-<a href="ubi.html#L_mlc">here</a>). UBI guarantees that the difference
+<a href="ubi.html#L_restrict">here</a>). UBI guarantees that the difference
 between maximum and minimum erase-counters is withing certain threshold,
 which is 4096 by default. Since MLC flashes have quite low eraseblock
 life-cycle (about 1000-10000, unlike 100000-1000000 for SLC NAND and NOR
