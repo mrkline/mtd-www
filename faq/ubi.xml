@@ -39,6 +39,7 @@
 	<li><a href="ubi.html#L_dyn_faster">Why a dynamic volume is faster to access than a static volume of the
 same size?</a></li>
 	<li><a href="ubi.html#L_how_debug">How do I debug UBI?</a></li>
+	<li><a href="ubi.html#L_how_send_bugreport">How do I send an UBI bug report?</a></li>
 </ol>
 
 
@@ -839,6 +840,59 @@ buffer large, e.g. 64MiB by booting the kernel with <code>log_buf_len=64M</code>
 option. This will most probably make the ring buffer fit enough messages to
 identify the problem. And because the messages are printed to RAM, this is way
 quicker than the first method.</p>
+
+
+
+<h2><a name="L_how_send_bugreport">How do I send an UBI bug report?</a></h2>
+
+<p>Before sending a bug report:</p>
+<ul>
+	<li>make sure you use up-to-date UBI; pull the latest UBI patches
+	from corresponding UBIFS back-port trees if needed, see
+	<a href="../doc/ubifs.html#L_source">here</a> (we do not maintain separate UBI
+	back-ports trees, and UBIFS trees also contain all UBI updates); no one
+	is interested in digging already fixed problems;</li>
+
+	<li>make sure you have compiled kernel symbols in
+	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
+
+	<li>enable UBI debugging (<code>CONFIG_MTD_UBI_DEBUG=y</code>
+	in <code>.config</code>); please, mark only the "<b>UBI debugging</b>"
+	check-box and do not mark other debugging sub-options like "UBI
+	debugging messages" unless you know what you are doing.</li>
+
+	<li>include all the messages UBI prints, not only those you see at
+	the console, but also those you see when running <code>dmesg</code>; or
+	before running your UBI test, which reproduces the error, just
+	invoke <code>dmesg -n8</code> command to make all kernel messages
+	to go to the console; another possibility is to boot the kernel
+	with <code>ignore_loglevel</code> option, in which makes the kernel
+	print all messages to the console unconditionally;
+	<a href="ubi.html#L_how_debug">this</a> section contains some
+	more information about how the messages can be collected.</li>
+
+	<li>provide UBI configuration from you your <code>.config</code>
+	file, or just attach whole file;</li>
+
+	<li>describe your flash device, attach the
+	"<code>cat /proc/mtd</code>" output;</li>
+
+	<li>specify which kernel version you are using; if your kernel is not
+	the latest one, please, explicitly tell whether you updated UBI by
+	pulling one of the back-port trees or not; if you did not, you will
+	probably be asked to do this, depending on the problem;</li>
+
+	<li>describe how the problem can be reproduced;</li>
+</ul>
+
+<p>Please, attach all the bug-related messages including the UBI messages from
+the kernel ring buffer, which may be collected using the <code>dmesg</code>
+utility or using <code>minicom</code> with serial console capturing. Please,
+describe how the problem can be reproduced (if it can be). The bug report
+should be sent to the <a href="../mail.html">MTD mailing list</a>. Please,
+<b>do not</b> send private e-mails to UBI authors, always CC the mailing
+list!</p>
+
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>
