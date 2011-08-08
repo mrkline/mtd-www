@@ -75,9 +75,9 @@ some specific aspects of MLC NAND flashes:</p>
 	this is also not a problem because it is exactly what UBI and UBIFS do
 	(see also <a href="ubi.html#L_restrict">this</a> section);</li>
 
-	<li>MLC flashes have rather short eraseblock life-cycle of just few
-	thousand of erase cycles; and this is not a problem, because UBI
-	uses deterministic wear-leveling algorithm
+	<li>MLC flashes have rather short eraseblock life-cycles of just a few
+	thousand erase cycles; this is not a problem because UBI uses a
+	deterministic wear-leveling algorithm
 	(see <a href="ubi.html#L_mlc">this</a> section);</li>
 
 	<li>MLC flashes have so called "read-disturb" property, which means
@@ -1207,7 +1207,7 @@ The ways to solve this:
 	<li>Use <code>ubiformat</code> and format the NOR partition before
 	attaching it to UBI. But this will not help in situations when you
 	delete may files, and starts erasing many eraseblocks, so the "MTD/CFI
-	chip lock" becomes very condtended.</li>
+	chip lock" becomes very contended.</li>
 	<li>Use erase-suspend for writing (if your chip supports this).</li>
 </ol>
 </p>
