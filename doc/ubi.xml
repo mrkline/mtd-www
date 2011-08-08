@@ -213,15 +213,16 @@ git tree. Please, use this branch unless you are an UBI developer.</p>
 
 <h2><a name="L_usptools">User-space tools</a></h2>
 
-<p>UBI user-space tools are available from the the following git repository:</p>
+<p>UBI user-space tools, as well as other MTD user-space tools, are available
+from the the following git repository:</p>
 
 <code>git://git.infradead.org/mtd-utils.git</code>
 
-<p>Please, clone it and compile. The easiest way to compile UBI tools is to go
-straight to the <code>ubi-utils</code> sub-directory and type
-<code>make</code>. <a href="../faq/general.html#L_compile_mtd">This</a> section
+<p>Please, clone it and compile using <code>make</code> from the root mtd-utils
+directory.  <a href="../faq/general.html#L_compile_mtd">This section</a>
 provides information about how to compile the whole <code>mtd-utils</code>
-repository tree.</p>
+repository tree. You should find the UBI tools under the <code>ubi-utils</code>
+sub-directory.</p>
 
 <p>The repository contains the following UBI tools:</p>
 <ul>

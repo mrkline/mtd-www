@@ -256,11 +256,22 @@ unlock them.
 <H2>How do I compile the mtd-utils tree?</H2>
 </A>
 
-<p>You have to install libraries the tools depend on. Please, find
-the information about <code>mkfs.jffs2</code> dependencies
-<a href="../faq/jffs2.html#L_mkfs_jffs2_comp">here</a> and the
-the information about <code>mkfs.ubifs</code> dependencies
-<a href="../faq/ubifs.html#L_mkfs_ubifs_comp">here</a>.</p>
+<P>
+The MTD and UBI user-space tools are available from the the following git
+repository:
+</P>
+
+<CODE>git://git.infradead.org/mtd-utils.git</CODE>
+
+<P>
+To compile, first you have to install libraries the tools depend on. You can
+find the information about <CODE>mkfs.jffs2</CODE> dependencies
+<A HREF="jffs2.html#L_mkfs_jffs2_comp">here</A> and the the information about
+<CODE>mkfs.ubifs</CODE> dependencies
+<A HREF="ubifs.html#L_mkfs_ubifs_comp">here</A>. Once you have these satisfied,
+you should be able to simply type <CODE>make</CODE> from the root mtd-utils
+directory.
+</P>
 
 
 <INCLUDE file="../inc/footer.tmpl" />
