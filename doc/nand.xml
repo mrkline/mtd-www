@@ -138,7 +138,7 @@ designed for the usage of DiskOnChip devices. JFFS2 supports raw NAND chips and
 SmartMediaCards at the moment. A JFFS2 support for DiskOnChip devices, based on the 
 NAND code, is planned. There are some other Open Source projects for NAND filesystem 
 support, but there's no other working solution than JFFS2 and YAFFS at the moment of this writing. 
-YAFFS is available from <a href="http://www.aleph1.co.uk/armlinux/projects/yaffs">YAFFS-Homepage</a>.
+YAFFS is available from <a href="http://www.yaffs.net/">YAFFS-Homepage</a>.
 YAFFS is faster than JFFS2 and consumes less RAM, JFFS2 provides on the fly file compression and
 decompression, which is very helpful for small FLASHs.</p>
 <p> There is currently no support for the wide spread SmartMedia DOS-FAT filesystem, 
@@ -331,7 +331,7 @@ CONFIG_JFFS2_FS_NAND=y</p>
 <h2>References:</h2>
 <h3>Open Source</h3>
 <p>JFFS2 and NTFL are located on this <a href="../index.html">website</a>.<br />
-YAFFS is located at <a href="http://www.aleph1.co.uk/armlinux/projects/yaffs">YAFFS-Homepage</a>.</p>
+YAFFS is located at <a href="http://www.yaffs.net/">YAFFS-Homepage</a>.</p>
 <h3>Hardware</h3>
 <p><a href="http://www.toshiba.com/taec">Toshiba</a></p>
 <p><a href="http://samsungelectronics.com">Samsung</a></p>
