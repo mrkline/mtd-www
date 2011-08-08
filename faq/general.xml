@@ -18,7 +18,7 @@
 	<LI><A HREF="general.html#L_mtd_vs_hdd">What are the differences between flash devices and block drives?</A></LI>
 	<LI><A HREF="general.html#L_ext2_mtd">Can I mount ext2 over an MTD device?</A></LI>
 	<LI><A HREF="general.html#L_point">What are the point() and unpoint() functions used for?</A></LI>
-	<LI><A HREF="general.html#L_unlock">I keep getting errors whenever I try to write or erase to my MTD device</A></LI>
+	<LI><A HREF="general.html#L_unlock">Why do I keep getting errors whenever I try to write to or erase my MTD device?</A></LI>
 	<LI><A HREF="general.html#L_compile_mtd">How do I compile the mtd-utils tree?</A></LI>
 </OL>
 
@@ -221,7 +221,7 @@ release the chip again.
 
 
 <A NAME="L_unlock">
-<H2>I keep getting errors whenever I try to write or erase to my MTD device</H2>
+<H2>Why do I keep getting errors whenever I try to write to or erase my MTD device?</H2>
 </A>
 
 <P>
