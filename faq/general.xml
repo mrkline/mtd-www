@@ -30,7 +30,10 @@
 
 <P>
 First off, an MTD is a "Memory Technology Device", so it's just "MTD". An "MTD
-device" is a pleonasm.
+device" is a pleonasm. Of course, at the time of this edit (Thu Aug 4 15:36:10
+PDT 2011) "MTD device" was found at least 520 times in the Linux source tree,
+189 times in the mtd-utils source, and even 119 times in the source for this
+website...
 </P>
 
 <P>
