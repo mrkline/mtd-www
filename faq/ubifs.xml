@@ -1463,8 +1463,8 @@ all checks: "<code>echo 127 > /sys/module/ubifs/parameters/debug_chks</code>".</
 	<li>provide UBIi and UBIFS configuration from you your
 	<code>.config</code> file, or just attach whole file;</li>
 
-	<li>describe your flash device, attach the
-	"<code>cat /proc/mtd</code>" output;</li>
+	<li>describe your flash device, attach the "<code>mtdinfo&amp;nbsp;-a</code>"
+	output (or the less useful "<code>cat&amp;nbsp;/proc/mtd</code>" output);</li>
 
 	<li>specify which kernel version you are using; if your kernel is not
 	the latest one, please, explicitly tell whether you updated UBIFS by
