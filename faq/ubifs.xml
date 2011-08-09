@@ -695,8 +695,8 @@ provably want the file-system doing inode updates every time they are read.</p>
 
 <p>Not, it does not, which means you cannot export UBIFS file-system via NFS.
 We did make an attempt to support NFS, but the support was not exactly correct
-so it was dropped, and we have never find time to come back to that. Please,
-refer <a href="http://marc.info/?l=linux-next&amp;m=121852228611051&amp;w=2">this tread</a>
+so it was dropped, and we have never found time to come back to that. Please,
+refer to <a href="http://marc.info/?l=linux-next&amp;m=121852228611051&amp;w=2">this thread</a>
 for some more details. The original patch can also be found there.</p>
 
 
@@ -1460,7 +1460,7 @@ all checks: "<code>echo 127 > /sys/module/ubifs/parameters/debug_chks</code>".</
 	saw any errors/warnings, describe them and include all corresponding
 	prints from tests / UBIFS / etc;</li>
 
-	<li>provide UBIi and UBIFS configuration from you your
+	<li>provide UBI and UBIFS configuration from your
 	<code>.config</code> file, or just attach whole file;</li>
 
 	<li>describe your flash device, attach the "<code>mtdinfo&amp;nbsp;-a</code>"
@@ -1479,7 +1479,7 @@ all checks: "<code>echo 127 > /sys/module/ubifs/parameters/debug_chks</code>".</
 private e-mails to UBIFS authors, always CC the mailing list!</p>
 
 <p>Note, sometimes UBIFS bugs may appear to be UBI bugs. If you suspect
-there are UBI problems, please, also enable UBI debugging. Please, refer the
+there are UBI problems, please, also enable UBI debugging. Please, refer to the
 <a href="ubi.html#L_how_debug">UBI debugging</a> section for more
 information.</p>
 

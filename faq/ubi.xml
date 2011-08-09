@@ -375,7 +375,7 @@ describes how UBI-aware flasher program has to work.</p>
 
 <p><b>Important!</b>: even if you do not care about erasecounters, do not use
 <code>nandwrite</code> for flashing UBI images containing UBIFS file-system to
-NAND flashes, read <a href="../faq/ubifs.html#L_why_ubiformat">here</a> for
+NAND flashes, read <a href="ubifs.html#L_why_ubiformat">here</a> for
 more information.</p>
 
 
@@ -567,7 +567,7 @@ any image, and check if you still have these errors.</p>
 <p>If you do not have errors when you mount empty flash, it is probably indeed
 related to how you flash the UBI/UBIFS images. One typical problem is related
 to ECC calculation algorithm - read
-<a name="ubifs.html#L_why_ubiformat">here</a> for more information. Make sure
+<a href="ubifs.html#L_why_ubiformat">here</a> for more information. Make sure
 that you use <a href="../doc/ubifs.html#L_usptools">ubiformat</a>, or make sure
 either that your flashing program skips <code>0xFF</code> properly (see
 <a href="../doc/ubi.html#L_flasher_algo">here</a>) or that your UBIFS image
