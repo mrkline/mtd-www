@@ -20,6 +20,7 @@
 	<LI><A HREF="general.html#L_point">What are the point() and unpoint() functions used for?</A></LI>
 	<LI><A HREF="general.html#L_unlock">Why do I keep getting errors whenever I try to write to or erase my MTD device?</A></LI>
 	<LI><A HREF="general.html#L_compile_mtd">How do I compile the mtd-utils tree?</A></LI>
+	<LI><A HREF="general.html#L_bug_report">How do I report bugs?</A></LI>
 </OL>
 
 
@@ -273,6 +274,69 @@ you should be able to simply type <CODE>make</CODE> from the root mtd-utils
 directory.
 </P>
 
+
+
+<A NAME="L_bug_report">
+<H2>How do I report bugs?</H2>
+</A>
+
+<P>
+First, you need to figure out what you're reporting a bug against. This website
+(and its accompanying <A HREF="../mail.html">mailing list</A>) supports several
+related aspects of Linux, from the MTD kernel subsystem to its user-space
+utilities, including the generic MTD and NAND interface layers, several MTD
+hardware drivers, the UBI volume management system, several flash filesystems
+(e.g., JFFS2, UBIFS), and the user-space MTD utils.
+</P>
+
+<P>
+Now, bug reports for any of the above areas are more than welcome on the
+<A HREF="../mail.html">MTD mailing list</A>, provided you include sufficient
+information for reproducing and debugging your problem. This means:
+</P>
+
+<UL>
+	<LI>include all kernel 'oopses', stack traces, debug messages, or
+	relevant logs along with a clear description of the problem you're
+	having, what system(s) are affected, and anything else you think might
+	help people understand your issue;</LI>
+
+	<LI>include information about flash parameters found from
+	"<CODE>mtdinfo&amp;nbsp;-a</CODE>" (or the less useful info from
+	"<CODE>cat&amp;nbsp;/proc/mtd</CODE>");</LI>
+
+	<LI>specify which kernel version you are using;</LI>
+
+	<LI>specify which mtd-utils version you are using, if applicable. In
+	past releases of mtd-utils, different tools had different versions, so
+	be sure to check the relevant tool (e.g., use
+	"<CODE>nanddump&amp;nbsp;--version</CODE>" when reporting bugs involving
+	the <CODE>nanddump</CODE> tool); newer releases give the same version to
+	most/all the tools.</LI>
+</UL>
+
+<P>
+Please, <b>do not</b> send private e-mails to MTD maintainers; always CC the
+mailing list!
+</P>
+
+<P>
+You may also want to read one of the other related FAQs:
+</P>
+
+<UL>
+	<LI><A HREF="ubifs.html#L_how_send_bugreport">How do I send an UBIFS bug report?</A></LI>
+	<LI><A HREF="ubi.html#L_how_send_bugreport">How do I send an UBI bug report?</A></LI>
+</UL>
+
+<P>
+The MTD community may help support the YAFFS/YAFFS2 filesystems; however, YAFFS
+has its own dedicated <A HREF="http://www.yaffs.net/">website</A> and
+<A HREF="http://stoneboat.aleph1.co.uk/cgi-bin/mailman/listinfo/yaffs">mailing
+list</A>, and its code is not kept in the mainstream Linux kernel tree. Thus,
+any support you receive here will be limited, and you should contact YAFFS
+maintainers with real YAFFS bug reports.
+</P>
 
 <INCLUDE file="../inc/footer.tmpl" />
 </PAGE>

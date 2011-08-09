@@ -18,7 +18,9 @@
 	    <ul>
 		<li>my <a href="http://www.infradead.org/~dwmw2/email.html">notes on etiquette</a>.</li> 
 		<li>the section about <a href="source.html#kernelversions">kernel versions</a></li>
-		<li>the <a href="faq/general.html">MTD-FAQ</a></li>
+		<li>the <a href="faq/general.html">MTD-FAQ</a>, especially the
+			<a href="faq/general.html#L_bug_report">bug reporting
+			FAQ</a>, if applicable</li>
 		<li>the available <a href="doc/general.html">documentation</a></li>
 		<li>the mailing list archives at <a href="http://lists.infradead.org/pipermail/linux-mtd/">
 			http://lists.infradead.org/pipermail/linux-mtd/</a></li>
