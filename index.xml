@@ -24,6 +24,10 @@
 	<hr size="2" />
 	<h2>News</h2>
 	<ul>
+	<li>19 Aug 2011: mtd-utils version <code>1.4.6</code> is out - this is
+	    just a bug-fix release which
+	    <a href="http://git.infradead.org/mtd-utils.git/commit/8faa32ae07b0fce0636f6e57d9dd4a93db0ebc13">
+	    fixes</a> "<code>mtdinfo -a</code>" breakage</li>
 	<li>19 Aug 2011: ubifs back-port trees for kernels 2.6.28-2.6.31 are
 	    no longer maintained</li>
 	<li>25 Jun 2011: mtd-utils version <code>1.4.5</code> is out</li>
