@@ -168,6 +168,13 @@ subsystems involved:</p>
 <p>Both UBI (see <a href="../faq/ubi.html#L_crash_safe">here</a>) and UBIFS are
 tolerant to power-cuts, and they were designed with this property in mind.</p>
 
+<p><b>Year 2011 note</b>: however, there is an unsolved
+<a href="../doc/ubifs.html#L_unstable_bits">unstable bits</a> issue which makes
+UBI/UBIFS fail to recover after a power cut on modern SLC and MLC flashes. This
+issues has not been observed on older SLC NANDs back at the time UBI/UBIFS has
+been developed. Note, the below text is quite old and has been written before
+the unstable bits issue has been first discovered.</p>
+
 <p>UBIFS has internal debugging infrastructure to emulate power failures and
 the authors used it for extensive testing. It was tested for long time with
 power-fail emulation. The advantage of the emulation is that it emulates power
