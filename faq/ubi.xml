@@ -434,6 +434,12 @@ probably do this.</p>
 <p>Yes, UBI is designed to be tolerant of power failures and unclean
 reboots.</p>
 
+<p><b>Year 2011 note</b>: however, there is an unsolved
+<a href="../doc/ubifs.html#L_unstable_bits">unstable bits</a> issue which may make
+UBI fail to recover after a power cut on modern SLC and MLC flashes. This has
+never been reported yet for UBI, but has been reported for UBIFS and we believe
+must be an issue for UBI as well.</p>
+
 
 
 <h2><a name="L_mlc">May UBI be used on MLC flash?</a></h2>
@@ -446,6 +452,12 @@ which is 4096 by default. Since MLC flashes have quite low eraseblock
 life-cycle (about 1000-10000, unlike 100000-1000000 for SLC NAND and NOR
 flashes), the threshold has to be set to a lower value (e.g., 256). This may be
 done via the Linux kernel configuration menu.</p>
+
+<p><b>Year 2011 note</b>: however, there is an unsolved
+<a href="../doc/ubifs.html#L_unstable_bits">unstable bits</a> issue which may make
+UBI fail to recover after a power cut on modern SLC and MLC flashes. This has
+never been reported yet for UBI, but has been reported for UBIFS and we believe
+must be an issue for UBI as well.</p>
 
 <p>Note, unlike UBI, JFFS2 uses random wear-leveling algorithm, which is in
 fact not completely random, because JFFS2 makes it more probable to
