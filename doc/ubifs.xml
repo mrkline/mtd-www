@@ -14,6 +14,7 @@
 <ol>
 	<li><a href="ubifs.html#L_rednote">Big red note</a></li>
 	<li><a href="ubifs.html#L_overview">Overview</a></li>
+	<li><a href="ubifs.html#L_powercut">Power-cuts tolerance</a></li>
 	<li><a href="ubifs.html#L_source">Source code</a></li>
 	<li><a href="ubifs.html#L_ml">Mailing list</a></li>
 	<li><a href="ubifs.html#L_usptools">User-space tools</a></li>
@@ -110,7 +111,7 @@ subsystems involved:</p>
 	journal, but UBIFS does not need to scan whole media, so it anyway
 	takes fractions of a second to mount UBIFS; note, authors payed
 	special attention to this UBIFS aspect, see
-	<a href="../faq/ubifs.html#L_powercut">this</a> FAQ entry;</li>
+	<a href="ubifs.html#L_powercut">here</a>;</li>
 
 	<li><b>fast I/O</b> - even with write-back disabled (e.g., if UBIFS is
 	mounted	with the "<code>-o sync</code>" mount option) UBIFS shows good
@@ -157,6 +158,47 @@ subsystems involved:</p>
 	data using one of the UBIFS mount options - see
 	<a href="ubifs.html#L_checksumming">here</a>.</li>
 </ul>
+
+
+
+<h2><a name="L_powercut">Power-cuts tolerance</a></h2>
+
+<p>Both UBI (see <a href="../faq/ubi.html#L_crash_safe">here</a>) and UBIFS are
+tolerant to power-cuts, and they were designed with this property in mind.</p>
+
+<p>UBIFS has internal debugging infrastructure to emulate power failures and
+the authors used it for extensive testing. It was tested for long time with
+power-fail emulation. The advantage of the emulation is that it emulates power
+failures even at the situations which happen not very often. For example, when
+the master node is updated, or the log is changed. The probability to interrupt
+the system at those moments is very low in real-life.</p>
+
+<p>There is also a powerful user-space test program called <code>integck</code>
+which performs a lot of random I/O operations and checks the integrity of the
+FS after remount. This test can also handle emulated power-cuts and check the
+FS integrity.</p>
+
+<p>Real power-cut tests have also done on OneNAND flash. We used Power
+Node devices which are controlled via serial line and may switch the power of
+the connected device on and off. UBIFS survived more than 100000 power-cuts
+while running stress tests.</p>
+
+<p>We've also done real power-cut tests on Spansion NOR flash. Some problems
+were found, but they were fixed and the board survived 10000 power-cuts after
+this. Please, see related discussions at the
+<a href="../mail.html">MTD mailing list</a>. The thread has
+"<i>UBIFS Corrupt during power failure</i>" subject. The beginning of the thread
+may be found
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-March/024953.html">here</a>,
+then it continues
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-April/025229.html">here</a>,
+and then continues
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-May/025609.html">here</a>,
+and
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-June/025887.html">here</a>,
+and
+<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-July/026259.html">here</a>.
+</p>
 
 
 

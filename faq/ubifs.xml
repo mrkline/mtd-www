@@ -33,7 +33,6 @@
 	<li><a href="ubifs.html#L_comproff">How do I disable compression?</a></li>
 	<li><a href="ubifs.html#L_ubifs_nandsim">How do I use UBIFS with nandsim?</a></li>
 	<li><a href="ubifs.html#L_ubifs_extract">How do I extract files from an UBI/UBIFS image?</a></li>
-	<li><a href="ubifs.html#L_powercut">Is UBIFS tolerant to power-cuts?</a></li>
 	<li><a href="ubifs.html#L_smaller_jrn">I need more space - should I make UBIFS journal smaller?</a></li>
 	<li><a href="ubifs.html#L_empty_file">Why is my file empty after an unclean reboot?</a></li>
 	<li><a href="ubifs.html#L_end_hole">Why does my file have zeroes at the end after an unclean reboot?</a></li>
@@ -1046,43 +1045,6 @@ the following to get rid of it:</p>
 umount /mnt/ubifs
 rmmod ubifs ubi nandsim
 </pre>
-
-
-
-<h2><a name="L_powercut">Is UBIFS tolerant to power-cuts?</a></h2>
-
-<p>Yes, both UBI (see <a href="ubi.html#L_crash_safe">here</a>) and UBIFS are
-tolerant to power-cuts, and they were designed with this property in mind.</p>
-
-<p>UBIFS has internal debugging infrastructure to emulate power failures and
-the authors used it for extensive testing. It was tested for long time with
-power-fail emulation (see <a href="ubifs.html#L_how_debug_test_modes">here</a>).
-The advantage of the emulation is that it emulates power failures even at the
-situations which happen not very often. For example, when the master node is
-updated, or the log is changed. The probability to interrupt the system at
-those moments is very low in real-life.</p>
-
-<p>Real power-cut tests have also done on OneNAND flash. We used Power
-Node devices which are controlled via serial line and may switch the power of
-the connected device on and off. UBIFS survived more than 100000 power-cuts
-while running stress tests.</p>
-
-<p>We've also done real power-cut tests on Spansion NOR flash. Some problems
-were found, but they were fixed and the board survived 10000 power-cuts after
-this. Please, see related discussions at the
-<a href="../mail.html">MTD mailing list</a>. The thread has
-"<i>UBIFS Corrupt during power failure</i>" subject. The beginning of the thread
-may be found
-<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-March/024953.html">here</a>,
-then it continues
-<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-April/025229.html">here</a>,
-and then continues
-<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-May/025609.html">here</a>,
-and
-<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-June/025887.html">here</a>,
-and
-<a href="http://lists.infradead.org/pipermail/linux-mtd/2009-July/026259.html">here</a>.
-</p>
 
 
 
