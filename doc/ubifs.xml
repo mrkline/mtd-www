@@ -15,6 +15,7 @@
 	<li><a href="ubifs.html#L_rednote">Big red note</a></li>
 	<li><a href="ubifs.html#L_overview">Overview</a></li>
 	<li><a href="ubifs.html#L_powercut">Power-cuts tolerance</a></li>
+	<li><a href="ubifs.html#L_ubifs_mlc">UBIFS and MLC NAND flash</a></li>
 	<li><a href="ubifs.html#L_source">Source code</a></li>
 	<li><a href="ubifs.html#L_ml">Mailing list</a></li>
 	<li><a href="ubifs.html#L_usptools">User-space tools</a></li>
@@ -199,6 +200,105 @@ and
 and
 <a href="http://lists.infradead.org/pipermail/linux-mtd/2009-July/026259.html">here</a>.
 </p>
+
+
+
+<h2><a name="L_ubifs_mlc">UBIFS and MLC NAND flash</a></h2>
+
+<p>UBIFS authors never tested UBI/UBIFS on MLC flash devices. Let's consider
+some specific aspects of MLC NAND flashes:</p>
+
+<ul>
+	<li>[<b>OK</b>] MLC NAND flashes are more "faulty" than SLC, so they use
+	stronger ECC codes; these ECC codes often occupy whole OOB area (as do
+	the ECC codes on some newer SLC flashes, which are more error-prone than
+	previous generations of flash); this is not a problem for UBI/UBIFS,
+	because neither UBIFS nor UBI use OOB area;</li>
+
+	<li>[<b>OK</b>] when the data are written to an eraseblock, they have to
+	be written sequentially, from the beginning of the eraseblock to the end
+	of it; this is also not a problem because it is exactly what UBI and UBIFS
+	do (see also <a href="../faq/ubi.html#L_restrict">this</a> section);</li>
+
+	<li>[<b>OK</b>] MLC flashes have rather short eraseblock life-cycles of
+	just a few thousand erase cycles; this is not a problem because UBI uses a
+	deterministic wear-leveling algorithm. However, the default 4096 erases
+	wear-levelling threshold may need to be lessened for MLC.</li>
+
+	<li>[<b>NEED WORK</b>] MLC flashes exhibit bit-flips as a result of
+	"program disturb" and "read disturb" errors (see
+	<a href="http://www.klabs.org/richcontent/MemoryContent/nvmt_symp/nvmts_2002/docs/12/12_dan_p.pdf">here</a>).
+	Note that SLC flashes have these same errors, but they are much more
+	common on MLC:
+	<ul>
+		<li>NAND flashes have a so called "read-disturb" property, which
+		means that a NAND page read operation may introduce a permanent
+		bit change; the ECC code would fix it, but more read operations
+		may introduce more bit changes and soft ECC errors may turn
+		into hard ECC errors; however, when these errors occur on the
+		same page that is being read, this should not be a problem
+		because UBI is doing scrubbing; in other words, once UBI notices
+		that there is a correctable bit-flip in an eraseblock, it moves
+		the contents of this physical eraseblock to a different physical
+		eraseblock, and re-maps the corresponding logical eraseblock to
+		the new physical eraseblock; so UBI refreshes the data and gets
+		rid of bit-flips, thus improving data integrity.</li>
+
+		<li>"Read-disturb" errors can also occur on a page <i>other</i>
+		that the one being read, but which is within the same
+		eraseblock. This is not a problem if the read operations are
+		spread around somewhat evenly within the eraseblock, since the
+		bit-flip will soon be detected and corrected through the
+		"scrubbing" process described above.  However if a particular
+		page within a block is rarely read, scrubbing will not have a
+		chance to fix errors, and they may accumulate over time until
+		they are unfixable. This is very similar the next problem.</li>
+
+		<li>NAND flashes also have a "program-disturb" property,
+		which means that if you program a NAND page, you may introduce
+		a bit-flip in a different NAND page.  The bit change can be
+		fixed by ECC, but with time the changes may accumulate
+		and become unfixable.  Current UBI bit-flip handling only
+		partially helps here, because it is passive, which means that
+		UBI notices bit-flips only when performing users' read requests.
+		So if you never read the NAND page which accumulates bit-flips,
+		UBI will never notice this.</li>
+	</ul>
+
+	<p>The read and program disturb issues should be possible to handle by
+	implementing a kind of "flash crawler" which would read all of the NAND
+	pages in the background from time to time (at UBI level) making UBI
+	notice and fix bit-flips. This is not implemented though, and this can
+	probably be done from user-space.</p></li>
+
+	<li>[<b>NEED WORK</b>] There is another aspect of MLC flashes which may
+	need closer attention: the "paired pages" problem (e.g., see
+	<a href="http://www.celinux.org/elc08_presentations/ELC2008 Filesystem support on Multi Level Cell flash in open source.ppt">this</a>
+	Power Point presentation). Namely, MLC NAND pages are coupled in a
+	sense that if you cut power while writing to a page, you corrupt not
+	only this page, but also one of the previous pages which is paired with
+	the current one. For example, pages 0 and 3, 1 and 4, 2 and 5, 3 and 6
+	in and so on (in the same eraseblock) may be paired (page distance is
+	4, but there may be other distances). So if you write data to, say,
+	page 3 and cut the power, you may end up with corrupted data in page 0.
+	UBIFS is not ready to handle this problem at the moment and this needs
+	some work.
+
+	<p>UBIFS can handle this problem by avoiding using the rest of free
+	space in LEBs after a sync or commit operation. E.g., if start writing
+	to a new journal LEB, and then have a sync or commit, we should "waste"
+	some amount of free space in this LEB to make sure that the previous
+	paired page does not contain synced data. This way we guarantee that
+	a power cut will not corrupt the synced or committed data. And the
+	"wasted" free space can be re-used after that LEB has been
+	garbage-collected. Similar to all the other LEBs we write to (LPT, log,
+	orphan, etc). This would require some work and would make UBIFS slower,
+	so this should probably be optional. The way to attack this issue is to
+	improve UBIFS power cut emulation and implement "paired-pages"
+	emulation, then use the <code>integck</code> test for testing. After
+	all the issues are fixed, a real power-cut tests could be carried
+	out.</p></li>
+</ul>
 
 
 
