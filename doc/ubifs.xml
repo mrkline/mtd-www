@@ -16,6 +16,7 @@
 	<li><a href="ubifs.html#L_overview">Overview</a></li>
 	<li><a href="ubifs.html#L_powercut">Power-cuts tolerance</a></li>
 	<li><a href="ubifs.html#L_ubifs_mlc">UBIFS and MLC NAND flash</a></li>
+	<li><a href="ubifs.html#L_unstable_bits">The unstable bits issue</a></li>
 	<li><a href="ubifs.html#L_source">Source code</a></li>
 	<li><a href="ubifs.html#L_ml">Mailing list</a></li>
 	<li><a href="ubifs.html#L_usptools">User-space tools</a></li>
@@ -298,7 +299,133 @@ some specific aspects of MLC NAND flashes:</p>
 	emulation, then use the <code>integck</code> test for testing. After
 	all the issues are fixed, a real power-cut tests could be carried
 	out.</p></li>
+
+	<li>[<b>NEED WORK</b>] The "unstable bits issue", which is not
+	MLC-specific, described
+	<a href="/ubifs.html#L_unstable_bits">here</a>.</li>
 </ul>
+
+
+
+<h2><a name="L_unstable_bits">The unstable bits issue</a></h2>
+
+<p>In the MTD community the "unstable bits" term is used to describe data
+instabilities caused by power cuts while writing ore erasing. The unstable bits
+issue is still not resolved in UBI and UBIFS, and it was reported several times
+in the MTD mailing list. In theory, this issue should be visible in any flash,
+but for some reason back at the times when we developed UBI/UBIFS and
+extensively tested them on a robust SLC NAND, we did not observe it. No one
+reported about this issue for NOR flash yet. However, on modern SLC and MLC
+flashes this problem is reproducible.</p>
+
+<p>The unstable bits are the result of a power cut during the program or erase
+operation. Depending on when the power cut has happened, they can corrupt the
+data or the free space. Consider the following 4 situations:</p>
+
+<ol>
+	<li>The power cut happens just before the NAND page program operation
+	finishes. After the reboot the page may be read correctly and without
+	a single bit-flip say, 2 times, and the 3rd time you may get an ECC
+	error. This happens because the page contain a number of unstable bits
+	which are sometimes read correctly and sometimes not.</li>
+
+	<li>The power cut happens just after the NAND page program operation
+	starts. After the reboot the page may be read correctly (return all
+	0xFFs) most of the time, but sometimes you may get some bits set to
+	zero. Moreover, if you then program this page, it also may be sometimes
+	read correctly, but sometimes return ECC error. The reason is again the
+	unstable bits in the NAND page.</li>
+
+	<li>The power cut happens just before the eraseblock erase operation
+	finishes. After the reboot the eraseblock may contain unstable bits and
+	the data in this eraseblock may suddenly become corrupted.</li>
+
+	<li>The power cut happens just after the eraseblock erase operation
+	starts. After the reboot the eraseblock may contain unstable bits and
+	sometimes return zero bits on read, or corrupted data if you program
+	it.</li>
+</ol>
+
+<p>Here is an example scenario how UBIFS may fail. UBIFS writes data node A to
+the journal LEB, and a power cut of type 1 happens. After the reboot, UBIFS
+recovery code reads that LEB, no bit-flips are reported by MTD, all the CRCs
+match, everything looks fine. UBIFS just assume that this LEB is all-right and
+the free space at the end of this LEB can be used for writing more data. UBIFS
+performs the commit operations, writes more user data, and everything works
+fine until the user reads node A by reading the corresponding file: an ECC
+error happens and the user gets the <code>EIO</code> error.</p>
+
+<p>The <code>EIO</code> may be what the user gets instead of his/her data also
+if a type 2 power cut happens, and UBIFS re-uses the corrupted free space for
+writing new nodes, and then these nodes are read.</p>
+
+<p>The solution is to teach UBIFS to erase-cycle any LEB which could potentially
+be written to when the power cut happened. This is not only about the
+journal LEBs, but also LPT, log, master and orphan LEBs. This means that the
+valid data from this LEB has to be read (and only once!) and then it should be
+written back to this LEB using the
+<a href="../doc/ubi.html#L_lebchange">atomic LEB change</a> UBI operation.
+This has to be done even if the LEB look all-right - no corruptions, all 0xFFs
+at the end.</p>
+
+<p>Similarly, UBI has to erase-cycle every eraseblock which could potentially be
+erased when the power cut happened.</p>
+
+<p>The other requirement is that during the recovery UBI/UBIFS should read data
+from the media only once. This is easy to demonstrate on the delayed recovery
+example. The delayed recovery happens when after a power cut the file-system is
+mounted R/O, in which case UBIFS must not write anything to the flash, and the
+real recovery is delayed until the FS is re-mounted R/W. Currently UBIFS just
+scans the journal during mounting R/O, drops (or "remembers") corrupted nodes,
+and "does not let" users to read them. But there is no guarantee that UBIFS
+spots all the corrupted nodes during the first scanning, so users may get
+<code>EIO</code> while reading data from the R/O-mounted FS.</p>
+
+<p>When UBIFS is then remounted R/W, it actually drops the corrupted nodes from
+the flash media by erase-cycling the corresponding LEBs. And UBIFS re-reads
+all the LEB data again. And there is no guarantee that UBIFS will get the same
+corruptions again.</p>
+
+<p>So it is important to make sure that the corrupted LEBs are read only once.
+E.g., we can cache the results of the first scanning, and then use that data
+when running the delayed recovery, instead of re-reading the data. Probably we
+may remember only the last NAND page containing valid nodes, not whole LEB,
+since for the journal only unstable bits of type 1 and 2 are relevant.</p>
+
+<p>There are similar double-read issues in UBI scanning - when it finds 2 PEBs
+belonging to the same LEB and it has to find out which one is newer. The volume
+table has to be erase-cycled as well in UBI.</p>
+
+<p>There are more issues related to unstable bits of type 2 and 3 in UBI, I
+think. This all needs a very careful look, and this is not trivial to fix
+because of the complexity: UBIFS as any file-system has many interfaces and a
+lot of states. The best strategy to attack this problem would be:</p>
+
+<ol>
+	<li>Improve the existing power cut emulation infrastructure in UBIFS
+	and start emulating unstable bits. Start with emulating only one type
+	of unstable bits, e.g., type 1.</li>
+
+	<li>Use the <code>integck</code> test to stress the file-system with
+	power cut emulation enabled - the test can re-start when an emulated
+	power cut happens. This will allow you to very quickly emulate hundreds
+	of power cuts in interesting places. Fix all the bugs. Make sure it is
+	rock solid. Of course, if you have various independent issues, you may
+	temporary hack the power cut emulation code to emulate unstable bits
+	only at certain places, to temporarily limit the amount of problems you
+	have to simultaneously deal with.</li>
+
+	<li>Start emulating other types of unstable bits, and fix all the
+	issues one-by-one.</li>
+
+	<li>Go down to UBI and add a similar power cut emulation
+	infrastructure. But emulate unstable bits only in UBI-specific on-flash
+	data structures - the EC/VID headers and the volume table. Improve the
+	<code>integck</code> test to support that infrastructure and fix all the
+	issues.</li>
+
+	<li>Run real power cut tests on real hardware.</li>
+</ol>
 
 
 
