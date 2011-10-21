@@ -186,7 +186,7 @@ Yes, you can. The requirements are the same as for boot-loaders
 <P>
 NAND simulator (<CODE>nandsim</CODE>) is an extremely useful debugging and
 development tool which simulates NAND flashes in RAM or a file. To select the
-simulated flash type one should specify ID bytes of your flashe - the onese
+simulated flash type one should specify ID bytes of your flash - the ones
 which are returned by the "Read ID" command (<CODE>0x90</CODE>) - consult the
 flash manual. The following are examples of input parameters:
 </P>
