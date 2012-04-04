@@ -299,6 +299,20 @@ actually has to be at least 225MiB in size. Of course it may be larger,
 in which case the "rootfs" volume will be re-sized and take the rest of the
 flash space (because of the auto-resize flag).</p>
 
+<p>
+The implications of the above paragraph are important. The
+<code>vol_size</code> option effectively represents the minimum size of the
+flash where the volume will be installed. If you are working with multiple
+devices (i.e. you are producing an image to be flashed on various devices,
+even when 'identical'), the amount of usable flash <em>will</em> vary because
+some devices have more bad blocks than others. Excluding the
+<code>vol_size</code> option will cause vol_size to be automatically
+calculated based on the size of the input image, and this will produce
+maximum robustness in the face of varying numbers of bad blocks on target
+devices. You can combine this with the autoresize functionality so that the
+maximum amount of free space is made available upon first mount.
+</p>
+
 <p>Also, the <code>config_data.img</code> and <code>rootfs.img</code> input
 files do not have to be 512KiB and 220MiB respectively, but may be smaller if
 they contain less data. In this case the resulting <code>ubi.img</code> file
