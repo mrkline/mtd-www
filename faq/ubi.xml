@@ -26,6 +26,7 @@
 	<li><a href="ubi.html#L_restrict">Can UBI logical eraseblocks be written randomly?</a></li>
 	<li><a href="ubi.html#L_why_no_oob">Why UBI does not use OOB area of NAND flashes?</a></li>
 	<li><a href="ubi.html#L_crash_safe">Is UBI tolerant of power failures?</a></li>
+	<li><a href="ubi.html#L_bad_blocks_exceeded">What happens when the PEBs reserved for bad block handling run out?</a></li>
 	<li><a href="ubi.html#L_mlc">May UBI be used on MLC flash?</a></li>
 	<li><a href="ubi.html#L_vid_offset_mismatch">Why does ubiattach on a freshly formatted device fail with "Invalid argument"?</a></li>
 	<li><a href="ubi.html#L_subpage">What is a sub-page?</a></li>
@@ -453,6 +454,22 @@ reboots.</p>
 UBI fail to recover after a power cut on modern SLC and MLC flashes. This has
 never been reported yet for UBI, but has been reported for UBIFS and we believe
 must be an issue for UBI as well.</p>
+
+
+
+<h2><a name="L_bad_blocks_exceeded">What happens when the PEBs reserved for bad block handling run out?</a></h2>
+
+By default, 1% of the available PEBs are reserved for handling bad blocks.
+
+If the number of blocks that turn bad exceeds that allocation, an error
+will be presented and UBI will switch to read-only mode.
+
+To recover from this error you could re-flash the device. The run-time
+recovery would require deleting or shrinking one of the UBI volumes.
+
+So, you need to carefully select the amount of PEBs reserved for bad
+blocks handling. For Nokia phones like N900 (with Samsung OneNAND flash,
+256MiB in size, 128KiB PEBs) 1% was just fine.
 
 
 
