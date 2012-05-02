@@ -85,7 +85,7 @@ eraseblocks and write only in NAND page size chunks. Please, use the
 <P>
 Also please, do not forget to erase your flash before flashing the image. You
 may use the <CODE>flash_eraseall</CODE> utility for this. And it makes sense to
-make sure the erase functionality actually works my reading the erase MTD
+make sure the erase functionality actually works by reading the erased MTD
 device back and checking that only 0xFF bytes were read.
 </P>
 
@@ -209,8 +209,8 @@ data write or write buffer sync or (2) while GC was working or (3) while the
 write-buffer contained some data and was not yet synced before the unclean
 reboot happened. In them first and the third cases, you just lose the very
 last data you have written, in the second case you lose nothing. The wrong
-nodes will eventually be recycled by Garbage Collector and the massages will go
-(but they may leave quite long).
+nodes will eventually be recycled by Garbage Collector and the messages will go
+(but they may live quite long).
 </P>
 
 <P>
@@ -301,7 +301,7 @@ the kernel command line to use it as a root filesystem
 <P>On <B>NOR FLASH</B> each write goes directly into the FLASH.</P>
 
 <P>
-On <B>NAND FLASHM</B> and <B>NOR ECC FLASH</B> we have a write-buffer for
+On <B>NAND FLASH</B> and <B>NOR ECC FLASH</B> we have a write-buffer for
 writing only full pages to the chips. There could be a loss of data, when the
 write-buffer is not flushed before power down. There are some mechanisms to
 ensure, that the write-buffer is flushed. You can force the flush of the

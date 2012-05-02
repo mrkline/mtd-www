@@ -557,7 +557,7 @@ fully erased, which removes any problematic non-<code>0xFF</code> data from
 their OOB areas.</p>
 
 <p>Of course it is not possible to re-erase individual NAND pages, and entire
-PEBs are erised.  UBIFS performs this procedure by reading the useful
+PEBs are erased.  UBIFS performs this procedure by reading the useful
 (non 0xFF'ed) contents of LEBs and then invoking the
 <a href="ubi.html#L_lebchange">atomic LEB change</a> UBI operation. Obviously,
 this means that UBIFS has to read and write a lot of LEBs which takes
