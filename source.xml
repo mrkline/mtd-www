@@ -8,9 +8,9 @@
 	
 	<INCLUDE file="inc/content.tmpl" />
 
-<h2>GIT vs. Linux 2.6.x</h2>
+<h2>GIT vs. Linux 3.x</h2>
 
-    <P>The MTD GIT tree is <TT>git://git.infradead.org/mtd-2.6.git</TT>, 
+    <P>The MTD GIT tree is <TT>git://git.infradead.org/linux-mtd.git</TT>,
     and is viewable using gitweb at <A 
     HREF="http://git.infradead.org/">http://git.infradead.org/</A>, along
     with a separate tree for the userspace tools, and users' own trees.
@@ -20,7 +20,7 @@
     <P>Gitweb can give patches between specific points in the tree. To
     obtain the full patch between Linus' official kernel tree and the
     current MTD tree, use the following URL: <A
-    HREF="http://git.infradead.org/?p=mtd-2.6.git;a=commitdiff_plain;h=master;hp=linus">http://git.infradead.org/?p=mtd-2.6.git;a=commitdiff_plain;h=master;hp=linus</A>. This
+    HREF="http://git.infradead.org/?p=linux-mtd.git;a=commitdiff_plain;h=master;hp=linus">http://git.infradead.org/?p=linux-mtd.git;a=commitdiff_plain;h=master;hp=linus</A>. This
     produces a full patch from the branch known as '<TT>linus</TT>' in
     the git repository, which represents the last point at which
     Linus' official kernel tree was merged into the MTD git tree. This
@@ -33,11 +33,11 @@
       of Linus' official kernel tree, share the object directory with that
       instead of downloading the same objects all over again. With GIT 1.3.0
       and onwards, that's simple enough. Assuming you have a local tree named
-      '<TT>~/git/linux-2.6</TT>' already, you can clone the MTD tree as follows:
-    <pre>
-git-clone --reference ~/git/linux-2.6 git://git.infradead.org/mtd-2.6
-</pre>
-</P>
+      '<TT>~/git/linux</TT>' already, you can clone the MTD tree as follows:</P>
+<p>
+<tt>git clone --reference ~/git/linux git://git.infradead.org/linux-mtd.git</tt>
+</p>
+
 <p>Users with accounts on git.infradead.org can create their own trees
 there, which are also accessible via public git:// URLs and visible in
 gitweb. For more details see the <A HREF="doc/git.html">GIT HOWTO</A>.</p>
@@ -51,7 +51,7 @@ gitweb. For more details see the <A HREF="doc/git.html">GIT HOWTO</A>.</p>
 If you have the facility to do so, please create a temporary git tree
 from which patches can be pulled. The <A HREF="doc/git.html">GIT
 HOWTO</A> documents how to do this. Please make sure that any such
-such GIT trees are based on the current mtd-2.6 GIT tree and not on 
+such GIT trees are based on the current linux-mtd GIT tree and not on
 Linus' tree, so that unnecessary merges are avoided.
 </p>
 <P>Users without an account on <TT>git.infradead.org</TT> (which is a
@@ -90,7 +90,7 @@ Signed-off-by: Realname &amp;lt;realmail&amp;gt;<br />
 
 <h2><a name="kernelversions">Kernel versions</a></h2>
 <p>The MTD code in the linux kernel is updated from the MTD GIT tree
-in kernel version <b>2.6.newest only</b>.  The 2.4 kernel does not
+in kernel version <b>3.x (newest) only</b>.  The 2.4 kernel does not
 have NAND support in JFFS2, and will not have anything but
 high-priority bug-fixes applied to it.</p>
 <P>As of March 2005 we dropped Linux 2.4 support from CVS head. This
