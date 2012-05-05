@@ -66,10 +66,10 @@ simple rules should be followed when submitting patches</p>
 
 <ol>
 <li>Provide a short summary line of the patch in the format:</li><br />
-<code>[PATCH] [MTD] DETAILEDTARGET: short summary</code>
+<code>[PATCH] mtd: DETAILEDTARGET: short summary</code>
 <p>
-DETAILEDTARGET should be one of the MTD subcomponents, e.g. NAND, CHIPS,
-MAPS, CORE, and/or a filename if it simplifies the review/recognition of
+DETAILEDTARGET should be one of the MTD subcomponents, e.g. nand, chips,
+maps, core, and/or a filename if it simplifies the review/recognition of
 patch relevance.</p>
 
 <li>Empty new line</li>
