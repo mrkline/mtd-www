@@ -89,19 +89,20 @@ use those prototyped in <code>mtd.h</code> outside of <code>struct
 mtd_info</code>.  These methods include <code>mtd_read()</code>,
 <code>mtd_write()</code>, etc.</p>
 
-Absent an error, the API methods will return zero, with one notable exception.
-<code>mtd_read()</code> may return <code>-EUCLEAN</code> in some circumstances.
-This return code is applicable mainly to NAND flash devices, and is used to
-indicate that some bit errors were corrected by the device's ECC facility.
-Prior to kernel version 3.4, <code>-EUCLEAN</code> was returned if one or more
-bit errors were corrected during the read operation.  As of kernel 3.4, the
-meaning is more nuanced, and can be broadly interpreted to mean "a dangerously
-high number of bit errors were corrected".  The <code>-EUCLEAN</code> return
-code is intended to help higher layers detect degradation of erase blocks.  The
-conditions by which <code>mtd_read()</code> returns <code>-EUCLEAN</code> can be
-tuned using the <code>bitflip_threshold</code> element of the sysfs interface.
-Please see the kernel documentation for the MTD sysfs interface (referenced
-above) before adjusting this value.
+Absent an error, the API methods will return zero, with two notable exceptions.
+<code>mtd_read()</code> and <code>mtd_read_oob()</code> may return
+<code>-EUCLEAN</code> in some circumstances.  This return code is applicable
+mainly to NAND flash devices, and is used to indicate that some bit errors were
+corrected by the device's ECC facility.  Prior to kernel version 3.4,
+<code>-EUCLEAN</code> was returned if one or more bit errors were corrected
+during the read operation.  As of kernel 3.4, the meaning is more nuanced, and
+can be broadly interpreted to mean "a dangerously high number of bit errors were
+corrected".  The <code>-EUCLEAN</code> return code is intended to help higher
+layers detect degradation of erase blocks.  The conditions by which
+<code>mtd_read()</code> and <code>mtd_read_oob()</code> return
+<code>-EUCLEAN</code> can be tuned using the <code>bitflip_threshold</code>
+element of the sysfs interface.  Please see the kernel documentation for the MTD
+sysfs interface (referenced above) before adjusting this value.
 
 
 <h2><a name="L_mtd_tests">MTD tests</a></h2>
