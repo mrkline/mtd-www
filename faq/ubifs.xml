@@ -1201,7 +1201,7 @@ a standard PC with the <code>nandsim</code> NAND simulator. Please, refer
 the available fake MTD devices.
 
 
-<h3>Debugging messages</h3>
+<h3><a name="L_debug_msgs">Debugging messages</a></h3>
 
 <p>Sometimes it is necessary to make UBIFS print about what it is doing. You may
 enable various UBIFS debugging messages using the "dynamic debug" Linux kernel
@@ -1403,10 +1403,8 @@ for UBIFS power-cut testing.</p>
 	before running your UBIFS test, which reproduces the error, just
 	invoke <code>dmesg -n8</code> command to make all kernel messages
 	to go to the console; another possibility is to boot the kernel
-	with <code>ignore_loglevel</code> option, in which makes the kernel
-	print all messages to the console unconditionally;
-	<a href="ubi.html#L_how_debug_printks">this</a> section contains
-	some more information about how the messages can be collected;</li>
+	with <code>ignore_loglevel</code> option, which makes the kernel
+	print all messages to the console unconditionally;</li>
 
 	<li>describe your flash device, attach the "<code>mtdinfo&amp;nbsp;-a</code>"
 	output (or the less useful "<code>cat&amp;nbsp;/proc/mtd</code>" output);</li>
