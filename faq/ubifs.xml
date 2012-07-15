@@ -1201,98 +1201,99 @@ a standard PC with the <code>nandsim</code> NAND simulator. Please, refer
 the available fake MTD devices.
 
 
-<h3>Enable UBIFS debugging support</h3>
-
-<p>Enable UBIFS debugging support in the configuration menu
-(the "<b>UBIFS debugging support</b>" check-box). This will make sure that
-assertions, debugging messages, self-checks and test modes are compiled-in.
-The assertions will be enabled, but messages, self-checks and test modes
-will be disabled by default. This option will also make many error messages
-to be more verbose (e.g., include flash dumps). This option should not slow
-down UBIFS, so it is recommended to always have it switched on, unless you
-are very concerned about UBIFS code size.</p>
-
-
 <h3>Debugging messages</h3>
 
 <p>Sometimes it is necessary to make UBIFS print about what it is doing. You may
-enable various UBIFS debugging messages using the <code>debug_msgs</code>
-UBIFS module parameter, or using the <code>ubifs.debug_msgs</code> kernel boot
-parameter if you have UBIFS compiled in. Alternatively, the same can be
-achieved by changing the <code>/sys/module/ubifs/parameters/debug_tsts</code>
-file.</p>
+enable various UBIFS debugging messages using the "dynamic debug" Linux kernel
+infrastructure (you should have it enabled by selecting the
+<code>CONFIG_DYNAMIC_DEBUG</code> kernel configuration option). Please, refer
+the <code>Documentation/dynamic-debug-howto.txt</code> file in the Linux kernel
+sources tree for details, but here we only provide some useful recepies.</p>
 
-<p>The <code>debug_msgs</code> option is a bit-mask which controls which message
-type has to be printed. You can combine the message types arbitrarily. The
-following message types are supported:</p>
-
+<p>In the below table we use the fact that UBIFS prefixes all debugging messages
+with "UBIFS DBG", which is followed by the subsystem name (see
+<code>fs/ubifs/debug.h</code>).</p>
 
 <table border="2" cellpadding="4" cellspacing="0">
 <tr>
 	<td><b>Message Type</b></td>
-	<td><b>Value</b></td>
+	<td><b>Magic string</b></td>
+</tr>
+<tr>
+	<td>All messages (very noisy)</td>
+	<td>format "UBIFS DBG" +pf'</td>
 </tr>
 <tr>
 	<td>General messages</td>
-	<td>1</td>
+	<td>format "UBIFS DBG gen" +pf'</td>
 </tr>
 <tr>
 	<td>Journal messages</td>
-	<td>2</td>
+	<td>format "UBIFS DBG jnl" +pf'</td>
 </tr>
 <tr>
 	<td>Mount messages</td>
-	<td>4</td>
+	<td>format "UBIFS DBG mnt" +pf'</td>
 </tr>
 <tr>
 	<td>Commit messages</td>
-	<td>8</td>
+	<td>format "UBIFS DBG cmt" +pf'</td>
 </tr>
 <tr>
 	<td>LEB search messages</td>
-	<td>16</td>
+	<td>format "UBIFS DBG find" +pf'</td>
 </tr>
 <tr>
 	<td>Budgeting messages</td>
-	<td>32</td>
+	<td>format "UBIFS DBG budg" +pf'</td>
 </tr>
 <tr>
 	<td>Garbage collection messages</td>
-	<td>64</td>
+	<td>format "UBIFS DBG gc" +pf'</td>
 </tr>
 <tr>
 	<td>Tree Node Cache (TNC) messages</td>
-	<td>128</td>
+	<td>format "UBIFS DBG tnc" +pf'</td>
 </tr>
 <tr>
 	<td>LEB properties (lprops) messages</td>
-	<td>256</td>
+	<td>format "UBIFS DBG lp" +pf'</td>
 </tr>
 <tr>
 	<td>Input/output messages</td>
-	<td>512</td>
+	<td>format "UBIFS DBG io" +pf'</td>
 </tr>
 <tr>
 	<td>Log messages</td>
-	<td>1024</td>
+	<td>format "UBIFS DBG log" +pf'</td>
 </tr>
 <tr>
 	<td>Scan messages</td>
-	<td>2048</td>
+	<td>format "UBIFS DBG scan" +pf'</td>
 </tr>
 <tr>
 	<td>Recovery messages</td>
-	<td>4096</td>
+	<td>format "UBIFS DBG rcvry" +pf'</td>
 </tr>
 </table>
 
-<p>E.g., "<code>echo 4097 > /sys/module/ubifs/parameters/debug_tsts</code>"
-enables general and recovery messages.</p>
+<p>To enable the debugging messages you should just write the magic string to
+the <code>/sys/kernel/debug/dynamic_debug/control</code> file (granted your
+debugfs is mounted at <code>/sys/kernel/debug</code>):</p>
+
+<pre>
+echo 'format "UBIFS DBG" +pf' > /sys/kernel/debug/dynamic_debug/control
+</pre>
+
+<p>If you are debugging an issue which happens boot time, you can pass the
+magic string with the <code>ddebug_query</code> kernel boot parameter (and
+please, do not forget to add the <code>ignore_loglevel</code> if you are
+relying on your default console output).</p>
 
 <p>UBIFS may print huge amount of debugging messages and slow down your system
 considerably. You might also end up losing them if your ring buffer is not
-large enough. <a href="ubi.html#L_how_debug_printks">This</a> section explains
-how to make the ring buffer larger.</p>
+large enough. Use the <code>log_buf_len=</code> kernel boot parameter to make
+the ring buffer larger (e.g., <code>log_buf_len=64M</code>).</p>
 
 
 <h3><a name="L_how_debug_self_checks">Extra self-checks</a></h3>
@@ -1302,72 +1303,77 @@ very useful for debugging or testing. However, the self-checks are very
 expensive and slow down UBIFS a lot. We recommend to use them only while
 hunting bugs or testing UBIFS changes.</p>
 
-<p>Similarly to debugging messages, the self-checks can be switched on
-using the <code>debug_chks</code> UBIFS module parameter or the
-<code>/sys/module/ubifs/parameters/debug_chks</code> file. The
-<code>debug_chks</code> option is a bit-mask which selects the check
-types to be enabled.</p>
+<p>If your debugfs is mounted at <code>/sys/kernel/debug</code>, then you
+should have global self-check switches at <code>/sys/kernel/debug/ubifs</code>
+(affect all mounted file-systems and available even when you do not have any
+file-system mounted) and per-file-system switches at
+<code>/sys/kernel/debug/ubifs/ubiX_Y</code>, where <code>X</code> is the
+mounted UBI device number and <code>Y</code> is the mounted volume ID. E.g.,
+when I mount <code>/dev/ubi0_1</code>, I have the following:</p>
+
+<pre>
+$ cd /sys/kernel/debug/ubifs
+$ ls
+chk_fs  chk_general  chk_index  chk_lprops  chk_orphans  tst_recovery  ubi0_0
+$ ls ubi0_0/
+chk_fs       chk_index   chk_orphans  dump_lprops  ro_error
+chk_general  chk_lprops  dump_budg    dump_tnc     tst_recovery
+</pre>
+
+<p>The self-check files start with "chk_" which follows by the UBIFS sub-system
+name where the self-checks will be enabled. The below table provides some more
+details.</p>
 
 <table border="2" cellpadding="4" cellspacing="0">
 <tr>
 	<td><b>Check type</b></td>
-	<td><b>Value</b></td>
+	<td><b>File name</b></td>
 </tr>
 <tr>
-	<td>General checks</td>
-	<td>1</td>
+	<td>General checks. Check correctness of inode size and link count,
+	buds accounting and node lists sorting, lprops categories, etc.
+	Also forces the "in-the-gaps" commit method whenever possible
+	(normally this method is used very rarely as the last resort method
+	when there is no enough free space to commit the normal way).</td>
+	<td><code>chk_general</code></td>
 </tr>
 <tr>
-	<td>Check Tree Node Cache (TNC)</td>
-	<td>2</td>
+	<td>Index checks. Quite heavy checks of index correctness.</td>
+	<td><code>chk_index</code></td>
 </tr>
 <tr>
-	<td>Check indexing tree size</td>
-	<td>4</td>
+	<td>Orphans checks.</td>
+	<td><code>chk_orphans</code></td>
 </tr>
 <tr>
-	<td>Check orphan area</td>
-	<td>8</td>
+	<td>LEB properties (lprops) checks.</td>
+	<td><code>chk_lprops</code></td>
 </tr>
 <tr>
-	<td>Check old indexing tree</td>
-	<td>16</td>
-</tr>
-<tr>
-	<td>Check LEB properties (lprops)</td>
-	<td>32</td>
-</tr>
-<tr>
-	<td>Check leaf nodes and inodes</td>
-	<td>64</td>
+	<td>Full file-system data checks on every commit.</td>
+	<td><code>chk_fs</code></td>
 </tr>
 </table>
 
-<p>E.g., "<code>echo 3 > /sys/module/ubifs/parameters/debug_chks</code>" enables
-general checks and TNC checks. But for testing, it is better to just enable
-all checks: "<code>echo 127 > /sys/module/ubifs/parameters/debug_chks</code>".</p>
 
 
-<h3><a name="L_how_debug_test_modes">Test modes</a></h3>
+<h3><a name="L_how_debug_recovery">Power-cut recovery testing</a></h3>
 
-<p>UBIFS currently supports 2 test modes:</p>
-<ul>
-	<li>"Force in-the-gaps" forces the "in-the-gaps" garbage collection
-	method to be used as much as possible. Normally, UBIFS uses this method
-	extremely rarely, only as the last resort way to do garbage collection,
-	which makes it difficult to test. This test mode changes this behavior.</li>
+<p>UBIFS suppors the power-cut emulation infrastructure which emulates a
+power-cut at random points. When a power-cut is emulated, UBIFS switches to
+read-only mode and disallows any further write to the UBIFS volume, thus
+emulating a power cut. The main idea of this mode is to emulate power cuts in
+"interesting" places, e.g., when changing the log, or the orphans area. Indeed,
+real power-cuts testing mostly interrupts UBIFS when it is writing data to the
+journal.</p>
 
-	<li>"Failure mode for recovery" test mode makes UBIFS emulate power cuts.
-	When a power-cut is emulated, UBIFS switches to read-only mode, and then
-	it is supposed to be unmounted and mounted again, which causes recovery.
-	The main idea of this mode is to emulate power cuts in "interesting" places,
-	e.g., when changing the log, or the orphans area. Indeed, real power-cuts
-	testing mostly interrupts UBIFS when it is writing data to the journal.
-	The testing mode makes it more probable to interrupt UBIFS in other places.
-	And of course, the testing mode should be considered as supplementary to
-	the real power cut testing.</li>
-</ul>
+<p>Use the <code>tst_recovery</code> debugfs file to enable the power-cut
+recovery testing mode. Alternatively, you may switch UBIFS to R/O mode using
+the <code>ro_error</code> file.</p>
 
+<p>The <code>integck</code> test program (part of the <code>mtd-utils</code>
+repository) is aware of UBIFS power cut recovery testing mode and can be used
+for UBIFS power-cut testing.</p>
 
 
 <h2><a name="L_how_send_bugreport">How do I send an UBIFS bug report?</a></h2>
@@ -1392,13 +1398,6 @@ all checks: "<code>echo 127 > /sys/module/ubifs/parameters/debug_chks</code>".</
 	<li>make sure you have compiled the kernel symbols in
 	(<code>CONFIG_KALLSYMS_ALL=y</code> in <code>.config</code>);</li>
 
-	<li>mark the <b>Enable debugging support</b> check-box in the UBIFS
-	kernel configuration menu (<code>CONFIG_UBIFS_FS_DEBUG=y</code> in
-	<code>.config</code>); this option will make UBIFS print more
-	informative error messages; <b>note</b>, you should enable UBIFS
-	debugging, not UBI debugging - distinguish between UBI and UBIFS please,
-	they are different things;</li>
-
 	<li>include all the messages UBIFS prints, not only those you see at
 	the console, but also those you see when running <code>dmesg</code>; or
 	before running your UBIFS test, which reproduces the error, just
@@ -1407,26 +1406,16 @@ all checks: "<code>echo 127 > /sys/module/ubifs/parameters/debug_chks</code>".</
 	with <code>ignore_loglevel</code> option, in which makes the kernel
 	print all messages to the console unconditionally;
 	<a href="ubi.html#L_how_debug_printks">this</a> section contains
-	some more information about how the messages can be collected.</li>
-
-	<li>explicitly tell about whether you did any checking as described in
-	the previous list of "actions before sending a bug-report" (running MTD
-	tests, enabling UBIFS extra self-checks; and tell the results; if you
-	saw any errors/warnings, describe them and include all corresponding
-	prints from tests / UBIFS / etc;</li>
-
-	<li>provide UBI and UBIFS configuration from your
-	<code>.config</code> file, or just attach whole file;</li>
+	some more information about how the messages can be collected;</li>
 
 	<li>describe your flash device, attach the "<code>mtdinfo&amp;nbsp;-a</code>"
 	output (or the less useful "<code>cat&amp;nbsp;/proc/mtd</code>" output);</li>
 
 	<li>specify which kernel version you are using; if your kernel is not
 	the latest one, please, explicitly tell whether you updated UBIFS by
-	pulling one of the back-port trees or not; if you did not, you will
-	probably be asked to do this, depending on the problem;</li>
+	pulling one of the back-port trees or not;</li>
 
-	<li>describe how the problem can be reproduced;</li>
+	<li>describe how the problem can be reproduced.</li>
 </ol>
 
 <p>The bugreport should be sent to the
