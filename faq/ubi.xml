@@ -459,17 +459,10 @@ must be an issue for UBI as well.</p>
 
 <h2><a name="L_bad_blocks_exceeded">What happens when the PEBs reserved for bad block handling run out?</a></h2>
 
-By default, 1% of the available PEBs are reserved for handling bad blocks.
+By default, 2% of the available PEBs are reserved for handling bad blocks.
 
 If the number of blocks that turn bad exceeds that allocation, an error
-will be presented and UBI will switch to read-only mode.
-
-To recover from this error you could re-flash the device. The run-time
-recovery would require deleting or shrinking one of the UBI volumes.
-
-So, you need to carefully select the amount of PEBs reserved for bad
-blocks handling. For Nokia phones like N900 (with Samsung OneNAND flash,
-256MiB in size, 128KiB PEBs) 1% was just fine.
+message will be printed and UBI will switch to read-only mode.
 
 
 

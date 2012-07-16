@@ -518,7 +518,7 @@ amount of flash space available for UBI users. Namely:</p>
 	<a href="ubi.html#L_lebchange">atomic LEB change</a> operation;</li>
 	<li>some amount of PEBs is reserved for bad PEB handling; this is
 	applicable for NAND flash, but not for NOR flash; the percentage of
-	reserved PEBs is configurable and is 1% by default;</li>
+	reserved PEBs is configurable and is 2% by default;</li>
 	<li>UBI stores the EC and VID
 	<a href="ubi.html#L_ubi_headers">headers</a> at the beginning of each
 	PEB; the amount of bytes used for these purposes depends on the flash
@@ -533,7 +533,7 @@ amount of flash space available for UBI users. Namely:</p>
 	<li><i>S<sub>P</sub></i> - physical eraseblock size;</li>
 	<li><i>S<sub>L</sub></i> - logical eraseblock size;</li>
 	<li><i>B</i> - number of PEBs reserved for bad PEB handling; it is
-	1% of <i>P</i> for NAND by default, and 0 for NOR and other flash types
+	2% of <i>P</i> for NAND by default, and 0 for NOR and other flash types
 	which do not have bad PEBs;</li>
 	<li><i>O</i> - the overhead related to storing EC and VID headers in
 	bytes, i.e. <i>O</i> = <i>S<sub>P</sub></i> - <i>S<sub>L</sub></i>.</li>
@@ -855,8 +855,8 @@ chips would have maximum amount of bad PEBs. But in practice, most of the chips
 will have only few bad PEBs which is far less than the maximum. In general, it
 is fine - this will increase reliability, because UBI anyway uses all PEBs of
 the device. On the other hand UBI anyway reserves some amount of physical
-eraseblocks for bad PEB handling which is 1% of PEBs by default. So in case of
-the above mentioned OneNAND chip the result would be that 1% of PEBs would be
+eraseblocks for bad PEB handling which is 2% of PEBs by default. So in case of
+the above mentioned OneNAND chip the result would be that 2% of PEBs would be
 reserved by UBI, and 0-2% of PEBs would not be used (they would be seen as
 available LEBs to the UBI users).</p>
 
@@ -869,7 +869,7 @@ For example, if there is a volume which is intended to have the root
 file-system, it may be reasonable to mark it with the auto-resize flag.</p>
 
 <p>In the example with OneNAND chip, if one of the UBI volumes is be marked
-as auto-re-sized, it will be enlarged by 0-2% on the first UBI boot, but 1% of
+as auto-re-sized, it will be enlarged by 0-2% on the first UBI boot, but 2% of
 PEBs will anyway be reserved for bad PEB handling.</p>
 
 <p>Note, the auto-resize feature exists in the Linux kernel starting from
