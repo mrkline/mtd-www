@@ -826,27 +826,27 @@ is a similar table for UBI.</p>
 </tr>
 <tr>
 	<td>All messages (very noisy)</td>
-	<td>format "UBI DBG" +pf'</td>
+	<td>'format "UBI DBG" +pf'</td>
 </tr>
 <tr>
 	<td>General messages</td>
-	<td>format "UBI DBG gen" +pf'</td>
+	<td>'format "UBI DBG gen" +pf'</td>
 </tr>
 <tr>
 	<td>EBA messages</td>
-	<td>format "UBI DBG eba" +pf'</td>
+	<td>'format "UBI DBG eba" +pf'</td>
 </tr>
 <tr>
 	<td>Wear-levelling messages</td>
-	<td>format "UBI DBG wl" +pf'</td>
+	<td>'format "UBI DBG wl" +pf'</td>
 </tr>
 <tr>
 	<td>Input/output messages</td>
-	<td>format "UBI DBG io" +pf'</td>
+	<td>'format "UBI DBG io" +pf'</td>
 </tr>
 <tr>
 	<td>Attach messages</td>
-	<td>format "UBI DBG bld" +pf'</td>
+	<td>'format "UBI DBG bld" +pf'</td>
 </tr>
 </table>
 

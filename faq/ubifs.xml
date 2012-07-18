@@ -1221,59 +1221,59 @@ with "UBIFS DBG", which is followed by the subsystem name (see
 </tr>
 <tr>
 	<td>All messages (very noisy)</td>
-	<td>format "UBIFS DBG" +pf'</td>
+	<td>'format "UBIFS DBG" +pf'</td>
 </tr>
 <tr>
 	<td>General messages</td>
-	<td>format "UBIFS DBG gen" +pf'</td>
+	<td>'format "UBIFS DBG gen" +pf'</td>
 </tr>
 <tr>
 	<td>Journal messages</td>
-	<td>format "UBIFS DBG jnl" +pf'</td>
+	<td>'format "UBIFS DBG jnl" +pf'</td>
 </tr>
 <tr>
 	<td>Mount messages</td>
-	<td>format "UBIFS DBG mnt" +pf'</td>
+	<td>'format "UBIFS DBG mnt" +pf'</td>
 </tr>
 <tr>
 	<td>Commit messages</td>
-	<td>format "UBIFS DBG cmt" +pf'</td>
+	<td>'format "UBIFS DBG cmt" +pf'</td>
 </tr>
 <tr>
 	<td>LEB search messages</td>
-	<td>format "UBIFS DBG find" +pf'</td>
+	<td>'format "UBIFS DBG find" +pf'</td>
 </tr>
 <tr>
 	<td>Budgeting messages</td>
-	<td>format "UBIFS DBG budg" +pf'</td>
+	<td>'format "UBIFS DBG budg" +pf'</td>
 </tr>
 <tr>
 	<td>Garbage collection messages</td>
-	<td>format "UBIFS DBG gc" +pf'</td>
+	<td>'format "UBIFS DBG gc" +pf'</td>
 </tr>
 <tr>
 	<td>Tree Node Cache (TNC) messages</td>
-	<td>format "UBIFS DBG tnc" +pf'</td>
+	<td>'format "UBIFS DBG tnc" +pf'</td>
 </tr>
 <tr>
 	<td>LEB properties (lprops) messages</td>
-	<td>format "UBIFS DBG lp" +pf'</td>
+	<td>'format "UBIFS DBG lp" +pf'</td>
 </tr>
 <tr>
 	<td>Input/output messages</td>
-	<td>format "UBIFS DBG io" +pf'</td>
+	<td>'format "UBIFS DBG io" +pf'</td>
 </tr>
 <tr>
 	<td>Log messages</td>
-	<td>format "UBIFS DBG log" +pf'</td>
+	<td>'format "UBIFS DBG log" +pf'</td>
 </tr>
 <tr>
 	<td>Scan messages</td>
-	<td>format "UBIFS DBG scan" +pf'</td>
+	<td>'format "UBIFS DBG scan" +pf'</td>
 </tr>
 <tr>
 	<td>Recovery messages</td>
-	<td>format "UBIFS DBG rcvry" +pf'</td>
+	<td>'format "UBIFS DBG rcvry" +pf'</td>
 </tr>
 </table>
 
