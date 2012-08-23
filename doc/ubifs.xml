@@ -468,9 +468,11 @@ to main-line. This branch contains more or less stable patches. Thus,
 unless you are an active UBIFS developer, use the <code>linux-next</code>
 branch.</p>
 
-<p>There are also <code>2.6.32</code> - <code>3.3</code>
+<p>There are also <code>2.6.32</code> - <code>3.5</code>
 kernel back-ports which may be found here:</p>
 
+<code>git://git.infradead.org/~dedekind/ubifs-v3.5.git</code><br/>
+<code>git://git.infradead.org/~dedekind/ubifs-v3.4.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v3.3.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v3.2.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v3.1.git</code><br/>
