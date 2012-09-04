@@ -459,10 +459,13 @@ must be an issue for UBI as well.</p>
 
 <h2><a name="L_bad_blocks_exceeded">What happens when the PEBs reserved for bad block handling run out?</a></h2>
 
-By default, 2% of the available PEBs are reserved for handling bad blocks.
-
+<p>By default, about 2% of the whole chip size (20/1024 PEB) are reserved for
+<a href="ubi.html#L_max_beb">bad blocks handling.</a>
 If the number of blocks that turn bad exceeds that allocation, an error
-message will be printed and UBI will switch to read-only mode.
+message will be printed and UBI will switch to read-only mode.</p>
+<p>Note: If at attach time, there's already more bad blocks than reserved PEBs,
+UBI will stay in read-write mode. The switching to read-only mode only occurs
+when a new bad block appears.</p>
 
 
 

@@ -32,6 +32,7 @@
 	<li><a href="ubi.html#L_scalability">Scalability issues</a>
 		<ul><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ul>
 	</li>
+	<li><a name="L_max_beb">Reserved blocks for bad block handling (only for NAND chips)</a></li>
 	<li><a href="ubi.html#L_autoresize">Volume auto-resize</a></li>
 	<li><a href="ubi.html#L_ubi_operations">UBI operations</a>
 		<ol>
@@ -516,9 +517,10 @@ amount of flash space available for UBI users. Namely:</p>
 	<li>1 PEB is reserved for wear-leveling purposes;</li>
 	<li>1 PEB is reserved for the
 	<a href="ubi.html#L_lebchange">atomic LEB change</a> operation;</li>
-	<li>some amount of PEBs is reserved for bad PEB handling; this is
-	applicable for NAND flash, but not for NOR flash; the percentage of
-	reserved PEBs is configurable and is 2% by default;</li>
+	<li>some <a href="ubi.html#L_max_beb">amount of PEBs</a> is reserved
+	for bad PEB handling; this is applicable for NAND flash, but not for
+	NOR flash; the amount of reserved PEBs is configurable and is equal
+	to 20 blocks per 1024 blocks by default;</li>
 	<li>UBI stores the EC and VID
 	<a href="ubi.html#L_ubi_headers">headers</a> at the beginning of each
 	PEB; the amount of bytes used for these purposes depends on the flash
@@ -528,13 +530,17 @@ amount of flash space available for UBI users. Namely:</p>
 <p>Lets introduce symbols:</p>
 
 <ul>
+	<li><i>W</i> - total number of physical eraseblocks on the flash
+	chip (NB: the entire chip, not the MTD partition);</li>
 	<li><i>P</i> - total number of physical eraseblocks on the MTD
-	device;</li>
+	partition);</li>
 	<li><i>S<sub>P</sub></i> - physical eraseblock size;</li>
 	<li><i>S<sub>L</sub></i> - logical eraseblock size;</li>
-	<li><i>B</i> - number of PEBs reserved for bad PEB handling; it is
-	2% of <i>P</i> for NAND by default, and 0 for NOR and other flash types
-	which do not have bad PEBs;</li>
+	<li><i>B<sub>B</sub></i> - number of bad blocks on the MTD partition;</li>
+	<li><i>B<sub>R</sub></i> - number of PEBs reserved for bad PEB
+	handling. it is 20 * <i>W</i>/1024 for NAND by default, and 0 for NOR
+	and other flash types which do not have bad PEBs;</li>
+	<li><i>B</i> - MAX(<i>B<sub>R</sub></i>,<i>B<sub>B</sub></i>);</li>
 	<li><i>O</i> - the overhead related to storing EC and VID headers in
 	bytes, i.e. <i>O</i> = <i>S<sub>P</sub></i> - <i>S<sub>L</sub></i>.</li>
 </ul>
@@ -564,6 +570,10 @@ different for different flashes:</p>
 	64 bytes aligned to the min. I/O unit size if the min. I/O unit size
 	is less than 64 bytes.</li>
 </ul>
+
+<p>N.B.: the formula above counts bad blocks as a UBI overhead. The <i>real</i>
+UBI overhead is: (<i>B</i> - <i>B<sub>B</sub></i> + 4) * <i>S<sub>P</sub></i> +
+<i>O</i> * (<i>P</i> - <i>B</i> - 4).</p>
 
 
 
@@ -833,47 +843,46 @@ UBI.</p>
 
 
 
-<h2><a name="L_autoresize">Volume auto-resize</a></h2>
+<h2><a name="L_max_beb">Reserved blocks for bad block handling (only for NAND chips)</a></h2>
 
 <p>It is well-known that NAND chips have some amount of physical eraseblocks
-marked as bad by the manufacturer. The bad PEBs are distributed randomly
-and their number is different, although manufacturers usually guarantee that
+marked as bad by the manufacturer. During the lifetime of the NAND device,
+other bad blocks may appear. Although, manufacturers usually guarantee that
 the first few physical eraseblocks are not bad and the total amount of bad PEBs
-does not exceed certain number. For example, a new 256MiB Samsung OneNAND chip
-is guaranteed to have not more than 40 128KiB PEBs (but of course, more
-physical eraseblock will become bad over time). This is about 2% of flash
-size.</p>
+will not exceed certain number. For example, a 256MiB (2048 128KiB PEBs)
+Samsung OneNAND chip is guaranteed to have not more than 40 128KiB PEBs during
+its endurance lifetime. This is a very common value for NAND devices:
+20/1024 PEB, which is about 2% of flash size.</p>
+
+<p>This ratio of 20/1024 is the default number of blocks that UBI reserves for
+a UBI device. It means that if there's 2 UBI devices on a 4096 PEB NAND, 80 PEB
+for <b>each</b> UBI device will be reserved. This may appear as a waste of
+space, but as far as bad blocks can appear everywhere on the NAND flash, and
+are not equally disposed on the whole device, it's the safer way. So instead of
+using several UBI devices on a NAND flash, it's more space efficient to use only
+one UBI device and several UBI volumes.</p>
+<p>The default value of 20 PEB reserved per 1024 PEB is a kernel config option.
+For each UBI device, this value can be adjusted via a kernel parameter or an
+ubiattach parameter (since kernel 3.7).</p>
+
+
+
+
+<h2><a name="L_autoresize">Volume auto-resize</a></h2>
 
 <p>When it is needed to create an UBI image which will be flashed to the end
 user devices in production line, you should define exact sizes of all volumes
-(the sizes are stored in the UBI volume table). But it is difficult to do
-because the total flash chip size may vary depending on the amount of the
-initially bad PEBs.</p>
+(the sizes are stored in the UBI volume table). But usually, in the embedded
+world, we like to have one (read only) volume for the root file system and
+one read write volume for the rest (logs, user data, etc.). If the size of the
+root file system is fixed, the size of the second one can vary from one product
+to another (different flash sizes) and we just want all space left.</p>
 
-<p>One obvious way to solve the problem is to assume the worst case, when all
-chips would have maximum amount of bad PEBs. But in practice, most of the chips
-will have only few bad PEBs which is far less than the maximum. In general, it
-is fine - this will increase reliability, because UBI anyway uses all PEBs of
-the device. On the other hand UBI anyway reserves some amount of physical
-eraseblocks for bad PEB handling which is 2% of PEBs by default. So in case of
-the above mentioned OneNAND chip the result would be that 2% of PEBs would be
-reserved by UBI, and 0-2% of PEBs would not be used (they would be seen as
-available LEBs to the UBI users).</p>
-
-<p>But there is an alternative approach - one of the volume may have the
-<b>auto-resize</b> mark, which means that its size has to be enlarged when UBI
-is run for the first time. After the volume size is adjusted, UBI removes the
-auto-resize mark and the volume is not re-sized anymore. The auto-resize flag is
-stored in the volume table and only one volume may be marked as auto-resize.
-For example, if there is a volume which is intended to have the root
-file-system, it may be reasonable to mark it with the auto-resize flag.</p>
-
-<p>In the example with OneNAND chip, if one of the UBI volumes is be marked
-as auto-re-sized, it will be enlarged by 0-2% on the first UBI boot, but 2% of
-PEBs will anyway be reserved for bad PEB handling.</p>
-
-<p>Note, the auto-resize feature exists in the Linux kernel starting from
-version <code>2.6.25</code>.</p>
+<p>That what the auto-resize is about. If the volume has the <b>auto-resize</b>
+mark, its size will be enlarged when UBI is run for the first time. After the
+volume size is adjusted, UBI removes the auto-resize mark and the volume is
+not re-sized anymore. The auto-resize flag is stored in the volume table and
+only one volume may be marked as auto-resize.</p>
 
 
 
