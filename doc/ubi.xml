@@ -974,28 +974,7 @@ go to the mapped PEB.</p>
 <p>The LEB map operation is available via the <code>ubi_leb_map()</code>
 UBI kernel API function, or via the <code>UBI_IOCEBMAP</code> volume character
 device ioctl command. However, thie ioctl interface is available only starting
-from kernel version <code>2.6.29</code></p>.
-
-<p>The LEB map operation accepts the <code>dtype</code> parameter which suggests
-UBI which type of data the LEB will contain. Namely, <code>dtype</code> may be
-one of:</p>
-
-<ul>
-	<li><code>UBI_SHORTTERM</code> - the LEB will store short-term data,
-	which means that it will be erased soon; UBI will map this LEB to a
-	PEB with low erase counter, so it will grow relative to other PEB
-	erase counters;</li>
-	<li><code>UBI_LONGTTERM</code> - the LEB will store long-term data and
-	will not be erased soon; UBI will map this LEB to a PEB with high erase
-	counter, so it will go down relative to other PEB erase counters;</li>
-	<li><code>UBI_UNKNOWN</code> - should be used most of the time, when
-	you are not sure whether the data are long-term or short term.</li>
-</ul>
-
-<p>Bear in mind that <code>dtype</code> is only a hint. Please, use
-<code>UBI_UNKNOWN</code> if unsure. And note, UBI authors never really tested
-the effects of using <code>UBI_SHORTTERM</code> and <code>UBI_LONGTTERM</code>,
-so there is not guarantee they improve anything.</p>
+from kernel version <code>2.6.29</code>.</p>
 
 <p>One of the possible use-cases of the LEB map operation is making sure the
 old LEB contents goes away forever. As it was explained in
@@ -1109,8 +1088,6 @@ struct ubi_leb_change_req req;
 
 req.lnum = lnum_to_change;
 req.len = data_len;
-req.dtype = UBI_LONGTERM;  /* data persistency (may also be UBI_SHORTTERM
-                              and UBI_UNKNOWN) */
 fd = open("/dev/my_volume");
 ioctl(fd, UBI_IOCEBCH, &amp;req);
 write(fd, data_buf, data_len);
