@@ -32,7 +32,7 @@
 	<li><a href="ubi.html#L_scalability">Scalability issues</a>
 		<ul><li><a href="ubi.html#L_scalability_det">Implementation details</a></li></ul>
 	</li>
-	<li><a name="L_max_beb">Reserved blocks for bad block handling (only for NAND chips)</a></li>
+	<li><a href="ubi.html#L_max_beb">Reserved blocks for bad block handling (only for NAND chips)</a></li>
 	<li><a href="ubi.html#L_autoresize">Volume auto-resize</a></li>
 	<li><a href="ubi.html#L_ubi_operations">UBI operations</a>
 		<ol>
