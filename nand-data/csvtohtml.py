@@ -21,7 +21,7 @@ def csvToHTML(file):
 	tmp = open(head, 'r')
 	fdout.write(tmp.read())
 	tmp.close()
-	fdout.write('<table>\n')
+	fdout.write('<table class="zebra">\n')
 	row = reader.next()
 	for i in range(len(row)):
 		if (row[i] == "All but Size"):
