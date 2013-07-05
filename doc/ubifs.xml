@@ -467,6 +467,10 @@ during the merge window.</p>
 <p>There are also <code>3.0</code> - <code>3.6</code>
 kernel back-ports which may be found here:</p>
 
+<code>git://git.infradead.org/~dedekind/ubifs-v3.10.git</code><br/>
+<code>git://git.infradead.org/~dedekind/ubifs-v3.9.git</code><br/>
+<code>git://git.infradead.org/~dedekind/ubifs-v3.8.git</code><br/>
+<code>git://git.infradead.org/~dedekind/ubifs-v3.7.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v3.6.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v3.5.git</code><br/>
 <code>git://git.infradead.org/~dedekind/ubifs-v3.4.git</code><br/>
