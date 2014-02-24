@@ -18,6 +18,7 @@
 	<li><a href="ubi.html#L_mkvol">How do I create/delete UBI volumes?</a></li>
 	<li><a href="ubi.html#L_run_jffs2">How do I run JFFS2 on top of an UBI volume?</a></li>
 	<li><a href="ubi.html#L_ext2_over_ubi">Can I run ext2 on top of UBI?</a></li>
+	<li><a href="ubi.html#L_squashfs_over_ubi">Can I run squashfs on top of UBI?</a></li>
 	<li><a href="ubi.html#L_format_mtd">Do I have to format my empty flash before running UBI on top of it?</a></li>
 	<li><a href="ubi.html#L_ubierase">How do I erase flash and preserve erase counters?</a></li>
 	<li><a href="ubi.html#L_ubi_mkimg">How do I create UBI images?</a></li>
@@ -159,16 +160,15 @@ Please, read the <a href="../doc/ubi.html#L_rednote">big red note</a>
 and <a href="../doc/ubi.html#L_overview">overview</a> documentation sections to
 realize why.</p>
 
-<p>But it is much easier to implement FTL on top of UBI than on top of MTD,
-because UBI takes care about many flash complexities and makes it
-possible to concentrate on on upper-level issues rather then solving flash
-media problems like wear-leveling, bit-flips, bad eraseblocks, etc.</p>
+<p>However, given UBI takes care of many flash complexities, it provides a
+bad-block-free block device access on top of UBI volumes. This feature is useful to
+mount read-only file systems.</p>
 
-<p><a
-href="http://lists.infradead.org/pipermail/linux-mtd/2008-January/020381.html">
-This</a> e-mail describes an idea of a simple FTL layer on top of UBI.</p>
+<h2><a name="L_squashfs_over_ubi">Can I run squashfs on top of UBI?</a></h2>
 
-
+<p>Yes. UBI allows to create a read-only block device on top of a UBI volume
+which is suitable for read-only, block-oriented file systems, such as squashfs.
+See the <a href="..doc/ubi.html#L_block">UBI block device</a> section for more details.</p>
 
 <h2><a name="L_format_mtd">
 	Do I have to format my empty flash before running UBI on top of it?

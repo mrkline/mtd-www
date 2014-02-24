@@ -47,6 +47,7 @@
 		</ol>
 	</li>
 	<li><a href="ubi.html#L_fastmap">Fastmap</a></li>
+	<li><a href="ubi.html#L_block">Block device</a></li>
 	<li><a href="ubi.html#L_ubidoc">More documentation</a></li>
 </ol>
 
@@ -173,6 +174,10 @@ because:</p>
 	mechanisms).</li>
 </ul>
 
+<p>UBI also provides a block device that allows regular, block-oriented
+file systems to be mounted on top of an UBI volume. This is possible because UBI
+handles bad-blocks transparently.</p>
+
 <p>There is an additional driver called <code>gluebi</code> which emulates MTD
 devices on top of UBI volumes. This looks a little strange, because UBI works
 on top of an MTD device, then <code>gluebi</code> emulates other MTD devices
@@ -236,6 +241,8 @@ sub-directory.</p>
 	devices (the opposite to what <code>ubiattach</code> does);</li>
 	<li><code>ubimkvol</code> - creates UBI volumes on UBI devices;</li>
 	<li><code>ubirmvol</code> - removes UBI volumes from UBI devices;</li>
+	<li><code>ubiblock</code> - manages block interfaces for UBI volumes.
+	See <a href="ubi.html#L_block">here</a> for more information;</li>
 	<li><code>ubiupdatevol</code> - updates UBI volumes; this tool uses the
 	<a href="ubi.html#L_volupdate">UBI volume update feature</a> which
 	leaves the volume in "corrupted" state if the update was interrupted;
@@ -1260,6 +1267,60 @@ are blocked while attaching. Depending on flash chips this can take up to one
 second. Therefore, fastmap makes only sense on fast and large flash devices
 where a full scan takes too long. E.g. On 4GiB NAND chips a full scan takes
 several seconds whereas a fast attach needs less than one second.</p>
+
+<h2><a name="L_block">Read-only block device access</a></h2>
+
+<p>UBI allows to create a block device on top of each UBI volume. The block
+device implementation currently has the following limitations:
+
+<ul>
+	<li>Read-only operation.</li>
+	<li>Serialized operation.</li>
+	<li>1-to-1 mapping between block sectors and logical eraseblocks.
+	In other words, no wear-leveling is provided.</li>
+</ul></p>
+
+<p>Keep in mind the NAND driver core already serializes all I/O anyway,
+so it's not expected this limitation will affect performance.</p>
+
+<p>Despite these limitations, a block device is still very useful to mount
+read-only, regular file systems on top of UBI volumes. This is the case
+of squashfs, which can be used as a lightweigth read-only rootfs on a NAND
+device.</p>
+
+<h4><a name="L_block_usage">Usage</a></h4>
+<p>Attaching and detaching a block device on a UBI volume is fairly easy.
+You can do this either by using the <code>block</code> UBI module parameter
+or with the <code>ubiblock</code> user-space tool.</p>
+
+<p>In order to attach a block device on bootup time (e.g. to mount the rootfs
+on such a block device) you can specify the <code>block</code> parameter as
+a kernel boot arguments:</p>
+
+<p><code>ubi.mtd=5 ubi.block=0,0 root=/dev/ubiblock0_0</code></p>
+
+<p>There are several ways if specifying a volume:</p>
+<ul>
+	<li><p>Using the UBI volume path:</p>
+	<code>ubi.block=/dev/ubi0_0</code></li>
+
+	<li><p>Using the UBI device, and the volume name:</p>
+	<code>ubi.block=0,rootfs</code></li>
+
+	<li><p>Using both UBI device number and UBI volume number:</p>
+	<code>ubi.block=0,0</code></li>
+</ul>
+
+<p>If you've built UBI as a module you can use this parameter at module insertion
+time:</p>
+
+<code>$ modprobe ubi mtd=/dev/mtd5 block=/dev/ubi0_0</code>
+
+<p>A block device can also be attached/detached dynamically at runtime, using
+the <code>ubiblock</code> user-space tool:</p>
+
+<p><code>$ ubiblock --attach /dev/ubi0_0</code></p>
+<p><code>$ ubiblock --detach /dev/ubi0_0</code></p>
 
 <h2><a name="L_ubidoc">More documentation</a></h2>
 

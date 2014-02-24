@@ -182,6 +182,10 @@ use block-based file systems on top of bare flashes using
 In other words, please, <b>do not use</b> <code>mtdblock</code> unless you
 know exactly what you are doing.</p>
 
+<p>Instead, you may find the block device emulation provided by <code>UBI</code>
+useful. Please refer to the <a href="ubi.html#L_block">UBI section</a> for more
+details.</p>
+
 <p>There is also a read-only version of this driver which doesn't have the
 capacity to do the caching and erase/writeback, mainly for use with uCLinux
 where the extra RAM requirement was considered too large.</p>
