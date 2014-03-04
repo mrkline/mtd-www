@@ -47,7 +47,7 @@
 		</ol>
 	</li>
 	<li><a href="ubi.html#L_fastmap">Fastmap</a></li>
-	<li><a href="ubi.html#L_block">Block device</a></li>
+	<li><a href="ubi.html#L_ubiblock">R/O block devices on top of UBI volumes</a></li>
 	<li><a href="ubi.html#L_ubidoc">More documentation</a></li>
 </ol>
 
@@ -242,7 +242,7 @@ sub-directory.</p>
 	<li><code>ubimkvol</code> - creates UBI volumes on UBI devices;</li>
 	<li><code>ubirmvol</code> - removes UBI volumes from UBI devices;</li>
 	<li><code>ubiblock</code> - manages block interfaces for UBI volumes.
-	See <a href="ubi.html#L_block">here</a> for more information;</li>
+	See <a href="ubi.html#L_ubiblock">here</a> for more information;</li>
 	<li><code>ubiupdatevol</code> - updates UBI volumes; this tool uses the
 	<a href="ubi.html#L_volupdate">UBI volume update feature</a> which
 	leaves the volume in "corrupted" state if the update was interrupted;
@@ -1159,21 +1159,22 @@ means that all data has been written to the flash media), otherwise it selects
 the PEB with lower sequence number(<i>P<sub>1</sub></i>). Of course, UBI has to
 read the LEB contents in order to check the <code>CRC-32</code> checksum.</p>
 
-<h2><a name="L_fastmap">Fastmap</a></h2>
-<p>
-Fastmap is an experimental and optional UBI feature, which can be enabled
-by setting CONFIG_MTD_UBI_FASTMAP to 'y'.
-Once enabled UBI evaluates the module parameter
-"fm_autoconvert". If it is set to 1 (default is 0) UBI automatically enables
-fastmap for any attached image. This means UBI creates a new internal
-volume with the fastmap data such that next time the fast attach mode can be
-used.
-In the default configuration UBI will use the information stored in this
-fastmap volume to accelerate the attach procedure.
-If you want to test fastmap, set fm_autoconvert to 1 and attach a volume.
-</p>
 
-The following settings are possible:
+
+<h2><a name="L_fastmap">Fastmap</a></h2>
+<p>Fastmap is an experimental and optional UBI feature, which can be enabled
+by setting CONFIG_MTD_UBI_FASTMAP to 'y'. Once enabled UBI evaluates the module
+parameter "fm_autoconvert". If it is set to 1 (default is 0) UBI automatically
+enables fastmap for any attached image. This means UBI creates a new internal
+volume with the fastmap data such that next time the fast attach mode can be
+used.</p>
+
+<p>In the default configuration UBI will use the information stored in this
+fastmap volume to accelerate the attach procedure. If you want to test
+fastmap, set fm_autoconvert to 1 and attach a volume.</p>
+
+<p>The following settings are possible:</p>
+
 <table>
 <thead>
 <th>CONFIG_MTD_UBI_FASTMAP</th>
@@ -1205,12 +1206,12 @@ is automatically installed on all attached images</td>
 </table>
 
 <h4><a name="L_fastmap_compat">Backwards compatibility</a></h4>
+
 <p>The fastmap on-disk data structure makes use of delete compatible volumes,
 therefore fastmap enabled images are fully backwards compatible with UBI
-implementations which do not support fastmap. The kernel will remove the fastmap
-volumes and continue with scanning.
-This includes not only v3.6- but also v3.7+ with this option disabled.
-</p>
+implementations which do not support fastmap. The kernel will remove the
+fastmap volumes and continue with scanning. This includes not only v3.6- but
+also v3.7+ with this option disabled.</p>
 
 <h4><a name="L_fastmap_tech">Technical design</a></h4>
 
@@ -1231,9 +1232,10 @@ It contains pointers to the remaining PEBs which carry the actual fastmap
 data. On modern NAND chips the whole fastmap fits into a single PEB.
 Hence, the anchor PEB points to itself.
 After loading the fastmap data, UBI attach information structure is created
-from it.
+from it.</p>
 
-The attach process works as follows:
+<p>The attach process works as follows:</p>
+
 <ol>
 	<li>UBI tries to find the fastmap anchor PEB,
 	if no anchor PEB was found UBI performs  traditional full scan</li>
@@ -1242,62 +1244,61 @@ The attach process works as follows:
 	<li>Then it performs a traditional scan only on PEBs in the pool
 	instead of all PEBs</li>
 </ol>
-If UBI detects that the used fastmap is invalid or corrupted it automatically
-falls back to scanning mode and performs a full scan.
-Using a CRC32 checksum and consistency checks of the internal UBI structures
-UBI is able to detect whether a fastmap is invalid or not.
-</p>
 
-<p>
-A fastmap is written to the devices each time the fastmap pool becomes full
+<p>If UBI detects that the used fastmap is invalid or corrupted it
+automatically falls back to scanning mode and performs a full scan. Using a
+CRC32 checksum and consistency checks of the internal UBI structures UBI is
+able to detect whether a fastmap is invalid or not.</p>
+
+<p>A fastmap is written to the devices each time the fastmap pool becomes full
 (no free PEBs are available), the volume layout changes or the image is
-detached. One may wonder why writing at detach time is needed.
-If UBI would not write a new fastmap at detach time all erase counter
-modifications since the last fastmap write are lost.
-</p>
+detached. One may wonder why writing at detach time is needed.  If UBI would
+not write a new fastmap at detach time all erase counter modifications since
+the last fastmap write are lost.</p>
 
 <h4><a name="L_fastmap_overhead">Overhead</a></h4>
+
 <p>If fastmap enabled UBI will reserve enough PEBs to carry two complete
-fastmaps. In practice on modern NAND chips two PEBs are reserved for fastmap.
-</p>
-<p>
-There is also some runtime overhead, to guarantee that the new fastmap is valid
+fastmaps. In practice on modern NAND chips two PEBs are reserved for fastmap.</p>
+
+<p>There is also some runtime overhead, to guarantee that the new fastmap is valid
 and conistent UBI has to take care that all IO which would cause EBA changes
 are blocked while attaching. Depending on flash chips this can take up to one
 second. Therefore, fastmap makes only sense on fast and large flash devices
 where a full scan takes too long. E.g. On 4GiB NAND chips a full scan takes
 several seconds whereas a fast attach needs less than one second.</p>
 
-<h2><a name="L_block">Read-only block device access</a></h2>
 
-<p>UBI allows to create a block device on top of each UBI volume. The block
-device implementation currently has the following limitations:
+
+<h2><a name="L_ubiblock">R/O block devices on top of UBI volumes</a></h2>
+
+<p>UBI allows to create block devices on top of UBI volumes with
+the following limitations:</p>
 
 <ul>
 	<li>Read-only operation.</li>
-	<li>Serialized operation.</li>
-	<li>1-to-1 mapping between block sectors and logical eraseblocks.
-	In other words, no wear-leveling is provided.</li>
-</ul></p>
-
-<p>Keep in mind the NAND driver core already serializes all I/O anyway,
-so it's not expected this limitation will affect performance.</p>
+	<li>Serialized I/O operation, but keep in mind the NAND driver core
+	    already serializes all I/O too.</li>
+</ul>
 
 <p>Despite these limitations, a block device is still very useful to mount
 read-only, regular file systems on top of UBI volumes. This is the case
 of squashfs, which can be used as a lightweigth read-only rootfs on a NAND
-device.</p>
+device. The UBI layer will take care of things like bit-flips handling and
+wear-levelling.</p>
 
-<h4><a name="L_block_usage">Usage</a></h4>
-<p>Attaching and detaching a block device on a UBI volume is fairly easy.
-You can do this either by using the <code>block</code> UBI module parameter
-or with the <code>ubiblock</code> user-space tool.</p>
 
-<p>In order to attach a block device on bootup time (e.g. to mount the rootfs
+<h4><a name="L_ubiblock_usage">Usage</a></h4>
+
+<p>Creating and destroying block devices on a UBI volume is somewhat similar to
+attaching MTD devices to UBI. You can either use the <code>block</code> UBI
+module parameter or use the "<code>ubiblock</code>" user-space tool.</p>
+
+<p>In order to create a block device on bootup time (e.g. to mount the rootfs
 on such a block device) you can specify the <code>block</code> parameter as
 a kernel boot arguments:</p>
 
-<p><code>ubi.mtd=5 ubi.block=0,0 root=/dev/ubiblock0_0</code></p>
+<code>ubi.mtd=5 ubi.block=0,0 root=/dev/ubiblock0_0</code>
 
 <p>There are several ways if specifying a volume:</p>
 <ul>
@@ -1311,16 +1312,22 @@ a kernel boot arguments:</p>
 	<code>ubi.block=0,0</code></li>
 </ul>
 
-<p>If you've built UBI as a module you can use this parameter at module insertion
-time:</p>
+<p>If you've built UBI as a module you can use this parameter at module
+load time:</p>
 
-<code>$ modprobe ubi mtd=/dev/mtd5 block=/dev/ubi0_0</code>
+<pre>
+$ modprobe ubi mtd=/dev/mtd5 block=/dev/ubi0_0
+</pre>
 
 <p>A block device can also be attached/detached dynamically at runtime, using
 the <code>ubiblock</code> user-space tool:</p>
 
-<p><code>$ ubiblock --attach /dev/ubi0_0</code></p>
-<p><code>$ ubiblock --detach /dev/ubi0_0</code></p>
+<pre>
+$ ubiblock --attach /dev/ubi0_0
+$ ubiblock --detach /dev/ubi0_0
+</pre>
+
+
 
 <h2><a name="L_ubidoc">More documentation</a></h2>
 

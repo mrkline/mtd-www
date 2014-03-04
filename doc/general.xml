@@ -174,7 +174,7 @@ works by caching a whole flash erase block in RAM, modifying it as requested,
 then erasing the whole block and writing back the modified. This means that
 <code>mtdblock</code> does not try to do any optimizations, and that you will
 lose lots of data in case of power cuts. And last, but not least,
-<code>mtdblock</code> does not do any wear-leveling.</p>
+<code>mtdblock</code> does not do any wear-leveling or bit-flips handling.</p>
 
 <p>Often people consider <code>mtdblock</code> as general FTL layer and try to
 use block-based file systems on top of bare flashes using
@@ -182,13 +182,14 @@ use block-based file systems on top of bare flashes using
 In other words, please, <b>do not use</b> <code>mtdblock</code> unless you
 know exactly what you are doing.</p>
 
-<p>Instead, you may find the block device emulation provided by <code>UBI</code>
-useful. Please refer to the <a href="ubi.html#L_block">UBI section</a> for more
-details.</p>
+<p>There is also a read-only version of this driver, mainly for use with
+uCLinux where the extra RAM requirement was considered too large. However, just
+like the R/W version of the driver, there is no wear-levelling and bit-flips
+handling.</p>
 
-<p>There is also a read-only version of this driver which doesn't have the
-capacity to do the caching and erase/writeback, mainly for use with uCLinux
-where the extra RAM requirement was considered too large.</p>
+<p>Instead of using this old driver, you may check the R/O block device
+emulation provided by <code>UBI</code> useful. Please refer to the
+<a href="ubi.html#L_ubiblock">UBI section</a> for more details.</p>
 
 
 
