@@ -1319,12 +1319,12 @@ load time:</p>
 $ modprobe ubi mtd=/dev/mtd5 block=/dev/ubi0_0
 </pre>
 
-<p>A block device can also be attached/detached dynamically at runtime, using
-the <code>ubiblock</code> user-space tool:</p>
+<p>A block device can also be created/removed dynamically at runtime, using the
+<code>ubiblock</code> user-space tool:</p>
 
 <pre>
-$ ubiblock --attach /dev/ubi0_0
-$ ubiblock --detach /dev/ubi0_0
+$ ubiblock --create /dev/ubi0_0
+$ ubiblock --remove /dev/ubi0_0
 </pre>
 
 
