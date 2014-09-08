@@ -844,16 +844,19 @@ include:</p>
 <h2><a name="L_comproff">How do I disable compression?</a></h2>
 
 <p>UBIFS compression may be disabled for whole file system during the image
-creation time using the "<code>-x none</code>" <a
-href="ubifs.html#L_mkfubifs"><code>mkfs.ubifs</code></a> option. However,
-if UBIFS compression is enabled, it may be disabled for individual files by
-cleaning the inode <i>compression flag</i>:</p>
+creation time using the "<code>-x none</code>"
+<a href="ubifs.html#L_mkfubifs"><code>mkfs.ubifs</code></a> option. The other
+way to do this is to mount UBIFS with the "<code>-o compre=none</code>"
+option.</p>
+
+<p>Compression may also be disabled for individual files by cleaning
+the inode <i>compression flag</i>:</p>
 
 <pre>
 $ chattr -c /mnt/ubifs/file
 </pre>
 
-<p>in <code>shell</code>, or</p>
+<p>in shell, or</p>
 
 <pre>
 /* Get inode flags */
