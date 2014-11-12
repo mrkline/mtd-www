@@ -1269,6 +1269,16 @@ where a full scan takes too long. E.g. On 4GiB NAND chips a full scan takes
 several seconds whereas a fast attach needs less than one second.</p>
 
 
+<h4><a name="L_fastmap_notes">Notes</a></h4>
+
+<p>Enabling fastmap does not guarantee that every attach process can be done
+in a fast way. In some situations a full scan is still needed.
+This can happen in two cases, (i) if a power cut occurred while a fastmap was
+written to the flash or (ii) UBI ran out of PEBs while writing the fastmap.
+The latter case can happen if a massive amount of IO errors happen while writing
+and UBI cannot find an usable PEB.
+</p>
+
 
 <h2><a name="L_ubiblock">R/O block devices on top of UBI volumes</a></h2>
 
