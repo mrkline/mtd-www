@@ -1238,7 +1238,7 @@ from it.</p>
 
 <ol>
 	<li>UBI tries to find the fastmap anchor PEB,
-	if no anchor PEB was found UBI performs  traditional full scan</li>
+	if no anchor PEB was found UBI performs a traditional full scan</li>
 	<li>It follows the pointers stored in the anchor PEB and reads
 	the fastmap payload data</li>
 	<li>Then it performs a traditional scan only on PEBs in the pool
