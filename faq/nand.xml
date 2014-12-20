@@ -92,7 +92,7 @@ necessary before you copy a filesystem image to the chip.
 
 <P>
 Technically yes, as long as this MTD partition does not contain bad blocks. But
-it is generally a bad idea. For bad block aware copying, batter use nandwrite
+it is generally a bad idea. For bad block aware copying, use nandwrite
 from the <CODE>mtd-utils</CODE> package.
 </P>
 

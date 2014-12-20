@@ -535,7 +535,7 @@ amount of flash space available for UBI users. Namely:</p>
 	type and is explained below.</li>
 </ul>
 
-<p>Lets introduce symbols:</p>
+<p>Let's introduce symbols:</p>
 
 <ul>
 	<li><i>W</i> - total number of physical eraseblocks on the flash
@@ -665,10 +665,10 @@ which might be difficult to debug later. So we recommend to always do this.</p>
 For example, suppose the first NAND page of a PEB has some data, the second one
 is empty, the third one also has some data, the fourth one and the rest of NAND
 pages are empty as well. In this case UBIFS will treat all NAND pages starting
-from the fourth one as free, and will write data there. However, if the flasher
-program has already written <code>0xFF</code>'s to these pages, so they will be
-written to twice! However, many NAND flashes require NAND pages to be written
-only once, even if the data contains only <code>0xFF</code> bytes.</p>
+from the fourth one as free, and will write data there. If the flasher program
+has already written <code>0xFF</code>'s to these pages, then any new UBIFS data
+will cause a second write. However, many NAND flashes require NAND pages to be
+written only once, even if the data contains only <code>0xFF</code> bytes.</p>
 
 <p>To put it differently, writing <code>0xFF</code> bytes may have side-effects.
 What the flasher has to do is to drop all empty NAND pages from the end of the

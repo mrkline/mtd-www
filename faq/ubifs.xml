@@ -188,7 +188,7 @@ by running the <a href="../doc/ubi.html#L_usptools"><code>mtdinfo</code></a>
 tool with <code>-u</code> parameter. Of course, the tool has to be run on
 the target system.</p>
 
-<p>Please, refer <a href="ubi.html#L_find_min_io_size">this</a> for more
+<p>Please, refer to <a href="ubi.html#L_find_min_io_size">this</a> for more
 information about how to find these parameters.</p>
 
 <p>And optionally, you should decide which compression algorithm you want
@@ -264,7 +264,7 @@ vol_flags=autoresize
 </ul>
 
 <p>The <code>ubinize</code> utility requires volumes description file. Please,
-refer <a href="ubi.html#L_ubi_mkimg">this</a> section for more
+refer to <a href="ubi.html#L_ubi_mkimg">this</a> section for more
 <code>ubinize</code> usage information.</p>
 
 <p>In the example, the <code>ubinize.cfg</code> file tells <code>ubinize</code>
@@ -628,7 +628,7 @@ provably want the file-system doing inode updates every time they are read.</p>
 
 <h2><a name="L_nfs">Does UBIFS support NFS?</a></h2>
 
-<p>Not, it does not, which means you cannot export UBIFS file-system via NFS.
+<p>No, it does not, which means you cannot export UBIFS file-systems via NFS.
 We did make an attempt to support NFS, but the support was not exactly correct
 so it was dropped, and we have never found time to come back to that. Please,
 refer to <a href="http://marc.info/?l=linux-next&amp;m=121852228611051&amp;w=2">this thread</a>
@@ -682,15 +682,15 @@ compression, write-back, space wastage at the end of logical eraseblocks,
 garbage-collection, etc. Please, refer
 <a href="../doc/ubifs.html#L_spaceacc">this</a> section for details.</p>
 
-<p>Note, JFFS2 also has problems with free space predictions, but in average,
-it reports much more accurate amount of free space. However, JFFS2 may lie and
+<p>Note, JFFS2 also has problems with free space predictions, but on average,
+it reports free space much more accurately. However, JFFS2 may lie and
 report more free space than it actually has. For example, we experienced
 situations when JFFS2 reported 8MiB free space, while we were able to write
 only 2 MiB of data. This makes some user-space applications very unhappy.</p>
 
-<p>UBIFS also lies, but it always report <i>less</i> space that user may
+<p>UBIFS also lies, but it always reports <i>less</i> space than the user may
 actually write. For example, it may report 2MiB of free space, but if you
-start writing to it, may be able to write 4MiB there (even if you have
+start writing to it, you may be able to write 4MiB (even if you have
 compression disabled).</p>
 
 <p>Thus, the only way to find out <i>precise</i> amount of free space is to

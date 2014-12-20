@@ -666,7 +666,7 @@ NOTES
 </pre>
 
 <p>This is true for UBIFS (except of the "some buggy implementations" part,
-because UBIFS does reserves space for cached dirty data). This is also true for
+because UBIFS does reserve space for cached dirty data). This is also true for
 JFFS2, as well as for any other Linux file system.</p>
 
 <p>However, some (perhaps not very good) user-space programmers do not take

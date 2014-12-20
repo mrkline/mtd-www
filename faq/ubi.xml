@@ -501,7 +501,7 @@ Why does ubiattach on a freshly formatted device fail with "Invalid argument"?
 
 <p>On NAND devices that support sub-page accesses, <code>ubiformat</code>
 may choose a different location for the
-<a href="../doc/ubi.html#L_ubi_headers">VID header</a> to the kernel UBI driver
+<a href="../doc/ubi.html#L_ubi_headers">VID header</a> to the kernel UBI driver.
 This can result in the following error when attaching to a UBI device:</p>
 
 <pre>
@@ -559,7 +559,7 @@ ubi.mtd=0,2048
 
 <h2><a name="L_subpage">What is a sub-page?</a></h2>
 
-<p>Please, refer <a href="../doc/ubi.html#L_subpage">this</a> section.</p>
+<p>Please, refer to <a href="../doc/ubi.html#L_subpage">this</a> section.</p>
 
 
 
@@ -857,7 +857,7 @@ is a similar table for UBI.</p>
 <h3>Extra self-checks</h3>
 
 <p>UBI contains various internal self-check functions which are often
-very useful for debugging or testing. Please, refer the corresponding
+very useful for debugging or testing. Please, refer to the corresponding
 <a href="ubifs.html#L_how_debug_self_checks">UBIFS self-checks</a>
 section for more information, because UBI extra self-checks are very
 similar, just a bit simpler. Here is a similar table for UBI.</p>
