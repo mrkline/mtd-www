@@ -11,10 +11,8 @@
 
 	<H2>MTD GIT HOWTO</H2>
 
-<P>The MTD GIT tree is at <TT>git://git.infradead.org/linux-mtd.git</TT>,
-and is visible through <A
-HREF="http://git.infradead.org/?p=linux-mtd.git">gitweb</A>. Other git
-trees are available and can be browsed through the gitweb interface 
+<P>The MTD GIT trees are documented <A HREF="../source.html">here</A>
+and can be browsed through the gitweb interface
 at <A HREF="http://git.infradead.org/">http://git.infradead.org/</A>.
 </P>
 
@@ -25,7 +23,7 @@ job runs every five minutes, indexing the available trees in users'
 gitweb.</P>
 <P>When creating GIT trees with patches you intend to be pushed upstream,
 please try to ensure that we end up with as few merges as possible.
-Anything you commit should be on top of the latest linux-mtd git tree,
+Anything you commit should be on top of the development tree (see <A HREF="../source.html">here</A>),
 rather than against a clean tree from Linus. Avoid doing any merges of
 your own, unless absolutely necessary.</P>
 

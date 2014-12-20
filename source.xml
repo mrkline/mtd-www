@@ -10,12 +10,88 @@
 
 <h2>GIT vs. Linux 3.x</h2>
 
-    <P>The MTD GIT tree is <TT>git://git.infradead.org/linux-mtd.git</TT>,
-    and is viewable using gitweb at <A 
+    <P>MTD development is kept in GIT and managed according to standard Linux
+    development practices. Development is based off of one of several trees,
+    depending on what you're targeting. For MTD development, patches are kept
+    in the <TT>linux-mtd.git</TT> and <TT>l2-mtd.git</TT> repositories. The
+    former targets the current release cycle (use this only for bugfixes other
+    material that's worthy of rapid integration into Linus' tree), while the
+    latter targets the next Linux release (use this for most development).
+    UBI and UBIFS development is tracked separately, in
+    <TT>linux-ubifs.git</TT>. User-space tools are kept in
+    <TT>mtd-utils.git</TT>.</P>
+
+    <P>All of the kernel trees are included in the
+    <a href="http://git.kernel.org/?p=linux/kernel/git/next/linux-next.git">linux-next</a>
+    tree and are viewable using gitweb at <A
     HREF="http://git.infradead.org/">http://git.infradead.org/</A>, along
-    with a separate tree for the userspace tools, and users' own trees.
-    From time to time, other trees will exist which contain development work
-    which is not yet ready to be merged with the mainstream kernel.</P>
+    with a separate tree for the userspace tools, and users' own trees.</P>
+
+<table cellpadding="8">
+    <tr>
+        <th>Tree Name</th><th>GIT URL</th><th>Gitweb URL</th>
+    </tr>
+    <tr>
+        <td>
+            MTD
+        </td>
+        <td>
+            <tt>git://git.infradead.org/linux-mtd.git</tt>
+        </td>
+        <td>
+            <a href="http://git.infradead.org/linux-mtd.git">
+                http://git.infradead.org/linux-mtd.git</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            MTD (next)
+        </td>
+        <td>
+            <tt>git://git.infradead.org/l2-mtd.git</tt>
+        </td>
+        <td>
+            <a href="http://git.infradead.org/l2-mtd.git">
+                http://git.infradead.org/l2-mtd.git</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            UBI / UBIFS
+        </td>
+        <td>
+            <tt>git://git.infradead.org/linux-ubifs.git</tt>
+        </td>
+        <td>
+            <a href="http://git.infradead.org/linux-ubifs.git">
+                http://git.infradead.org/linux-ubifs.git</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            MTD user-space tools
+        </td>
+        <td>
+            <tt>git://git.infradead.org/mtd-utils.git</tt>
+        </td>
+        <td>
+            <a href="http://git.infradead.org/mtd-utils.git">
+                http://git.infradead.org/mtd-utils.git</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            This website
+        </td>
+        <td>
+            <tt>git://git.infradead.org/mtd-www.git</tt>
+        </td>
+        <td>
+            <a href="http://git.infradead.org/mtd-www.git">
+                http://git.infradead.org/mtd-www.git</a>
+        </td>
+    </tr>
+</table>
 
     <P>Gitweb can give patches between specific points in the tree. To
     obtain the full patch between Linus' official kernel tree and the
@@ -58,6 +134,10 @@ Linus' tree, so that unnecessary merges are avoided.
 different machine to the old <tt>cvs.infradead.org</tt>) may send trivial patches
 to the mailing list -- but expect to be given an account and expected to
 use git if you make a habit of it.</P>
+
+<p>If you are sending patches to the <a href="mail.html">mailing list</a>,
+please remember to base them on the appropriate tree listed above, not Linus'
+tree.</p>
 
 <h3>Patch Format Guidelines</h3>
 <p>
